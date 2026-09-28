@@ -36,6 +36,20 @@ delete from public.allowed_emails where email = 'ancien@exemple.com';
 Pour supprimer un compte existant : **Authentication** > **Users** > `…` > **Delete user**.
 Ses données sont supprimées avec lui.
 
+### Activer le partage entre utilisateurs
+
+Pour l'onglet « Suivi Amis », colle aussi [`supabase/partage.sql`](../supabase/partage.sql)
+dans le SQL Editor, puis **Run**. Il crée la table `shares` :
+
+- chacun y publie une copie de son suivi, associée à un code ;
+- cette copie n'est lisible que par quelqu'un qui **fournit le code exact** (en-tête
+  `x-share-code` vérifié par la base) : impossible de lister les suivis des autres ;
+- générer un nouveau code coupe l'accès à tous ceux qui avaient l'ancien ;
+- désactiver le partage supprime la ligne.
+
+Tant que ce script n'est pas passé, l'appli fonctionne normalement, mais l'onglet
+Suivi Amis affiche « Le partage n'est pas encore activé sur le serveur ».
+
 ---
 
 ## 2. Régler l'authentification
@@ -122,6 +136,7 @@ toutes les protections.
 | Quelqu'un s'inscrit avec l'email d'un autre | Confirmation par email obligatoire |
 | Un membre essaie de lire les données d'un autre | Règles RLS : chacun ne voit que sa ligne |
 | Visiteur non connecté qui interroge l'API | Rôle `anon` sans aucun droit sur les tables |
+| Quelqu'un veut lire un suivi partagé sans le code | Refusé : la règle exige le code exact dans l'en-tête |
 | Deviner un mot de passe | 10 caractères minimum, limite de tentatives de Supabase |
 | Savoir si un email a un compte | Messages identiques (connexion, mot de passe oublié) |
 | Lien de réinitialisation intercepté | Flux PKCE : le lien ne marche que dans le navigateur qui l'a demandé, une seule fois, pendant 1 h |

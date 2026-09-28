@@ -25,19 +25,15 @@ export function logoMark(size = 28) {
   return svg;
 }
 
+export const APP_NAME = 'Suivi Muscu';
+
 /** Symbole + nom, pour l'en-tête et la page de connexion. */
 export function logo({ size = 28, large = false } = {}) {
   const wrap = document.createElement('span');
   wrap.className = 'logo' + (large ? ' logo-large' : '');
-  const text = document.createElement('span');
-  text.className = 'logo-text';
   const name = document.createElement('span');
   name.className = 'logo-name';
-  name.textContent = 'Suivi Muscu';
-  const tag = document.createElement('span');
-  tag.className = 'logo-tag';
-  tag.textContent = 'India';
-  text.append(name, tag);
-  wrap.append(logoMark(size), text);
+  name.textContent = APP_NAME;
+  wrap.append(logoMark(size), name);
   return wrap;
 }

@@ -111,18 +111,9 @@ a  { color: inherit; }
 .logo-mark { display: block; flex: none; }
 .logo-bg { fill: var(--accent); }
 .logo-fg { fill: #ffffff; }
-.logo-text { display: flex; align-items: baseline; gap: 6px; white-space: nowrap; }
-.logo-name { font-weight: 700; font-size: 1rem; letter-spacing: -0.02em; }
-.logo-tag {
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--accent-ink);
-}
+.logo-name { font-weight: 700; font-size: 1rem; letter-spacing: -0.02em; white-space: nowrap; }
 .logo-large { flex-direction: column; gap: 12px; }
 .logo-large .logo-name { font-size: 1.4rem; }
-.logo-large .logo-tag { font-size: 0.75rem; }
 
 /* ------------------------------------------------------- barre du haut */
 
@@ -925,6 +916,26 @@ details.accordion[open] > summary { margin-bottom: 8px; }
 .sync-status.busy::before { background: var(--accent); }
 .sync-status.err::before  { background: var(--critical); }
 
+.credit { margin-top: 6px; color: var(--ink-muted); font-size: 0.75rem; }
+
+/* --------------------------------------------------------------- partage */
+
+.share-block { margin-top: 14px; }
+.code-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.share-code {
+  flex: 0 1 auto;
+  padding: 8px 14px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1.15rem;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  color: var(--accent-ink);
+  background: var(--accent-soft);
+  border-radius: var(--radius-s);
+  user-select: all;
+}
+.avatar.small { width: 36px; height: 36px; font-size: 0.95rem; }
+
 .toast {
   position: fixed;
   left: 50%;
@@ -981,7 +992,7 @@ details.accordion[open] > summary { margin-bottom: 8px; }
     bottom: 0;
     z-index: 40;
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(7, 1fr);
     gap: 0;
     margin: 0;
     height: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
@@ -995,7 +1006,8 @@ details.accordion[open] > summary { margin-bottom: 8px; }
     flex-direction: column;
     justify-content: center;
     gap: 3px;
-    padding: 6px 2px;
+    padding: 6px 1px;
+    min-width: 0;
     border-radius: 0;
     font-size: 0.68rem;
     color: var(--ink-muted);
@@ -1034,8 +1046,8 @@ details.accordion[open] > summary { margin-bottom: 8px; }
 
 @media (max-width: 560px) {
   .form-grid { grid-template-columns: 1fr; }
-  .nav a { font-size: 0.62rem; }
-  .nav a svg { width: 21px; height: 21px; }
+  .nav a { font-size: 0.6rem; letter-spacing: -0.01em; }
+  .nav a svg { width: 20px; height: 20px; }
 }
 
 @media (max-width: 440px) {

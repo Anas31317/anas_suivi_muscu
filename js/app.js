@@ -15,6 +15,7 @@
  *   #/progression             vue d'ensemble des exercices
  *   #/progression/:exId       progression d'un exercice
  *   #/1rm, /nouveau, /:id     1RM réalisés (à part des séances)
+ *   #/amis, #/amis/:code      suivi partagé d'un ami (lecture seule)
  *   #/programme               gestion des séances et exercices
  *   #/profil                  compte, apparence, données
  *
@@ -27,7 +28,8 @@ import * as sync from './sync.js';
 import * as auth from './auth.js';
 import * as authViews from './auth-views.js';
 import { initTheme } from './theme.js';
-import { logo } from './logo.js';
+import { logo, APP_NAME } from './logo.js';
+import { APP_VERSION, APP_AUTHOR } from './version.js';
 import { h, toast, icon, ICONS } from './ui.js';
 import { plural } from './views/common.js';
 import { viewDashboard } from './views/dashboard.js';
@@ -36,6 +38,7 @@ import { viewWorkout } from './views/workout.js';
 import { viewSessionEditor } from './views/session-editor.js';
 import { viewCardio, viewCardioForm } from './views/cardio.js';
 import { viewOneRM, viewOneRMForm } from './views/one-rm.js';
+import { viewFriends, viewFriend } from './views/friends.js';
 import { viewHistory } from './views/history.js';
 import { viewProgressionIndex, viewProgressionDetail } from './views/progression.js';
 import { viewProgramme } from './views/programme.js';
@@ -59,7 +62,8 @@ const TABS = [
   { id: 'seances', href: '#/seances', label: 'Séances', icon: ICONS.dumbbell },
   { id: 'cardio', href: '#/cardio', label: 'Cardio', icon: ICONS.pulse },
   { id: 'historique', href: '#/historique', label: 'Historique', icon: ICONS.history },
-  { id: 'progression', href: '#/progression', label: 'Progression', icon: ICONS.chart },
+  { id: 'progression', href: '#/progression', label: 'Progrès', icon: ICONS.chart },
+  { id: 'amis', href: '#/amis', label: 'Amis', icon: ICONS.friends },
   { id: 'profil', href: '#/profil', label: 'Profil', icon: ICONS.user }
 ];
 
@@ -159,6 +163,7 @@ function handleAuthEvent(event, session) {
 
 function buildChrome() {
   document.getElementById('brand').append(logo({ size: 30 }));
+  document.getElementById('credit').textContent = `${APP_NAME} · v${APP_VERSION} · Créé par ${APP_AUTHOR}`;
   const nav = document.getElementById('nav');
   for (const tab of TABS) {
     nav.append(h('a', { href: tab.href, 'data-route': tab.id },
@@ -243,6 +248,9 @@ function privateView(parts, query, ctx) {
         return [viewProgressionDetail(query.ex, ctx), 'progression'];
       }
       return [viewProgressionIndex(), 'progression'];
+    case 'amis':
+      if (a) return [viewFriend(a, ctx), 'amis'];
+      return [viewFriends(ctx), 'amis'];
     case 'programme':
       return [viewProgramme(), 'profil'];
     case 'profil':
