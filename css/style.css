@@ -539,11 +539,6 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 .check { display: flex; gap: 8px; align-items: center; cursor: pointer; }
 
 
-.manage-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
-.manage-row input[type="text"] { flex: 1 1 auto; min-width: 0; }
-.manage-row select { flex: 0 0 auto; width: auto; }
-.manage-row .mini { display: flex; gap: 2px; flex: none; }
-
 /* ------------------------------------------------ séance en cours */
 
 .workout-sub { font-variant-numeric: tabular-nums; }
@@ -654,18 +649,6 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 .date-field { min-width: 160px; }
 .link.centered { display: block; text-align: center; padding: 8px; }
 
-details.more > summary {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  list-style: none;
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-details.more > summary::-webkit-details-marker { display: none; }
-details.more[open] > summary { margin-bottom: 8px; }
-
 /* barre Enregistrer qui reste visible en bas */
 .form-actions {
   position: sticky;
@@ -733,21 +716,6 @@ input.derived { color: var(--ink-muted); }
 .row-value .v.small { font-size: 0.82rem; font-weight: 550; color: var(--ink-2); white-space: normal; text-align: right; }
 
 /* -------------------------------------------------------- programme */
-
-.prog-session > summary {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
-  cursor: pointer;
-  list-style: none;
-}
-.prog-session > summary::-webkit-details-marker { display: none; }
-.prog-session > summary .body { flex: 1 1 auto; min-width: 0; }
-.prog-session > summary .name { font-weight: 600; }
-.prog-session > summary .meta { font-size: 0.8rem; color: var(--ink-muted); }
-.prog-body { padding: 4px 16px 16px; border-top: 1px solid var(--grid); }
-.ex-list { display: grid; }
 
 /* ------------------------------------------------------------ tableaux */
 
@@ -1038,9 +1006,6 @@ details.accordion[open] > summary { margin-bottom: 8px; }
   .ex-card { padding: 12px 12px 14px; }
   .workout-actions { width: 100%; justify-content: space-between; }
   .workout-actions .date-field { width: auto; flex: 1 1 auto; max-width: 200px; }
-  .manage-row { flex-wrap: wrap; }
-  .manage-row input[type="text"] { flex: 1 1 100%; }
-  .manage-row select { flex: 1 1 auto; }
   .footer { padding: 0 16px 16px; }
 }
 
