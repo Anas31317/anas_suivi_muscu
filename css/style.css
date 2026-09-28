@@ -707,7 +707,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 .duration { display: flex; align-items: center; gap: 6px; }
 .duration input { text-align: center; }
 .duration span { color: var(--ink-muted); font-size: 0.85rem; }
-input.derived { color: var(--ink-muted); }
+input.derived { color: var(--ink-2); }
 .reuse { margin-top: 16px; }
 .reuse select { width: 100%; }
 .reuse .hint { display: block; margin-top: 4px; font-size: 0.78rem; color: var(--ink-muted); }
@@ -718,7 +718,12 @@ input.derived { color: var(--ink-muted); }
 .tile-link { text-decoration: none; color: inherit; }
 .tile-link:hover { border-color: var(--axis); }
 .meta.cap::first-letter { text-transform: uppercase; }
-.row-value .v.small { font-size: 0.82rem; font-weight: 550; color: var(--ink-2); white-space: normal; text-align: right; }
+.list-row .meta.stats {
+  margin-top: 3px;
+  color: var(--ink-2);
+  font-weight: 550;
+  white-space: normal;
+}
 
 /* -------------------------------------------------------- programme */
 
