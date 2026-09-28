@@ -24,10 +24,11 @@ fait en dessous**, et toutes les courbes de musculation sont réunies dans Progr
 - **Cardio** : tapis, course, vélo, rameur… durée, vitesse **ou** distance (l'une calcule
   l'autre), inclinaison ; calories et fréquence cardiaque en option. Chiffres sur 7 et
   30 jours, courbe par activité, puis l'historique par mois.
-- **Progrès** : une courbe à la fois. L'exercice se choisit dans un sélecteur (groupé par
-  séance) : charge max, volume, reps totales ou 1RM, avec les tuiles et le détail des
-  séances. Les **1RM réellement réalisés** se saisissent à part et se comparent au 1RM
-  estimé (deux courbes).
+- **Progrès** : une courbe à la fois. L'exercice se choisit dans un sélecteur groupé par
+  séance : charge max, volume, reps totales ou 1RM, avec les tuiles et le détail des
+  séances. Les activités cardio (tapis, vélo, elliptique…) figurent à la fin du sélecteur
+  sous « Séance cardio », avec distance, durée, vitesse ou allure. Les **1RM réellement
+  réalisés** se saisissent à part et se comparent au 1RM estimé (deux courbes).
 - **Amis** : ton code de partage se règle ici. Donne-le à qui tu veux et il verra ton
   programme, ta progression, ton cardio et tes 1RM, en lecture seule. Personne ne peut te
   trouver sans ce code, et en générer un nouveau coupe l'accès aux anciens.
