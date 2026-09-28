@@ -13,10 +13,10 @@
  */
 
 import * as store from '../store.js';
-import { fmtNum, formatDate } from '../store.js';
+import { fmtNum, formatDate, formatDateShort } from '../store.js';
 import * as sync from '../sync.js';
 import { h, numInput, parseNum, toast, icon, ICONS } from '../ui.js';
-import { summarizeSets, sessionNumber, plural, pageHead, emptyState, longDate } from './common.js';
+import { sessionNumber, plural, pageHead, emptyState, longDate } from './common.js';
 
 const SAVE_DELAY = 500;
 
@@ -166,7 +166,8 @@ export function viewWorkout({ sessionId, logId }, ctx) {
     const rows = h('div', { class: 'sets' },
       h('div', { class: 'set-row set-head-row' },
         h('span', { class: 'set-head' }, '#'),
-        h('span', { class: 'set-head' }, 'Dernière fois'),
+        // la date de la dernière séance tient dans l'en-tête : pas besoin de la répéter
+        h('span', { class: 'set-head' }, prev ? `Dernière fois · ${formatDateShort(prev.date)}` : 'Dernière fois'),
         h('span', { class: 'set-head' }, isBW ? 'Lest kg' : 'Charge kg'),
         h('span', { class: 'set-head' }, 'Reps')
       )
@@ -217,9 +218,7 @@ export function viewWorkout({ sessionId, logId }, ctx) {
       h('div', { class: 'ex-head' },
         h('span', { class: 'ex-num' }, String(entryIndex + 1)),
         h('div', { class: 'ex-title' },
-          h('h2', {}, entry.name, isBW ? h('span', { class: 'tag' }, 'PdC') : null),
-          h('p', { class: 'ex-prev' },
-            prev ? `Dernière fois (${formatDate(prev.date)}) : ${summarizeSets(prev.sets, entry.mode)}` : 'Première fois sur cet exercice')
+          h('h2', {}, entry.name, isBW ? h('span', { class: 'tag' }, 'PdC') : null)
         ),
         h('span', { class: 'done-mark', title: 'Exercice fait' }, icon('M5 12.5l4.5 4.5L19 7.5', 14)),
         h('a', {
