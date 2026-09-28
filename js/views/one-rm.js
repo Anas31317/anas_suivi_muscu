@@ -19,8 +19,9 @@ import { pageHead, emptyState, longDate, plural } from './common.js';
 
 export function viewOneRM() {
   const entries = store.oneRMList();
+  // l'estimé le plus à jour (dernière séance), pas le meilleur de tous les temps
   const rows = store.exerciseCatalog()
-    .map((ex) => ({ ex, real: store.bestOneRM(ex.id), est: store.bestEstimatedRM(ex.id) }))
+    .map((ex) => ({ ex, real: store.bestOneRM(ex.id), est: store.latestEstimatedRM(ex.id) }))
     .filter((r) => r.real || r.est);
 
   const addBtn = h('a', { class: 'btn primary', href: '#/1rm/nouveau' }, icon(ICONS.plus, 14), 'Enregistrer un 1RM');
@@ -34,18 +35,20 @@ export function viewOneRM() {
     );
   }
 
+  // deux chiffres par exercice, sous le nom : sur un téléphone, une colonne de
+  // droite écraserait le nom de l'exercice
   const byExercise = h('section', { class: 'card list-card' },
     h('div', { class: 'list-head' }, h('h2', {}, 'Par exercice')),
     rows.map(({ ex, real, est }) =>
-      h('a', { class: 'list-row', href: `#/progression/${encodeURIComponent(ex.id)}` },
+      h('a', { class: 'list-row', href: `#/1rm/nouveau?ex=${encodeURIComponent(ex.id)}` },
         h('div', { class: 'body' },
           h('div', { class: 'name' }, ex.name, ex.inProgramme ? null : h('span', { class: 'tag' }, 'retiré')),
-          h('div', { class: 'meta' },
-            real ? `réalisé le ${formatDate(real.date)}` : 'aucun maxi réalisé')
-        ),
-        h('div', { class: 'row-value' },
-          h('span', { class: 'v' }, real ? `${fmtNum(real.weight, 1)} kg` : '—'),
-          h('span', { class: 'delta' }, est ? `estimé ${fmtNum(est.weight, 1)} kg` : 'estimé —')
+          h('div', { class: 'meta stats' },
+            `Estimé ${est ? `${fmtNum(est.weight, 1)} kg` : '—'}`,
+            ' · ',
+            `Réalisé ${real ? `${fmtNum(real.weight, 1)} kg` : '—'}`
+          ),
+          real ? h('div', { class: 'meta' }, `réalisé le ${formatDate(real.date)}`) : null
         ),
         h('span', { class: 'chev' }, icon(ICONS.chevron, 16))
       )
@@ -75,7 +78,7 @@ export function viewOneRM() {
   return h('div', { class: 'page' },
     pageHead('1RM', {
       back: { href: '#/progression', label: 'Progrès' },
-      sub: 'Ton maxi réalisé, et l’estimation calculée depuis tes séances.',
+      sub: 'Ton maxi réalisé, et l’estimation tirée de ta dernière séance.',
       actions: addBtn
     }),
     h('div', { class: 'stack' }, byExercise, recorded)
@@ -111,7 +114,7 @@ export function viewOneRMForm(id, query = {}) {
 
   const estimate = h('p', { class: 'computed' });
   const refresh = () => {
-    const est = store.bestEstimatedRM(exSel.value);
+    const est = store.latestEstimatedRM(exSel.value);
     const real = store.bestOneRM(exSel.value);
     estimate.textContent = [
       est ? `1RM estimé : ${fmtNum(est.weight, 1)} kg` : null,

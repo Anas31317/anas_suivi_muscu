@@ -383,9 +383,11 @@ export const METRICS = {
 
 /** Métriques pertinentes selon le type d'exercice. */
 export function metricsFor(mode) {
+  // le volume en premier : c'est la mesure regardée en premier dans Progrès.
+  // Le 1RM n'est pas ici : il a sa propre page (#/1rm), estimé et réalisé côte à côte.
   return mode === 'bw'
     ? [METRICS.reps, METRICS.topWeight, METRICS.volume]
-    : [METRICS.topWeight, METRICS.volume, METRICS.reps, METRICS.e1rm];
+    : [METRICS.volume, METRICS.topWeight, METRICS.reps];
 }
 
 /** Série temporelle { x: Date, iso, y } pour un exercice et une métrique. */
@@ -567,14 +569,14 @@ export function bestOneRM(exerciseId) {
   return best;
 }
 
-/** Meilleur 1RM estimé (Epley) depuis les séances : { weight, date } ou null. */
-export function bestEstimatedRM(exerciseId) {
-  let best = null;
-  for (const h of historyForExercise(exerciseId)) {
-    const v = METRICS.e1rm.compute(h.sets);
-    if (v !== null && (!best || v > best.weight)) best = { weight: v, date: h.date };
+/** 1RM estimé le plus à jour : calculé sur la dernière séance qui s'y prête. */
+export function latestEstimatedRM(exerciseId) {
+  const history = historyForExercise(exerciseId);
+  for (let i = history.length - 1; i >= 0; i--) {
+    const v = METRICS.e1rm.compute(history[i].sets);
+    if (v !== null) return { weight: v, date: history[i].date };
   }
-  return best;
+  return null;
 }
 
 /* --------------------------------------------------------------- cardio */
