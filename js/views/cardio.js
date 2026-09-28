@@ -130,11 +130,13 @@ export function viewCardio(ctx) {
         g.items.map((c) =>
           h('a', { class: 'list-row', href: `#/cardio/${encodeURIComponent(c.id)}` },
             h('span', { class: 'row-icon' }, icon(ICONS.pulse, 18)),
+            // chiffres sous le nom : sur un téléphone, une colonne de droite
+            // écraserait le nom de l'activité
             h('div', { class: 'body' },
               h('div', { class: 'name' }, store.cardioName(c)),
-              h('div', { class: 'meta cap' }, longDate(c.date))
+              h('div', { class: 'meta cap' }, longDate(c.date)),
+              h('div', { class: 'meta stats' }, cardioSummary(c))
             ),
-            h('div', { class: 'row-value' }, h('span', { class: 'v small' }, cardioSummary(c))),
             h('span', { class: 'chev' }, icon(ICONS.chevron, 16))
           )
         )
