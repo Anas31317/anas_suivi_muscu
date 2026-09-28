@@ -242,7 +242,7 @@ function privateView(parts, query, ctx) {
     case 'cardio':
       if (a === 'nouveau') return [viewCardioForm(null), 'cardio'];
       if (a) return [viewCardioForm(a), 'cardio'];
-      return [viewCardio(ctx), 'cardio'];
+      return [viewCardio(), 'cardio'];
     case '1rm':
       if (a === 'nouveau') return [viewOneRMForm(null, query), 'progression'];
       if (a) return [viewOneRMForm(a, query), 'progression'];

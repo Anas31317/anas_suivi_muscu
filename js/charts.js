@@ -1,13 +1,12 @@
 /**
  * Graphes SVG écrits à la main (aucune librairie, fonctionne hors ligne).
  *
- * - courbe de progression d'un exercice (avec survol) ;
+ * - courbe de progression d'un exercice ou d'une activité (avec survol) ;
  * - histogramme des séances par semaine (accueil) ;
- * - mini-courbe (sparkline) pour la vue d'ensemble.
+ * - mini-courbe (sparkline) pour le suivi d'un ami.
  *
  * Les couleurs viennent de classes CSS (.c-*) : elles suivent le thème et
- * restent fiables sur tous les navigateurs. Une seule série par graphe,
- * un seul axe Y.
+ * restent fiables sur tous les navigateurs. Un seul axe Y par graphe.
  */
 
 import { fmtNum, formatDate, formatDateShort } from './store.js';
@@ -83,17 +82,9 @@ const LINE_PAD = { top: 28, right: 18, bottom: 30, left: 46 };
 const LINE_H = 250;
 
 /**
- * Une seule courbe.
- * @param {Array} points  [{ iso, x: Date, y: number, sets, detail }]
+ * Une ou plusieurs courbes sur le même axe (ex. 1RM estimé et 1RM réalisé).
+ * @param {Array} series  [{ label, points, cls }] — points : [{ iso, x: Date, y, sets, detail }]
  * @param {object} opts   { unit, label, mode }
- */
-export function mountChart(host, points, opts = {}) {
-  return mountSeriesChart(host, [{ label: opts.label || '', points }], opts);
-}
-
-/**
- * Plusieurs courbes sur le même axe (ex. 1RM estimé et 1RM réalisé).
- * @param {Array} series  [{ label, points, cls }] — cls : '' ou 'alt'
  */
 export function mountSeriesChart(host, series, opts = {}) {
   host.classList.add('chart');
