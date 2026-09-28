@@ -980,9 +980,19 @@ details.accordion[open] > summary { margin-bottom: 8px; }
 /* ----------------------------------------------- téléphone : onglets en bas */
 
 @media (max-width: 720px) {
-  /* un backdrop-filter sur l'en-tête deviendrait le repère de la barre
-     d'onglets (position: fixed) et la collerait en haut : fond plein ici */
+  /*
+   * Aucun backdrop-filter sur téléphone. Un élément flouté devient le repère
+   * des éléments position: fixed ou sticky qu'il contient : c'est ce qui avait
+   * collé la barre d'onglets en haut de l'écran, et ce qui faisait glisser
+   * latéralement la page de saisie d'une séance, sous sa barre Enregistrer.
+   * Fonds pleins partout ici.
+   */
   .topbar { backdrop-filter: none; -webkit-backdrop-filter: none; background: var(--plane); }
+  .form-actions {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: var(--plane);
+  }
   .topbar-inner { padding: 8px 16px; min-height: 52px; }
   .app { padding: 18px 16px 32px; }
   h1 { font-size: 1.45rem; }
@@ -999,9 +1009,7 @@ details.accordion[open] > summary { margin-bottom: 8px; }
     margin: 0;
     height: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
     padding: 0 4px env(safe-area-inset-bottom);
-    background: color-mix(in srgb, var(--surface) 94%, transparent);
-    backdrop-filter: saturate(1.4) blur(12px);
-    -webkit-backdrop-filter: saturate(1.4) blur(12px);
+    background: var(--surface);
     border-top: 1px solid var(--border);
   }
   .nav a {
@@ -1040,7 +1048,7 @@ details.accordion[open] > summary { margin-bottom: 8px; }
   .set-row { grid-template-columns: 18px minmax(58px, 0.9fr) minmax(0, 1fr) minmax(0, 1fr); gap: 6px; }
   .ex-card { padding: 12px 12px 14px; }
   .workout-actions { width: 100%; justify-content: space-between; }
-  .workout-actions .date-field { width: auto; flex: 1 1 auto; max-width: 200px; }
+  .workout-actions .date-field { width: auto; flex: 0 1 auto; max-width: 160px; }
   .footer { padding: 0 16px 16px; }
 }
 
