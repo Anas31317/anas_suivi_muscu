@@ -110,10 +110,20 @@ function normalize(raw) {
       type: CARDIO_TYPES.some((t) => t.id === c.type) ? c.type : 'autre',
       label: String(c.label || '').slice(0, 60),
       duration: numOrNull(c.duration),   // minutes
-      distance: numOrNull(c.distance),   // km
+      distance: numOrNull(c.distance),   // km (la vitesse s'en déduit)
+      incline: numOrNull(c.incline),     // % de pente
       calories: numOrNull(c.calories),
       heartRate: numOrNull(c.heartRate), // bpm moyen
       note: String(c.note || '').slice(0, 500)
+    })),
+    // 1RM réellement réalisés : saisis à part, jamais mélangés aux séances
+    oneRM: (Array.isArray(s.oneRM) ? s.oneRM : []).map((r) => ({
+      id: r.id || uid('rm'),
+      exerciseId: r.exerciseId || '',
+      name: r.name || 'Exercice',
+      date: r.date || todayISO(),
+      weight: numOrNull(r.weight),
+      note: String(r.note || '').slice(0, 300)
     }))
   };
 }
@@ -262,6 +272,37 @@ export function historyForExercise(exerciseId, excludeLogId = null) {
 export function lastEntryForExercise(exerciseId, excludeLogId = null) {
   const h = historyForExercise(exerciseId, excludeLogId);
   return h.length ? h[h.length - 1] : null;
+}
+
+/**
+ * Tous les exercices connus : ceux du programme, plus ceux qui n'existent que
+ * dans l'historique ou dans les 1RM (exercices retirés du programme).
+ * Sert à la progression, au choix d'un exercice et à la remise d'un exercice
+ * dans une séance (en gardant son id, donc son historique).
+ */
+export function exerciseCatalog() {
+  const st = getState();
+  const seen = new Set();
+  const out = [];
+  for (const sess of st.sessions) {
+    for (const e of sess.exercises) {
+      seen.add(e.id);
+      out.push({ ...e, sessionId: sess.id, sessionName: sess.name, inProgramme: true });
+    }
+  }
+  const addExtra = (id, name, mode, sets) => {
+    if (!id || seen.has(id)) return;
+    seen.add(id);
+    out.push({
+      id, name, mode: mode === 'bw' ? 'bw' : 'kg', defaultSets: sets || 3,
+      sessionId: null, sessionName: null, inProgramme: false
+    });
+  };
+  for (const log of st.logs) {
+    for (const en of log.entries) addExtra(en.exerciseId, en.name, en.mode, en.sets.length);
+  }
+  for (const r of st.oneRM || []) addExtra(r.exerciseId, r.name, 'kg', 3);
+  return out;
 }
 
 /** Tous les exercices, aplatis, avec leur séance — pour la page Progression. */
@@ -460,6 +501,61 @@ export function deleteLog(logId) {
 
 export function getLog(logId) {
   return getState().logs.find((l) => l.id === logId) || null;
+}
+
+/* ------------------------------------------------------------------ 1RM */
+
+/** 1RM réalisés, du plus récent au plus ancien. */
+export function oneRMList() {
+  return (getState().oneRM || [])
+    .map((r, i) => [r, i])
+    .sort(([a, i], [b, j]) => (a.date < b.date ? 1 : a.date > b.date ? -1 : j - i))
+    .map(([r]) => r);
+}
+
+export function getOneRM(id) {
+  return (getState().oneRM || []).find((r) => r.id === id) || null;
+}
+
+export function saveOneRM(entry) {
+  mutate((s) => {
+    if (!Array.isArray(s.oneRM)) s.oneRM = [];
+    const i = s.oneRM.findIndex((r) => r.id === entry.id);
+    if (i >= 0) s.oneRM[i] = entry;
+    else s.oneRM.push(entry);
+  });
+}
+
+export function deleteOneRM(id) {
+  mutate((s) => {
+    s.oneRM = (s.oneRM || []).filter((r) => r.id !== id);
+  });
+}
+
+/** 1RM réalisés d'un exercice, du plus ancien au plus récent. */
+export function oneRMForExercise(exerciseId) {
+  return (getState().oneRM || [])
+    .filter((r) => r.exerciseId === exerciseId && r.weight !== null)
+    .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+}
+
+/** Meilleur 1RM réalisé : { weight, date } ou null. */
+export function bestOneRM(exerciseId) {
+  let best = null;
+  for (const r of oneRMForExercise(exerciseId)) {
+    if (!best || r.weight > best.weight) best = { weight: r.weight, date: r.date };
+  }
+  return best;
+}
+
+/** Meilleur 1RM estimé (Epley) depuis les séances : { weight, date } ou null. */
+export function bestEstimatedRM(exerciseId) {
+  let best = null;
+  for (const h of historyForExercise(exerciseId)) {
+    const v = METRICS.e1rm.compute(h.sets);
+    if (v !== null && (!best || v > best.weight)) best = { weight: v, date: h.date };
+  }
+  return best;
 }
 
 /* --------------------------------------------------------------- cardio */
