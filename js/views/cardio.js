@@ -1,15 +1,18 @@
 /**
  * Cardio : tapis, course à pied, vélo, rameur…
  *
- *   #/cardio            chiffres de la semaine, progression, liste par mois
+ *   #/cardio            chiffres de la semaine, historique par mois
  *   #/cardio/nouveau    ajouter une séance cardio
  *   #/cardio/:id        modifier une séance cardio
+ *
+ * Les courbes sont toutes dans l'onglet Progrès, y compris celles du cardio :
+ * ce fichier exporte de quoi les tracer (CARDIO_METRICS et les fonctions en
+ * dessous), la page se contente d'y renvoyer.
  */
 
 import * as store from '../store.js';
 import { fmtNum, formatDate } from '../store.js';
 import * as insights from '../insights.js';
-import { mountChart } from '../charts.js';
 import { h, numInput, parseNum, toast, icon, ICONS } from '../ui.js';
 import { pageHead, emptyState, monthLabel, longDate, plural } from './common.js';
 
@@ -79,12 +82,9 @@ export function cardioPoints(entries, metric) {
     .filter((p) => p.y !== null && p.y !== undefined && Number.isFinite(p.y));
 }
 
-let chosenType = null;
-let chosenMetric = 'distance';
-
 /* --------------------------------------------------------------- page */
 
-export function viewCardio(ctx) {
+export function viewCardio() {
   const all = store.cardioList();
   const week = insights.cardioStats(7);
   const month = insights.cardioStats(30);
@@ -108,49 +108,22 @@ export function viewCardio(ctx) {
     return h('div', { class: 'page' },
       pageHead('Cardio', { sub: 'Tapis, course, vélo, rameur…', actions: addBtn }),
       emptyState('Aucune séance cardio',
-        'Enregistre ta première séance : durée, distance, et ta progression apparaîtra ici.',
+        'Enregistre ta première séance : durée, vitesse ou distance, inclinaison.',
         h('a', { class: 'btn primary', href: '#/cardio/nouveau' }, icon(ICONS.plus, 14), 'Ajouter une séance'))
     );
   }
 
-  /* --- progression par activité ------------------------------------- */
-  const activities = cardioActivities();
-  if (!chosenType || !activities.some((a) => a.key === chosenType)) chosenType = activities[0].key;
-  const activity = activities.find((a) => a.key === chosenType);
-  const ofType = cardioEntries(chosenType);
-
-  const usable = cardioUsableMetrics(activity.typeId, ofType);
-  if (!usable.some(([k]) => k === chosenMetric)) chosenMetric = usable.length ? usable[0][0] : 'duration';
-  const metric = CARDIO_METRICS[chosenMetric];
-
-  const points = cardioPoints(ofType, metric);
-
-  const typeSelect = h('select', {
-    class: 'filter-select', 'aria-label': 'Activité',
-    onchange: () => { chosenType = typeSelect.value; ctx.render(); }
-  }, activities.map((a) => h('option', { value: a.key, selected: a.key === chosenType }, a.name)));
-
-  const seg = h('div', { class: 'segmented', role: 'group', 'aria-label': 'Valeur affichée' },
-    usable.map(([key, m]) => h('button', {
-      type: 'button', 'aria-pressed': key === chosenMetric ? 'true' : 'false',
-      onclick: () => { chosenMetric = key; ctx.render(); }
-    }, m.short))
-  );
-
-  const chartHost = h('div', {});
-  const chartCard = h('section', { class: 'card chart-card' },
-    h('div', { class: 'chart-head' },
-      h('h2', { class: 'title' }, 'Progression'),
-      h('span', { class: 'spacer' }),
-      typeSelect
+  /* --- renvoi vers la courbe ----------------------------------------- */
+  // la progression, muscu comme cardio, se lit dans l'onglet Progrès
+  const activity = cardioActivities()[0];
+  const progLink = h('a', { class: 'card nav-card', href: `#/progression/${encodeURIComponent('cardio:' + activity.key)}` },
+    h('span', { class: 'row-icon' }, icon(ICONS.chart, 18)),
+    h('div', { class: 'body' },
+      h('div', { class: 'name' }, 'Progression'),
+      h('div', { class: 'meta' }, `${activity.name} · distance, durée, allure`)
     ),
-    usable.length > 1 ? h('div', { class: 'chart-seg' }, seg) : null,
-    points.length
-      ? chartHost
-      : h('p', { class: 'list-empty' }, 'Renseigne la distance ou la durée pour voir la courbe.'),
-    points.length === 1 ? h('p', { class: 'chart-note' }, 'La courbe se tracera dès la prochaine séance de cette activité.') : null
+    h('span', { class: 'chev' }, icon(ICONS.chevron, 16))
   );
-  if (points.length) ctx.onCleanup(mountChart(chartHost, points, { unit: metric.unit, label: metric.label }));
 
   /* --- liste par mois ------------------------------------------------ */
   const groups = [];
@@ -185,7 +158,7 @@ export function viewCardio(ctx) {
 
   return h('div', { class: 'page' },
     pageHead('Cardio', { sub: 'Tapis, course, vélo, rameur…', actions: addBtn }),
-    h('div', { class: 'stack' }, tiles, chartCard,
+    h('div', { class: 'stack' }, tiles, progLink,
       h('div', { class: 'section-head' }, h('h2', {}, 'Historique')),
       ...list)
   );
