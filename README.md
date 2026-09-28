@@ -19,11 +19,11 @@ privé (séries, charges, répétitions), un historique complet et des courbes d
   mini-courbe), puis pour chacun : charge max, volume, reps totales ou 1RM.
 - **1RM** : les maxis réellement réalisés se saisissent à part (jamais dans une séance) et
   se comparent au 1RM estimé sur un graphe à deux courbes.
-- **Suivi Amis** : donne ton code à quelqu'un et il voit ton programme, ta progression,
+- **Suivi Amis** : ton code de partage se règle ici. Donne-le à quelqu'un et il voit ton programme, ta progression,
   ton cardio et tes 1RM, en lecture seule. Personne ne peut te trouver sans ce code, et
   générer un nouveau code coupe l'accès aux anciens.
-- **Profil** : partage et code, programme, apparence (auto / clair / sombre),
-  export / import des données, mot de passe, déconnexion.
+- **Profil** : programme, apparence (auto / clair / sombre), export / import des données,
+  mot de passe, déconnexion.
 - **Compte** : inscription réservée aux emails autorisés, connexion, mot de passe oublié.
 
 Site statique (HTML, CSS, JavaScript, sans build), hébergé sur GitHub Pages ; comptes et

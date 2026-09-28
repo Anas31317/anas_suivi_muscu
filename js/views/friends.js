@@ -65,30 +65,65 @@ function lastLogOf(data) {
 
 /* ------------------------------------------------------- liste des amis */
 
-function codeCard() {
-  const s = store.getShare();
-  if (!s.enabled || !s.code) {
-    return h('section', { class: 'card section' },
-      h('h2', {}, 'Mon code'),
-      h('p', { class: 'desc' }, 'Le partage est désactivé : personne ne peut voir ton suivi.'),
-      h('a', { class: 'btn', href: '#/profil' }, 'Activer le partage dans Profil')
-    );
-  }
+/** Mon code : activer le partage, le copier, le renouveler, choisir son nom. */
+function codeCard(ctx) {
+  const cfg = store.getShare();
+  const defaultName = insights.firstName(ctx.user.email);
+
+  const enabledIn = h('input', { type: 'checkbox', id: 'share-on', checked: cfg.enabled });
+  const nameIn = h('input', {
+    type: 'text', maxlength: 40, id: 'share-name', value: cfg.name || defaultName,
+    placeholder: 'Le nom que verront tes amis'
+  });
+
+  const apply = async (patch) => {
+    const next = { ...store.getShare(), ...patch };
+    if (next.enabled && !next.code) next.code = store.newShareCode();
+    next.name = nameIn.value.trim() || defaultName;
+    store.setShare(next);
+    try {
+      if (next.enabled) await share.push(ctx.user.id);
+      else await share.stopSharing(ctx.user.id);
+      toast(next.enabled ? 'Partage activé' : 'Partage désactivé');
+    } catch (err) {
+      toast(share.explain(err));
+    }
+  };
+
+  enabledIn.addEventListener('change', () => apply({ enabled: enabledIn.checked }));
+  nameIn.addEventListener('change', () => { if (store.getShare().enabled) apply({}); });
+
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(store.formatShareCode(s.code));
+      await navigator.clipboard.writeText(store.formatShareCode(store.getShare().code));
       toast('Code copié');
     } catch {
       toast('Copie impossible : note le code à la main.');
     }
   };
+
+  const regenerate = () => {
+    if (!confirm('Générer un nouveau code ?\n\nCeux qui ont l’ancien ne verront plus ton suivi.')) return;
+    apply({ code: store.newShareCode() });
+  };
+
   return h('section', { class: 'card section' },
     h('h2', {}, 'Mon code'),
-    h('p', { class: 'desc' }, 'Donne-le à qui tu veux : il pourra suivre ton programme et ta progression.'),
-    h('div', { class: 'code-row' },
-      h('span', { class: 'share-code' }, store.formatShareCode(s.code)),
-      h('button', { class: 'btn small', type: 'button', onclick: copy }, 'Copier')
-    )
+    h('p', { class: 'desc' },
+      cfg.enabled
+        ? 'Donne ton code à qui tu veux : il verra ton programme, tes séances, ton cardio et tes 1RM, en lecture seule.'
+        : 'Le partage est désactivé : personne ne peut voir ton suivi.'),
+    h('label', { class: 'check' }, enabledIn, 'Partager mon suivi'),
+    cfg.enabled
+      ? h('div', { class: 'stack share-block' },
+          h('div', { class: 'code-row' },
+            h('span', { class: 'share-code' }, store.formatShareCode(cfg.code)),
+            h('button', { class: 'btn small', type: 'button', onclick: copy }, 'Copier'),
+            h('button', { class: 'btn small ghost', type: 'button', onclick: regenerate }, 'Nouveau code')
+          ),
+          h('div', { class: 'field' }, h('label', { for: 'share-name' }, 'Nom affiché'), nameIn)
+        )
+      : null
   );
 }
 
@@ -97,7 +132,7 @@ export function viewFriends(ctx) {
   const cache = share.readCache(ctx.user.id);
 
   const codeIn = h('input', {
-    type: 'text', placeholder: 'ex : K7P4-M2QX', maxlength: 20, autocomplete: 'off',
+    type: 'text', id: 'friend-code', placeholder: 'ex : K7P4-M2QX', maxlength: 20, autocomplete: 'off',
     autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Code d’un ami'
   });
   const msg = h('div', { class: 'auth-msg error', role: 'alert', hidden: true });
@@ -161,7 +196,7 @@ export function viewFriends(ctx) {
 
   return h('div', { class: 'page' },
     pageHead('Suivi Amis', { sub: 'Le suivi de tes amis, en lecture seule.' }),
-    h('div', { class: 'stack' }, codeCard(), addCard, friendsCard)
+    h('div', { class: 'stack' }, codeCard(ctx), addCard, friendsCard)
   );
 }
 
