@@ -83,34 +83,50 @@ const LINE_PAD = { top: 28, right: 18, bottom: 30, left: 46 };
 const LINE_H = 250;
 
 /**
- * @param {Array} points  [{ iso, x: Date, y: number, sets }]
+ * Une seule courbe.
+ * @param {Array} points  [{ iso, x: Date, y: number, sets, detail }]
  * @param {object} opts   { unit, label, mode }
  */
 export function mountChart(host, points, opts = {}) {
-  host.classList.add('chart');
-  return mountResponsive(host, (el, width) => drawLine(el, width, points, opts));
+  return mountSeriesChart(host, [{ label: opts.label || '', points }], opts);
 }
 
-function drawLine(host, width, points, opts) {
+/**
+ * Plusieurs courbes sur le même axe (ex. 1RM estimé et 1RM réalisé).
+ * @param {Array} series  [{ label, points, cls }] — cls : '' ou 'alt'
+ */
+export function mountSeriesChart(host, series, opts = {}) {
+  host.classList.add('chart');
+  const kept = series.filter((s) => s.points.length);
+  return mountResponsive(host, (el, width) => drawLine(el, width, kept, opts));
+}
+
+function drawLine(host, width, series, opts) {
   const unit = opts.unit || '';
   const mode = opts.mode || 'kg';
+  const multi = series.length > 1;
   const P = LINE_PAD;
   const innerW = width - P.left - P.right;
   const innerH = LINE_H - P.top - P.bottom;
   host.textContent = '';
+  if (!series.length) return;
 
-  const ys = points.map((p) => p.y);
-  const ticks = niceTicks(Math.min(...ys), Math.max(...ys));
+  const all = series.flatMap((s) => s.points);
+  const ticks = niceTicks(Math.min(...all.map((p) => p.y)), Math.max(...all.map((p) => p.y)));
   const yMin = ticks[0];
   const yMax = ticks[ticks.length - 1];
   const yScale = (v) => P.top + innerH - ((v - yMin) / (yMax - yMin || 1)) * innerH;
-  const t0 = points[0].x.getTime();
-  const t1 = points[points.length - 1].x.getTime();
-  const xScale = (d) => (points.length === 1 ? P.left + innerW / 2 : P.left + ((d.getTime() - t0) / (t1 - t0 || 1)) * innerW);
+
+  const times = all.map((p) => p.x.getTime());
+  const t0 = Math.min(...times);
+  const t1 = Math.max(...times);
+  const single = t0 === t1;
+  const xScale = (d) => (single ? P.left + innerW / 2 : P.left + ((d.getTime() - t0) / (t1 - t0)) * innerW);
 
   const svg = svgEl('svg', {
     viewBox: `0 0 ${width} ${LINE_H}`, width, height: LINE_H, role: 'img',
-    'aria-label': `${opts.label || 'Progression'} : ${points.length} séances, du ${formatDate(points[0].iso)} au ${formatDate(points[points.length - 1].iso)}`
+    'aria-label': `${opts.label || 'Progression'} : ` +
+      series.map((s) => `${s.label} ${s.points.length} point(s)`).join(', ')
   });
 
   for (const t of ticks) {
@@ -119,70 +135,128 @@ function drawLine(host, width, points, opts) {
     svg.append(text(P.left - 8, y + 4, fmtNum(t, 1), 'c-tick', 'end'));
   }
 
+  // axe des dates : au plus 5 étiquettes, prises sur l'ensemble des courbes
+  const dates = [...new Set(all.map((p) => p.iso))].sort();
   const maxLabels = Math.max(2, Math.min(5, Math.floor(innerW / 64)));
-  const step = Math.max(1, Math.ceil(points.length / maxLabels));
-  points.forEach((p, i) => {
-    const isLast = i === points.length - 1;
+  const step = Math.max(1, Math.ceil(dates.length / maxLabels));
+  dates.forEach((iso, i) => {
+    const isLast = i === dates.length - 1;
     if (i % step !== 0 && !isLast) return;
-    const anchor = points.length > 1 && i === 0 ? 'start' : points.length > 1 && isLast ? 'end' : 'middle';
-    svg.append(text(xScale(p.x), LINE_H - 9, formatDateShort(p.iso), 'c-tick', anchor));
+    const x = xScale(new Date(iso + 'T12:00:00'));
+    const anchor = dates.length > 1 && i === 0 ? 'start' : dates.length > 1 && isLast ? 'end' : 'middle';
+    svg.append(text(x, LINE_H - 9, formatDateShort(iso), 'c-tick', anchor));
   });
 
   svg.append(svgEl('line', { x1: P.left, x2: width - P.right, y1: P.top + innerH, y2: P.top + innerH, class: 'c-base' }));
 
-  const coords = points.map((p) => [xScale(p.x), yScale(p.y)]);
-  if (coords.length > 1) {
-    const base = P.top + innerH;
-    svg.append(svgEl('path', {
-      class: 'c-area',
-      d: `M ${coords[0][0]} ${base} ` + coords.map(([x, y]) => `L ${x} ${y}`).join(' ') + ` L ${coords[coords.length - 1][0]} ${base} Z`
-    }));
-    svg.append(svgEl('path', { class: 'c-line', d: coords.map(([x, y], i) => `${i ? 'L' : 'M'} ${x} ${y}`).join(' ') }));
-  }
+  const dots = new Map(); // `${si}|${iso}` -> cercle
+  series.forEach((s, si) => {
+    const suffix = s.cls ? ' ' + s.cls : '';
+    const coords = s.points.map((p) => [xScale(p.x), yScale(p.y)]);
+    if (coords.length > 1) {
+      // aire seulement quand il n'y a qu'une courbe : sinon ça brouille la lecture
+      if (!multi) {
+        const base = P.top + innerH;
+        svg.append(svgEl('path', {
+          class: 'c-area',
+          d: `M ${coords[0][0]} ${base} ` + coords.map(([x, y]) => `L ${x} ${y}`).join(' ') +
+             ` L ${coords[coords.length - 1][0]} ${base} Z`
+        }));
+      }
+      svg.append(svgEl('path', {
+        class: 'c-line' + suffix,
+        d: coords.map(([x, y], i) => `${i ? 'L' : 'M'} ${x} ${y}`).join(' ')
+      }));
+    }
+    s.points.forEach((p, i) => {
+      const dot = svgEl('circle', { cx: coords[i][0], cy: coords[i][1], r: 4, class: 'c-dot' + suffix });
+      dots.set(si + '|' + p.iso, dot);
+      svg.append(dot);
+    });
+  });
 
   const cross = svgEl('line', { y1: P.top, y2: P.top + innerH, class: 'c-cross' });
   svg.append(cross);
-  const dots = coords.map(([x, y]) => svgEl('circle', { cx: x, cy: y, r: 4, class: 'c-dot' }));
-  dots.forEach((d) => svg.append(d));
 
-  // étiquette directe sur la dernière valeur uniquement
-  const [lx, ly] = coords[coords.length - 1];
-  const nearRight = lx > width - P.right - 42;
-  svg.append(text(nearRight ? lx : lx + 8, ly - 10, fmtNum(points[points.length - 1].y, 1) + (unit ? ' ' + unit : ''), 'c-end', nearRight ? 'end' : 'start'));
+  // étiquette directe sur la dernière valeur (une seule courbe : sinon la légende suffit)
+  if (!multi) {
+    const last = series[0].points[series[0].points.length - 1];
+    const lx = xScale(last.x);
+    const ly = yScale(last.y);
+    const nearRight = lx > width - P.right - 42;
+    svg.append(text(nearRight ? lx : lx + 8, ly - 10,
+      fmtNum(last.y, 1) + (unit ? ' ' + unit : ''), 'c-end', nearRight ? 'end' : 'start'));
+  }
 
   const hit = svgEl('rect', { class: 'hit', x: P.left - 10, y: P.top, width: innerW + 20, height: innerH, fill: 'transparent' });
   svg.append(hit);
   host.append(svg);
 
+  if (multi) {
+    const legend = document.createElement('div');
+    legend.className = 'chart-legend';
+    series.forEach((s) => {
+      const item = document.createElement('span');
+      item.className = 'legend-item';
+      const key = document.createElement('span');
+      key.className = 'legend-key' + (s.cls ? ' ' + s.cls : '');
+      const label = document.createElement('span');
+      label.textContent = s.label;
+      item.append(key, label);
+      legend.append(item);
+    });
+    host.append(legend);
+  }
+
   const tip = document.createElement('div');
   tip.className = 'chart-tip';
   host.append(tip);
 
+  // une position de survol par date, toutes courbes confondues
+  const slots = dates.map((iso) => ({
+    iso,
+    x: xScale(new Date(iso + 'T12:00:00')),
+    vals: series.map((s, si) => ({ si, s, p: s.points.find((p) => p.iso === iso) })).filter((v) => v.p)
+  }));
+
   let active = -1;
   const show = (i) => {
-    if (i === active) return;
+    if (i === active || !slots[i]) return;
     active = i;
-    const p = points[i];
-    const [x, y] = coords[i];
-    cross.setAttribute('x1', x);
-    cross.setAttribute('x2', x);
+    const slot = slots[i];
+    cross.setAttribute('x1', slot.x);
+    cross.setAttribute('x2', slot.x);
     cross.classList.add('on');
-    dots.forEach((d, k) => d.setAttribute('r', k === i ? 6 : 4));
+    dots.forEach((d) => d.setAttribute('r', 4));
+    slot.vals.forEach((v) => {
+      const d = dots.get(v.si + '|' + slot.iso);
+      if (d) d.setAttribute('r', 6);
+    });
+
     tip.textContent = '';
-    for (const [cls, content] of [
-      ['d', formatDate(p.iso)],
-      ['v', fmtNum(p.y, 1) + (unit ? ' ' + unit : '')],
-      ['s', p.detail || setsLabel(p.sets || [], mode)]
-    ]) {
+    const head = document.createElement('div');
+    head.className = 'd';
+    head.textContent = formatDate(slot.iso);
+    tip.append(head);
+    for (const v of slot.vals) {
       const line = document.createElement('div');
-      line.className = cls;
-      line.textContent = content;
+      line.className = 'v';
+      line.textContent = (multi ? v.s.label + ' : ' : '') + fmtNum(v.p.y, 1) + (unit ? ' ' + unit : '');
       tip.append(line);
+      const detail = v.p.detail || (v.p.sets ? setsLabel(v.p.sets, mode) : '');
+      if (detail) {
+        const sub = document.createElement('div');
+        sub.className = 's';
+        sub.textContent = detail;
+        tip.append(sub);
+      }
     }
     tip.classList.add('on');
+
     const scale = host.clientWidth / width || 1;
-    tip.style.left = Math.max(70, Math.min(host.clientWidth - 70, x * scale)) + 'px';
-    tip.style.top = Math.max(34, y * scale - 12) + 'px';
+    const topY = Math.min(...slot.vals.map((v) => yScale(v.p.y)));
+    tip.style.left = Math.max(70, Math.min(host.clientWidth - 70, slot.x * scale)) + 'px';
+    tip.style.top = Math.max(34, topY * scale - 12) + 'px';
   };
   const hide = () => {
     active = -1;
@@ -194,7 +268,7 @@ function drawLine(host, width, points, opts) {
     const rect = svg.getBoundingClientRect();
     const xIn = ((evt.clientX - rect.left) / rect.width) * width;
     let best = 0;
-    coords.forEach(([x], i) => { if (Math.abs(x - xIn) < Math.abs(coords[best][0] - xIn)) best = i; });
+    slots.forEach((s, i) => { if (Math.abs(s.x - xIn) < Math.abs(slots[best].x - xIn)) best = i; });
     return best;
   };
   hit.addEventListener('pointermove', (e) => show(nearest(e)));

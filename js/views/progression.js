@@ -3,26 +3,10 @@
 import * as store from '../store.js';
 import { fmtNum, formatDate } from '../store.js';
 import * as insights from '../insights.js';
-import { mountChart, sparkline } from '../charts.js';
+import { mountSeriesChart, sparkline } from '../charts.js';
 import { h, icon, ICONS } from '../ui.js';
 import { summarizeSets, sessionTitle, pageHead, emptyState, plural } from './common.js';
 
-/** Exercices du programme + ceux retirés mais présents dans l'historique. */
-function knownExercises() {
-  const state = store.getState();
-  const programme = store.allExercises();
-  const ids = new Set(programme.map((e) => e.id));
-  const orphans = [];
-  for (const log of state.logs) {
-    for (const en of log.entries) {
-      if (!ids.has(en.exerciseId)) {
-        ids.add(en.exerciseId);
-        orphans.push({ id: en.exerciseId, name: en.name, mode: en.mode, sessionId: null });
-      }
-    }
-  }
-  return { programme, orphans };
-}
 
 function deltaEl(delta, unit) {
   if (delta === null) return h('span', { class: 'delta' }, '—');
@@ -36,8 +20,9 @@ function deltaEl(delta, unit) {
 
 export function viewProgressionIndex() {
   const state = store.getState();
-  const { programme, orphans } = knownExercises();
-  if (!programme.length && !orphans.length) {
+  const catalog = store.exerciseCatalog();
+  const orphans = catalog.filter((e) => !e.inProgramme);
+  if (!catalog.length) {
     return h('div', { class: 'page' }, pageHead('Progression'),
       emptyState('Aucun exercice', 'Ajoute des exercices à ton programme.'));
   }
@@ -73,6 +58,18 @@ export function viewProgressionIndex() {
       orphans.map(row)));
   }
 
+  const rmCount = (state.oneRM || []).length;
+  groups.push(h('a', { class: 'card nav-card', href: '#/1rm' },
+    h('span', { class: 'row-icon' }, icon(ICONS.trophy, 18)),
+    h('div', { class: 'body' },
+      h('div', { class: 'name' }, '1RM'),
+      h('div', { class: 'meta' }, rmCount
+        ? `${plural(rmCount, 'maxi enregistré', 'maxis enregistrés')} · réalisé et estimé`
+        : 'enregistre un maxi réalisé, compare-le à l\u2019estimation')
+    ),
+    h('span', { class: 'chev' }, icon(ICONS.chevron, 16))
+  ));
+
   const cardioCount = (state.cardio || []).length;
   groups.push(h('a', { class: 'card nav-card', href: '#/cardio' },
     h('span', { class: 'row-icon' }, icon(ICONS.pulse, 18)),
@@ -94,8 +91,7 @@ export function viewProgressionIndex() {
 let chosenMetric = null;
 
 export function viewProgressionDetail(exerciseId, ctx) {
-  const { programme, orphans } = knownExercises();
-  const exercise = [...programme, ...orphans].find((e) => e.id === exerciseId);
+  const exercise = store.exerciseCatalog().find((e) => e.id === exerciseId);
   if (!exercise) {
     return emptyState('Exercice introuvable', null, h('a', { class: 'btn', href: '#/progression' }, 'Progression'));
   }
@@ -127,10 +123,19 @@ export function viewProgressionDetail(exerciseId, ctx) {
       `${pct > 0 ? '+' : ''}${fmtNum(pct, 0)} % depuis le début`);
   }
 
-  const tiles = h('div', { class: 'tiles' },
+  // 1RM réalisés : saisis dans l'onglet 1RM, jamais dans les séances
+  const isRM = metric.key === 'e1rm';
+  const realRM = isRM ? store.oneRMForExercise(exerciseId) : [];
+  const bestReal = isRM ? store.bestOneRM(exerciseId) : null;
+
+  const tiles = h('div', { class: 'tiles' + (isRM ? ' tiles-4' : '') },
     tile('Dernière', lastPt ? lastPt.y : null, metric.unit,
       lastPt && prevPt ? h('div', {}, deltaEl(lastPt.y - prevPt.y, metric.unit)) : h('div', { class: 'delta' }, lastPt ? 'première mesure' : '')),
-    tile('Record', best, metric.unit, progress),
+    tile(isRM ? 'Record estimé' : 'Record', best, metric.unit, progress),
+    isRM
+      ? tile('1RM réalisé', bestReal ? bestReal.weight : null, 'kg',
+          h('div', { class: 'delta' }, bestReal ? `le ${formatDate(bestReal.date)}` : 'aucun maxi enregistré'))
+      : null,
     tile('Séances', history.length, '',
       history.length ? h('div', { class: 'delta' }, `depuis le ${formatDate(history[0].date)}`) : null)
   );
@@ -145,21 +150,33 @@ export function viewProgressionDetail(exerciseId, ctx) {
     )
   );
   const chartHost = h('div', {});
+  const rmPoints = realRM.map((r) => ({
+    iso: r.date, x: new Date(r.date + 'T12:00:00'), y: r.weight,
+    detail: r.note || 'maxi réalisé'
+  }));
+  const hasChart = points.length || rmPoints.length;
+
   const chartCard = h('section', { class: 'card chart-card' },
     h('div', { class: 'chart-head' },
-      h('h2', { class: 'title' }, metric.label),
+      h('h2', { class: 'title' }, isRM ? '1RM estimé et réalisé' : metric.label),
       h('span', { class: 'spacer' }),
+      isRM
+        ? h('a', { class: 'btn small', href: `#/1rm/nouveau?ex=${encodeURIComponent(exerciseId)}` },
+            icon(ICONS.plus, 14), 'Ajouter un 1RM')
+        : null,
       seg
     ),
-    points.length
+    hasChart
       ? chartHost
       : h('p', { class: 'list-empty' }, 'Pas encore de données pour cet exercice.'),
-    points.length === 1
+    points.length === 1 && !rmPoints.length
       ? h('p', { class: 'chart-note' }, 'Une seule séance pour l’instant : la courbe se tracera dès la prochaine.')
       : null
   );
-  if (points.length) {
-    ctx.onCleanup(mountChart(chartHost, points, { unit: metric.unit, label: metric.label, mode: exercise.mode }));
+  if (hasChart) {
+    const series = [{ label: isRM ? 'Estimé' : metric.short, points, cls: '' }];
+    if (rmPoints.length) series.push({ label: 'Réalisé', points: rmPoints, cls: 'alt' });
+    ctx.onCleanup(mountSeriesChart(chartHost, series, { unit: metric.unit, label: metric.label, mode: exercise.mode }));
   }
 
   /* --- tableau (équivalent texte du graphe) -------------------------- */

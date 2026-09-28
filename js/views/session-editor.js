@@ -102,6 +102,7 @@ export function viewSessionEditor(sessionId, ctx) {
             if (!confirm(`Retirer « ${ex.name || 'cet exercice'} » de la séance ? Son historique est conservé.`)) return;
             draft.exercises.splice(i, 1);
             draw();
+            drawReuse();
           })
         )
       ));
@@ -110,6 +111,45 @@ export function viewSessionEditor(sessionId, ctx) {
   draw();
 
   /* --- ajout --------------------------------------------------------- */
+  /*
+   * Remettre un exercice déjà connu (retiré de cette séance, ou d'une autre) :
+   * on reprend son id, donc sa courbe et son historique continuent.
+   */
+  const reuseWrap = h('div', { class: 'reuse' });
+  const drawReuse = () => {
+    reuseWrap.textContent = '';
+    const known = store.exerciseCatalog().filter((e) => !draft.exercises.some((x) => x.id === e.id));
+    if (!known.length) return;
+
+    const select = h('select', { 'aria-label': 'Exercice déjà fait à remettre' },
+      h('option', { value: '' }, 'Choisir un exercice déjà fait…'));
+    const groups = new Map();
+    for (const e of known) {
+      const key = e.inProgramme ? e.sessionName : 'Retirés du programme';
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(e);
+    }
+    for (const [label, items] of groups) {
+      const group = h('optgroup', { label });
+      for (const e of items) group.append(h('option', { value: e.id }, e.name));
+      select.append(group);
+    }
+    select.addEventListener('change', () => {
+      const found = known.find((e) => e.id === select.value);
+      if (!found) return;
+      draft.exercises.push({ id: found.id, name: found.name, mode: found.mode, defaultSets: found.defaultSets });
+      draw();
+      drawReuse();
+    });
+
+    reuseWrap.append(
+      h('p', { class: 'field-label' }, 'Remettre un exercice déjà fait'),
+      select,
+      h('span', { class: 'hint' }, 'Son historique et sa courbe continuent.')
+    );
+  };
+  drawReuse();
+
   const newName = h('input', { type: 'text', placeholder: 'Nom du nouvel exercice', maxlength: 80, 'aria-label': 'Nom du nouvel exercice' });
   const newMode = h('select', { 'aria-label': 'Type' }, h('option', { value: 'kg' }, 'Charge'), h('option', { value: 'bw' }, 'Poids du corps'));
   const newSets = h('select', { 'aria-label': 'Nombre de séries' },
@@ -120,6 +160,7 @@ export function viewSessionEditor(sessionId, ctx) {
     draft.exercises.push({ id: store.uid('e'), name: value, mode: newMode.value, defaultSets: Number(newSets.value) });
     newName.value = '';
     draw();
+    drawReuse();
     newName.focus();
   };
   newName.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); add(); } });
@@ -143,6 +184,8 @@ export function viewSessionEditor(sessionId, ctx) {
         h('h2', {}, 'Exercices'),
         h('p', { class: 'desc' }, 'Ordre, type et nombre de séries tels qu’ils apparaîtront pendant la séance.'),
         list,
+        reuseWrap,
+        h('p', { class: 'field-label' }, 'Nouvel exercice'),
         h('div', { class: 'edit-add' },
           newName,
           h('div', { class: 'edit-opts' }, newMode, newSets,

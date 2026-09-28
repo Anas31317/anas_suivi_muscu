@@ -6,16 +6,19 @@ privé (séries, charges, répétitions), un historique complet et des courbes d
 - **Accueil** : prochaine séance à faire, chiffres de la semaine et du mois, activité des
   8 dernières semaines, derniers records.
 - **Séances** : chaque séance s'ouvre sur une page unique avec tous ses exercices, séries
-  et reps. Pour chaque série, la valeur de la séance précédente est affichée (un tap la
+  et reps. Chaque série affiche à gauche ce qui a été fait la séance précédente (un tap la
   recopie). Tout s'enregistre automatiquement pendant la saisie, et « Enregistrer la
   séance » valide ; rouvrir la séance le même jour reprend là où on en était.
   Le programme (exercices, nombre de séries, ordre) ne se change que via
   « Modifier la séance », avec un bouton Enregistrer ; l'historique n'est jamais modifié.
-- **Cardio** : tapis, course, vélo, rameur… avec durée, distance, vitesse / allure,
-  chiffres sur 7 et 30 jours et courbe de progression par activité.
+- **Cardio** : tapis, course, vélo, rameur… durée, vitesse **ou** distance (l'une calcule
+  l'autre), inclinaison, calories et fréquence cardiaque en option ; chiffres sur 7 et
+  30 jours et courbe de progression par activité.
 - **Historique** : toutes les séances enregistrées, par mois, filtrables par séance.
 - **Progression** : vue d'ensemble de tous les exercices (dernière valeur, évolution,
-  mini-courbe), puis pour chacun : charge max, volume, reps totales ou 1RM estimé.
+  mini-courbe), puis pour chacun : charge max, volume, reps totales ou 1RM.
+- **1RM** : les maxis réellement réalisés se saisissent à part (jamais dans une séance) et
+  se comparent au 1RM estimé sur un graphe à deux courbes.
 - **Profil** : programme (séances et exercices), apparence (auto / clair / sombre),
   export / import des données, mot de passe, déconnexion.
 - **Compte** : inscription réservée aux emails autorisés, connexion, mot de passe oublié.
@@ -72,6 +75,7 @@ de Supabase pour que les liens email fonctionnent en local).
 | `js/auth-views.js` | écrans de connexion, inscription, mot de passe oublié, sécurité |
 | `js/sync.js` | synchronisation des données du compte |
 | `js/store.js` | état, cache local par compte, métriques, import / export |
+| `js/views/one-rm.js` | 1RM réalisés, comparés au 1RM estimé |
 | `js/insights.js` | calculs de l'accueil : prochaine séance, activité, records |
 | `js/seed.js` | programme type des nouveaux comptes |
 | `js/charts.js` | graphes SVG (progression, activité, mini-courbes) |

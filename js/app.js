@@ -14,6 +14,7 @@
  *   #/historique[?seance=id]  toutes les séances enregistrées
  *   #/progression             vue d'ensemble des exercices
  *   #/progression/:exId       progression d'un exercice
+ *   #/1rm, /nouveau, /:id     1RM réalisés (à part des séances)
  *   #/programme               gestion des séances et exercices
  *   #/profil                  compte, apparence, données
  *
@@ -34,6 +35,7 @@ import { viewSessions } from './views/sessions.js';
 import { viewWorkout } from './views/workout.js';
 import { viewSessionEditor } from './views/session-editor.js';
 import { viewCardio, viewCardioForm } from './views/cardio.js';
+import { viewOneRM, viewOneRMForm } from './views/one-rm.js';
 import { viewHistory } from './views/history.js';
 import { viewProgressionIndex, viewProgressionDetail } from './views/progression.js';
 import { viewProgramme } from './views/programme.js';
@@ -228,6 +230,10 @@ function privateView(parts, query, ctx) {
       if (a === 'nouveau') return [viewCardioForm(null), 'cardio'];
       if (a) return [viewCardioForm(a), 'cardio'];
       return [viewCardio(ctx), 'cardio'];
+    case '1rm':
+      if (a === 'nouveau') return [viewOneRMForm(null, query), 'progression'];
+      if (a) return [viewOneRMForm(a, query), 'progression'];
+      return [viewOneRM(), 'progression'];
     case 'historique':
       return [viewHistory(query), 'historique'];
     case 'progression':
@@ -341,7 +347,8 @@ async function main() {
   // rafraîchissement ferait perdre ce qui est en cours de frappe.
   store.subscribe(() => {
     const { parts } = parseHash();
-    const editing = (parts[0] === 'seance' && parts[1]) || parts[0] === 'log' || (parts[0] === 'cardio' && parts[1]);
+    const editing = (parts[0] === 'seance' && parts[1]) || parts[0] === 'log' ||
+      (parts[0] === 'cardio' && parts[1]) || (parts[0] === '1rm' && parts[1]);
     if (!editing) render();
   });
 
