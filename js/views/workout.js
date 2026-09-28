@@ -16,7 +16,7 @@ import * as store from '../store.js';
 import { fmtNum, formatDate, formatDateShort } from '../store.js';
 import * as sync from '../sync.js';
 import { h, numInput, parseNum, toast, icon, ICONS } from '../ui.js';
-import { sessionNumber, plural, pageHead, emptyState, longDate } from './common.js';
+import { sessionNumber, pageHead, emptyState, longDate } from './common.js';
 
 const SAVE_DELAY = 500;
 
@@ -166,8 +166,11 @@ export function viewWorkout({ sessionId, logId }, ctx) {
     const rows = h('div', { class: 'sets' },
       h('div', { class: 'set-row set-head-row' },
         h('span', { class: 'set-head' }, '#'),
-        // la date de la dernière séance tient dans l'en-tête : pas besoin de la répéter
-        h('span', { class: 'set-head' }, prev ? `Dernière fois · ${formatDateShort(prev.date)}` : 'Dernière fois'),
+        // la date de la dernière séance tient dans l'en-tête, sur sa propre ligne :
+        // à la suite du libellé, elle débordait sur « Charge kg »
+        h('span', { class: 'set-head prev-head' },
+          'Dernière fois',
+          prev ? h('span', { class: 'prev-date' }, formatDateShort(prev.date)) : null),
         h('span', { class: 'set-head' }, isBW ? 'Lest kg' : 'Charge kg'),
         h('span', { class: 'set-head' }, 'Reps')
       )
@@ -276,7 +279,6 @@ export function viewWorkout({ sessionId, logId }, ctx) {
   };
 
   const n = sess ? sessionNumber(sess.id) : null;
-  const others = sess ? store.logsForSession(sid).filter((l) => l.id !== draft.id).length : 0;
 
   return h('div', { class: 'page page-form' },
     pageHead(sess ? sess.name : 'Séance', {
@@ -293,11 +295,7 @@ export function viewWorkout({ sessionId, logId }, ctx) {
     }),
     h('div', { class: 'stack' },
       list,
-      h('div', { class: 'card section' }, h('h2', {}, 'Note de séance'), sessionNote),
-      others
-        ? h('a', { class: 'link centered', href: `#/muscu?seance=${encodeURIComponent(sid)}` },
-            `Voir les ${plural(others, 'séance précédente', 'séances précédentes')}`)
-        : null
+      h('div', { class: 'card section' }, h('h2', {}, 'Note de séance'), sessionNote)
     ),
     h('div', { class: 'form-actions' },
       source ? h('button', { class: 'btn ghost danger', type: 'button', onclick: remove }, 'Supprimer') : null,
