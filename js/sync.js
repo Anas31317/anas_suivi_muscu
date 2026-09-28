@@ -13,6 +13,7 @@
 
 import { client } from './auth.js';
 import * as store from './store.js';
+import * as share from './share.js';
 
 const TABLE = 'user_state';
 const PUSH_DELAY = 1200;
@@ -166,6 +167,8 @@ export async function flush() {
   if (!reconciled) return false;
   try {
     await push(store.getState());
+    // copie partagée : si elle échoue, la synchro reste réussie
+    try { await share.push(userId); } catch (err) { console.warn('partage non publié', err); }
     dirty = false;
     setStatus('ok', 'Synchronisé · ' + timeLabel());
     return true;

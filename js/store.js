@@ -17,7 +17,10 @@
  *   logs:     [{ id, sessionId, date, note, entries: [
  *                 { exerciseId, name, mode, note, sets: [{ weight, reps }] } ] }],
  *   cardio:   [{ id, date, type, label, duration (min), distance (km),
- *                calories, heartRate, note }]
+ *                incline, calories, heartRate, note }],
+ *   oneRM:    [{ id, exerciseId, name, date, weight, note }],
+ *   share:    { enabled, code, name },   // mon code de partage
+ *   friends:  [{ code, name, addedAt }]  // codes des amis suivis
  * }
  *
  * Chaque log fige le nom et le mode de l'exercice : renommer ou supprimer un
@@ -116,6 +119,19 @@ function normalize(raw) {
       heartRate: numOrNull(c.heartRate), // bpm moyen
       note: String(c.note || '').slice(0, 500)
     })),
+    // partage : mon code, et les codes des amis que je suis
+    share: {
+      enabled: Boolean(s.share && s.share.enabled),
+      code: normalizeShareCode((s.share && s.share.code) || ''),
+      name: String((s.share && s.share.name) || '').slice(0, 40)
+    },
+    friends: (Array.isArray(s.friends) ? s.friends : [])
+      .map((f) => ({
+        code: normalizeShareCode(f.code || ''),
+        name: String(f.name || '').slice(0, 40),
+        addedAt: f.addedAt || new Date().toISOString()
+      }))
+      .filter((f) => f.code),
     // 1RM réellement réalisés : saisis à part, jamais mélangés aux séances
     oneRM: (Array.isArray(s.oneRM) ? s.oneRM : []).map((r) => ({
       id: r.id || uid('rm'),
@@ -501,6 +517,67 @@ export function deleteLog(logId) {
 
 export function getLog(logId) {
   return getState().logs.find((l) => l.id === logId) || null;
+}
+
+/* -------------------------------------------------------------- partage */
+
+// Sans I, O, 0 ni 1 : un code se dicte et se recopie sans ambiguïté.
+const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
+/** Nettoie un code saisi : majuscules, sans espaces ni tirets. */
+export function normalizeShareCode(input) {
+  return String(input || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 16);
+}
+
+/** « K7P4M2QX » -> « K7P4-M2QX » (lecture et dictée plus faciles). */
+export function formatShareCode(code) {
+  const c = normalizeShareCode(code);
+  return c.length === 8 ? c.slice(0, 4) + '-' + c.slice(4) : c;
+}
+
+export function newShareCode() {
+  const bytes = new Uint8Array(8);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => CODE_ALPHABET[b % CODE_ALPHABET.length]).join('');
+}
+
+export function getShare() {
+  const s = getState().share;
+  return s || { enabled: false, code: '', name: '' };
+}
+
+export function setShare(patch) {
+  mutate((s) => {
+    s.share = { ...(s.share || { enabled: false, code: '', name: '' }), ...patch };
+    s.share.code = normalizeShareCode(s.share.code);
+  });
+}
+
+export function friends() {
+  return (getState().friends || []).slice().sort((a, b) => a.name.localeCompare(b.name));
+}
+
+export function getFriend(code) {
+  const c = normalizeShareCode(code);
+  return (getState().friends || []).find((f) => f.code === c) || null;
+}
+
+export function addFriend({ code, name }) {
+  const c = normalizeShareCode(code);
+  mutate((s) => {
+    if (!Array.isArray(s.friends)) s.friends = [];
+    const i = s.friends.findIndex((f) => f.code === c);
+    const entry = { code: c, name: String(name || '').slice(0, 40), addedAt: new Date().toISOString() };
+    if (i >= 0) s.friends[i] = { ...s.friends[i], name: entry.name };
+    else s.friends.push(entry);
+  });
+}
+
+export function removeFriend(code) {
+  const c = normalizeShareCode(code);
+  mutate((s) => {
+    s.friends = (s.friends || []).filter((f) => f.code !== c);
+  });
 }
 
 /* ------------------------------------------------------------------ 1RM */

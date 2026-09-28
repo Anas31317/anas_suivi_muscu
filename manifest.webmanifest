@@ -1,7 +1,7 @@
 {
   "name": "Suivi Musculation",
   "short_name": "Muscu",
-  "description": "Saisie des séances, historique et progression.",
+  "description": "Suivi de musculation et de cardio : séances, historique, progression.",
   "lang": "fr",
   "start_url": "./",
   "scope": "./",

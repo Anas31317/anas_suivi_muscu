@@ -19,7 +19,10 @@ privé (séries, charges, répétitions), un historique complet et des courbes d
   mini-courbe), puis pour chacun : charge max, volume, reps totales ou 1RM.
 - **1RM** : les maxis réellement réalisés se saisissent à part (jamais dans une séance) et
   se comparent au 1RM estimé sur un graphe à deux courbes.
-- **Profil** : programme (séances et exercices), apparence (auto / clair / sombre),
+- **Suivi Amis** : donne ton code à quelqu'un et il voit ton programme, ta progression,
+  ton cardio et tes 1RM, en lecture seule. Personne ne peut te trouver sans ce code, et
+  générer un nouveau code coupe l'accès aux anciens.
+- **Profil** : partage et code, programme, apparence (auto / clair / sombre),
   export / import des données, mot de passe, déconnexion.
 - **Compte** : inscription réservée aux emails autorisés, connexion, mot de passe oublié.
 
@@ -30,7 +33,8 @@ hors ligne.
 ## Mise en service
 
 1. **Supabase** : suivre [docs/SUPABASE.md](docs/SUPABASE.md) (tables, liste blanche,
-   réglages d'authentification, envoi des emails, clé dans `js/config.js`).
+   partage entre utilisateurs, réglages d'authentification, envoi des emails, clé dans
+   `js/config.js`).
 2. **GitHub Pages** : **Settings** > **Pages** > Source = *Deploy from a branch*,
    Branch = `main`, dossier `/ (root)`.
 3. Le site est en ligne sur `https://anas31317.github.io/suivi_muscu_india/`.
@@ -76,6 +80,8 @@ de Supabase pour que les liens email fonctionnent en local).
 | `js/sync.js` | synchronisation des données du compte |
 | `js/store.js` | état, cache local par compte, métriques, import / export |
 | `js/views/one-rm.js` | 1RM réalisés, comparés au 1RM estimé |
+| `js/views/friends.js`, `js/share.js` | suivi partagé : mon code, lecture du suivi d'un ami |
+| `js/version.js` | nom, version et auteur affichés en pied de page |
 | `js/insights.js` | calculs de l'accueil : prochaine séance, activité, records |
 | `js/seed.js` | programme type des nouveaux comptes |
 | `js/charts.js` | graphes SVG (progression, activité, mini-courbes) |
