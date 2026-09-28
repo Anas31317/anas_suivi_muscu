@@ -1055,7 +1055,9 @@ details.accordion[open] > summary { margin-bottom: 8px; }
   .set-row { grid-template-columns: 18px minmax(58px, 0.9fr) minmax(0, 1fr) minmax(0, 1fr); gap: 6px; }
   .ex-card { padding: 12px 12px 14px; }
   .workout-actions { width: 100%; justify-content: space-between; }
-  .workout-actions .date-field { width: auto; flex: 0 1 auto; max-width: 160px; }
+  /* juste la place de « 28/09/2026 » et de l'icône du calendrier */
+  .workout-actions .date-field { width: auto; flex: 0 1 auto; max-width: 142px; }
+  .workout-actions .date-field input { padding-left: 8px; padding-right: 8px; }
   .footer { padding: 0 16px 16px; }
 }
 
