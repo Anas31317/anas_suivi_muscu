@@ -23,8 +23,8 @@ fait en dessous**, et toutes les courbes de musculation sont réunies dans Progr
   un bouton Enregistrer — **l'historique n'est jamais réécrit**.
 - **Cardio** : tapis, course, vélo, rameur… durée, vitesse **ou** distance (l'une calcule
   l'autre), inclinaison ; calories et fréquence cardiaque en option. Chiffres sur 7 et
-  30 jours, puis l'historique par mois. La courbe est dans Progrès, comme celles de la
-  muscu.
+  30 jours, puis l'historique par mois. Rien sur la progression ici : toutes les courbes
+  sont dans Progrès.
 - **Progrès** : une courbe à la fois, muscu ou cardio. L'exercice se choisit dans un
   sélecteur groupé par séance — volume, charge max ou reps totales — avec les tuiles et le
   détail des séances. Les activités cardio figurent à la fin du sélecteur sous « Séance
