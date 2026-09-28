@@ -90,7 +90,14 @@ html, body {
   line-height: 1.5;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation; /* pas de zoom au double-tap */
+  /*
+   * pan-y : le doigt ne fait défiler la page que vers le haut et le bas.
+   * Sans ça, le moindre décalage de quelques pixels permet de la faire
+   * glisser sur les côtés, et iOS autorise le pincement même avec
+   * user-scalable=no. Les tableaux qui défilent à l'horizontale rétablissent
+   * touch-action: auto pour eux-mêmes.
+   */
+  touch-action: pan-y;
 }
 
 h1, h2, h3 { line-height: 1.2; margin: 0; font-weight: 700; letter-spacing: -0.015em; }
@@ -752,7 +759,7 @@ input.derived { color: var(--ink-2); }
 
 /* ------------------------------------------------------------ tableaux */
 
-.table-wrap { overflow-x: auto; }
+.table-wrap { overflow-x: auto; touch-action: auto; } /* seul endroit qui défile latéralement */
 table { width: 100%; border-collapse: collapse; font-size: 0.875rem; font-variant-numeric: tabular-nums; }
 th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--grid); white-space: nowrap; }
 th {
@@ -954,7 +961,7 @@ details.accordion[open] > summary { margin-bottom: 8px; }
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.18s ease, transform 0.18s ease;
-  max-width: calc(100vw - 32px);
+  max-width: calc(100% - 32px);
 }
 .toast.on { opacity: 1; transform: translate(-50%, 0); }
 
