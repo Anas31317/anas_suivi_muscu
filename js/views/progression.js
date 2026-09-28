@@ -1,12 +1,19 @@
-/** Progression : vue d'ensemble de tous les exercices, puis détail d'un exercice. */
+/**
+ * Progrès : une courbe à la fois.
+ *
+ *   #/progression          le dernier exercice travaillé
+ *   #/progression/:exId    un exercice précis
+ *
+ * Le choix se fait dans un sélecteur, comme pour le cardio : la liste complète
+ * des exercices tenait sur plusieurs écrans et il fallait la traverser avant
+ * d'arriver à une courbe.
+ */
 
 import * as store from '../store.js';
 import { fmtNum, formatDate } from '../store.js';
-import * as insights from '../insights.js';
-import { mountSeriesChart, sparkline } from '../charts.js';
+import { mountSeriesChart } from '../charts.js';
 import { h, icon, ICONS } from '../ui.js';
 import { summarizeSets, sessionTitle, pageHead, emptyState, plural } from './common.js';
-
 
 function deltaEl(delta, unit) {
   if (delta === null) return h('span', { class: 'delta' }, '—');
@@ -16,92 +23,61 @@ function deltaEl(delta, unit) {
     icon(up ? ICONS.up : ICONS.down, 12), `${up ? '+' : ''}${fmtNum(delta, 1)} ${unit}`);
 }
 
-/* --------------------------------------------------- vue d'ensemble */
-
-export function viewProgressionIndex() {
-  const state = store.getState();
-  const catalog = store.exerciseCatalog();
-  const orphans = catalog.filter((e) => !e.inProgramme);
-  if (!catalog.length) {
-    return h('div', { class: 'page' }, pageHead('Progression'),
-      emptyState('Aucun exercice', 'Ajoute des exercices à ton programme.'));
+/** Dernier exercice enregistré, pour ouvrir la page sur quelque chose d'utile. */
+function lastTrained(catalog) {
+  const logs = store.getState().logs;
+  for (let i = logs.length - 1; i >= 0; i--) {
+    const log = logs[i];
+    for (const en of log.entries) {
+      if (catalog.some((e) => e.id === en.exerciseId)) return en.exerciseId;
+    }
   }
-
-  const row = (ex) => {
-    const s = insights.exerciseSummary(ex.id, ex.mode);
-    return h('a', { class: 'list-row prog-row', href: `#/progression/${encodeURIComponent(ex.id)}` },
-      h('div', { class: 'body' },
-        h('div', { class: 'name' }, ex.name),
-        h('div', { class: 'meta' },
-          s.values.length ? `${s.metric.short} · ${plural(s.values.length, 'séance', 'séances')}` : 'aucune donnée')
-      ),
-      s.values.length > 1 ? sparkline(s.values.slice(-10)) : h('span', { class: 'spark-empty' }),
-      h('div', { class: 'row-value' },
-        h('span', { class: 'v' }, s.last === null ? '—' : `${fmtNum(s.last, 1)} ${s.metric.unit}`),
-        s.values.length > 1 ? deltaEl(s.delta, s.metric.unit) : null
-      ),
-      h('span', { class: 'chev' }, icon(ICONS.chevron, 16))
-    );
-  };
-
-  const groups = state.sessions
-    .filter((sess) => sess.exercises.length)
-    .map((sess) =>
-      h('section', { class: 'card list-card' },
-        h('div', { class: 'list-head' }, h('h2', {}, sessionTitle(sess))),
-        sess.exercises.map((ex) => row(ex))
-      )
-    );
-  if (orphans.length) {
-    groups.push(h('section', { class: 'card list-card' },
-      h('div', { class: 'list-head' }, h('h2', {}, 'Retirés du programme')),
-      orphans.map(row)));
-  }
-
-  const rmCount = (state.oneRM || []).length;
-  groups.push(h('a', { class: 'card nav-card', href: '#/1rm' },
-    h('span', { class: 'row-icon' }, icon(ICONS.trophy, 18)),
-    h('div', { class: 'body' },
-      h('div', { class: 'name' }, '1RM'),
-      h('div', { class: 'meta' }, rmCount
-        ? `${plural(rmCount, 'maxi enregistré', 'maxis enregistrés')} · réalisé et estimé`
-        : 'enregistre un maxi réalisé, compare-le à l\u2019estimation')
-    ),
-    h('span', { class: 'chev' }, icon(ICONS.chevron, 16))
-  ));
-
-  const cardioCount = (state.cardio || []).length;
-  groups.push(h('a', { class: 'card nav-card', href: '#/cardio' },
-    h('span', { class: 'row-icon' }, icon(ICONS.pulse, 18)),
-    h('div', { class: 'body' },
-      h('div', { class: 'name' }, 'Progression cardio'),
-      h('div', { class: 'meta' }, cardioCount ? `${plural(cardioCount, 'séance', 'séances')} · distance, durée, allure` : 'aucune séance cardio pour l’instant')
-    ),
-    h('span', { class: 'chev' }, icon(ICONS.chevron, 16))
-  ));
-
-  return h('div', { class: 'page' },
-    pageHead('Progression', { sub: 'Touche un exercice pour voir sa courbe.' }),
-    h('div', { class: 'stack' }, groups)
-  );
+  return catalog[0].id;
 }
 
-/* ------------------------------------------------------------- détail */
+/** Sélecteur d'exercice, groupé par séance (comme le programme). */
+function picker(catalog, currentId) {
+  const sel = h('select', {
+    class: 'filter-select', 'aria-label': 'Exercice',
+    onchange: () => { location.hash = `#/progression/${encodeURIComponent(sel.value)}`; }
+  });
+
+  const groups = [];
+  for (const sess of store.getState().sessions) {
+    const items = catalog.filter((e) => e.sessionId === sess.id);
+    if (items.length) groups.push([sessionTitle(sess), items]);
+  }
+  const orphans = catalog.filter((e) => !e.inProgramme);
+  if (orphans.length) groups.push(['Retirés du programme', orphans]);
+
+  for (const [label, items] of groups) {
+    sel.append(h('optgroup', { label },
+      items.map((e) => h('option', { value: e.id, selected: e.id === currentId }, e.name))));
+  }
+  return sel;
+}
+
+/* ----------------------------------------------------------------- page */
 
 let chosenMetric = null;
 
-export function viewProgressionDetail(exerciseId, ctx) {
-  const exercise = store.exerciseCatalog().find((e) => e.id === exerciseId);
-  if (!exercise) {
-    return emptyState('Exercice introuvable', null, h('a', { class: 'btn', href: '#/progression' }, 'Progression'));
+export function viewProgression(exerciseId, ctx) {
+  const catalog = store.exerciseCatalog();
+  if (!catalog.length) {
+    return h('div', { class: 'page' }, pageHead('Progrès'),
+      emptyState('Aucun exercice', 'Ajoute des exercices à ton programme.',
+        h('a', { class: 'btn primary', href: '#/programme' }, 'Créer mon programme')));
   }
+
+  const id = catalog.some((e) => e.id === exerciseId) ? exerciseId : lastTrained(catalog);
+  const exercise = catalog.find((e) => e.id === id);
   const sess = exercise.sessionId ? store.getSession(exercise.sessionId) : null;
 
   const metrics = store.metricsFor(exercise.mode);
   if (!chosenMetric || !metrics.some((m) => m.key === chosenMetric)) chosenMetric = metrics[0].key;
   const metric = metrics.find((m) => m.key === chosenMetric);
-  const points = store.seriesFor(exerciseId, metric.key);
-  const history = store.historyForExercise(exerciseId);
+  const points = store.seriesFor(id, metric.key);
+  const history = store.historyForExercise(id);
 
   /* --- tuiles -------------------------------------------------------- */
   const lastPt = points[points.length - 1];
@@ -125,8 +101,8 @@ export function viewProgressionDetail(exerciseId, ctx) {
 
   // 1RM réalisés : saisis dans l'onglet 1RM, jamais dans les séances
   const isRM = metric.key === 'e1rm';
-  const realRM = isRM ? store.oneRMForExercise(exerciseId) : [];
-  const bestReal = isRM ? store.bestOneRM(exerciseId) : null;
+  const realRM = isRM ? store.oneRMForExercise(id) : [];
+  const bestReal = isRM ? store.bestOneRM(id) : null;
 
   const tiles = h('div', { class: 'tiles' + (isRM ? ' tiles-4' : '') },
     tile('Dernière', lastPt ? lastPt.y : null, metric.unit,
@@ -161,11 +137,11 @@ export function viewProgressionDetail(exerciseId, ctx) {
       h('h2', { class: 'title' }, isRM ? '1RM estimé et réalisé' : metric.label),
       h('span', { class: 'spacer' }),
       isRM
-        ? h('a', { class: 'btn small', href: `#/1rm/nouveau?ex=${encodeURIComponent(exerciseId)}` },
+        ? h('a', { class: 'btn small', href: `#/1rm/nouveau?ex=${encodeURIComponent(id)}` },
             icon(ICONS.plus, 14), 'Ajouter un 1RM')
-        : null,
-      seg
+        : null
     ),
+    h('div', { class: 'chart-seg' }, seg),
     hasChart
       ? chartHost
       : h('p', { class: 'list-empty' }, 'Pas encore de données pour cet exercice.'),
@@ -212,11 +188,33 @@ export function viewProgressionDetail(exerciseId, ctx) {
       : h('p', { class: 'list-empty' }, 'Aucun historique.')
   );
 
+  /* --- les autres progressions --------------------------------------- */
+  const state = store.getState();
+  const rmCount = (state.oneRM || []).length;
+  const cardioCount = (state.cardio || []).length;
+  const navCard = (href, ic, name, meta) =>
+    h('a', { class: 'card nav-card', href },
+      h('span', { class: 'row-icon' }, icon(ic, 18)),
+      h('div', { class: 'body' }, h('div', { class: 'name' }, name), h('div', { class: 'meta' }, meta)),
+      h('span', { class: 'chev' }, icon(ICONS.chevron, 16))
+    );
+
   return h('div', { class: 'page' },
-    pageHead(exercise.name, {
-      back: { href: '#/progression', label: 'Progression' },
-      sub: sess ? sessionTitle(sess) : 'Retiré du programme'
+    pageHead('Progrès', {
+      sub: sess ? sessionTitle(sess) : 'Retiré du programme',
+      actions: picker(catalog, id)
     }),
-    h('div', { class: 'stack' }, tiles, chartCard, table)
+    h('div', { class: 'stack' },
+      tiles,
+      chartCard,
+      table,
+      h('div', { class: 'section-head' }, h('h2', {}, 'Voir aussi')),
+      navCard('#/1rm', ICONS.trophy, '1RM',
+        rmCount ? `${plural(rmCount, 'maxi enregistré', 'maxis enregistrés')} · réalisé et estimé`
+          : 'enregistre un maxi réalisé, compare-le à l’estimation'),
+      navCard('#/cardio', ICONS.pulse, 'Progression cardio',
+        cardioCount ? `${plural(cardioCount, 'séance', 'séances')} · distance, durée, allure`
+          : 'aucune séance cardio pour l’instant')
+    )
   );
 }

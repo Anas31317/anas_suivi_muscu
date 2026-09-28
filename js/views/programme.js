@@ -42,7 +42,7 @@ export function viewProgramme() {
 
   return h('div', { class: 'page' },
     pageHead('Programme', {
-      back: { href: '#/seances', label: 'Séances' },
+      back: { href: '#/muscu', label: 'Muscu' },
       sub: `${plural(state.sessions.length, 'séance', 'séances')} · l’historique n’est jamais modifié.`
     }),
     h('div', { class: 'stack' },

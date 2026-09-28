@@ -79,7 +79,6 @@ export const ICONS = {
   down: 'M12 5v14M19 12l-7 7-7-7',
   home: 'M3 11l9-7 9 7M5 9.5V20h5v-6h4v6h5V9.5',
   dumbbell: 'M6.5 7v10M3.5 9.5v5M17.5 7v10M20.5 9.5v5M6.5 12h11',
-  history: 'M12 3a9 9 0 1 1-8.5 6M3 4v5h5M12 8v4l3 2',
   chart: 'M4 4v16h16M8 15l3.5-4 3 2.5L20 7',
   user: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4.5 20.5a7.5 7.5 0 0 1 15 0',
   play: 'M8 5.5v13l10-6.5-10-6.5Z',
