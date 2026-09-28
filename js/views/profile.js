@@ -3,7 +3,6 @@
 import * as store from '../store.js';
 import * as insights from '../insights.js';
 import { accountSection } from '../auth-views.js';
-import * as shareApi from '../share.js';
 import { getTheme, setTheme } from '../theme.js';
 import { h, toast, icon, ICONS } from '../ui.js';
 import { plural, pageHead } from './common.js';
@@ -51,64 +50,6 @@ export function viewProfile(ctx) {
         `${plural(state.sessions.length, 'séance', 'séances')} · ${plural(store.allExercises().length, 'exercice', 'exercices')}`)
     ),
     h('span', { class: 'chev' }, icon(ICONS.chevron, 16))
-  );
-
-  /* --- partage ------------------------------------------------------- */
-  const cfg = store.getShare();
-  const enabledIn = h('input', { type: 'checkbox', id: 'share-on', checked: cfg.enabled });
-  const nameIn = h('input', {
-    type: 'text', maxlength: 40, id: 'share-name', value: cfg.name || name,
-    placeholder: 'Le nom que verront tes amis'
-  });
-  const codeEl = h('span', { class: 'share-code' }, cfg.code ? store.formatShareCode(cfg.code) : '—');
-
-  const apply = async (patch) => {
-    const next = { ...store.getShare(), ...patch };
-    if (next.enabled && !next.code) next.code = store.newShareCode();
-    next.name = nameIn.value.trim() || name;
-    store.setShare(next);
-    try {
-      if (next.enabled) await shareApi.push(ctx.user.id);
-      else await shareApi.stopSharing(ctx.user.id);
-      toast(next.enabled ? 'Partage activé' : 'Partage désactivé');
-    } catch (err) {
-      toast(shareApi.explain(err));
-    }
-  };
-
-  enabledIn.addEventListener('change', () => apply({ enabled: enabledIn.checked }));
-  nameIn.addEventListener('change', () => { if (store.getShare().enabled) apply({}); });
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(store.formatShareCode(store.getShare().code));
-      toast('Code copié');
-    } catch {
-      toast('Copie impossible : note le code à la main.');
-    }
-  };
-
-  const regenerate = () => {
-    if (!confirm('Générer un nouveau code ?\n\nCeux qui ont l’ancien ne verront plus ton suivi.')) return;
-    apply({ code: store.newShareCode() });
-  };
-
-  const sharing = h('section', { class: 'card section' },
-    h('h2', {}, 'Partage'),
-    h('p', { class: 'desc' },
-      'Donne ton code à qui tu veux : il verra ton programme, tes séances, ton cardio et tes 1RM, ' +
-      'en lecture seule. Personne ne peut te trouver sans ce code.'),
-    h('label', { class: 'check' }, enabledIn, 'Partager mon suivi'),
-    cfg.enabled
-      ? h('div', { class: 'stack share-block' },
-          h('div', { class: 'code-row' },
-            codeEl,
-            h('button', { class: 'btn small', type: 'button', onclick: copy }, 'Copier'),
-            h('button', { class: 'btn small ghost', type: 'button', onclick: regenerate }, 'Nouveau code')
-          ),
-          h('div', { class: 'field' }, h('label', { for: 'share-name' }, 'Nom affiché'), nameIn)
-        )
-      : null
   );
 
   /* --- données ------------------------------------------------------- */
@@ -162,7 +103,6 @@ export function viewProfile(ctx) {
     h('div', { class: 'stack' },
       identity,
       programme,
-      sharing,
       appearance,
       data,
       accountSection({ email, onSignOut: ctx.signOut })
