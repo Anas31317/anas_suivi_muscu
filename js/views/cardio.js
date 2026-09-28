@@ -27,12 +27,57 @@ export function cardioSummary(c) {
   return parts.join(' · ') || '—';
 }
 
-const METRICS = {
-  distance: { label: 'Distance', unit: 'km', get: (c) => c.distance },
-  duration: { label: 'Durée', unit: 'min', get: (c) => c.duration },
-  speed: { label: 'Vitesse moyenne', unit: 'km/h', get: (c) => store.cardioSpeed(c) },
-  pace: { label: 'Allure (plus bas = plus rapide)', unit: 'min/km', get: (c) => store.cardioPace(c) }
+/*
+ * Mesures d'une séance cardio. `format` sert aux tuiles (une allure s'écrit
+ * « 6:09 /km », pas « 6,2 »), `lowerIsBetter` dit dans quel sens est le progrès.
+ * L'onglet Progrès s'en sert aussi : les activités y figurent comme les exercices.
+ */
+export const CARDIO_METRICS = {
+  distance: { label: 'Distance', short: 'Distance', unit: 'km',
+    get: (c) => c.distance, format: (v) => `${fmtNum(v, 2)} km` },
+  duration: { label: 'Durée', short: 'Durée', unit: 'min',
+    get: (c) => c.duration, format: (v) => store.formatDuration(v) },
+  speed: { label: 'Vitesse moyenne', short: 'Vitesse', unit: 'km/h',
+    get: (c) => store.cardioSpeed(c), format: (v) => `${fmtNum(v, 1)} km/h` },
+  pace: { label: 'Allure (plus bas = plus rapide)', short: 'Allure', unit: 'min/km',
+    get: (c) => store.cardioPace(c), format: (v) => `${store.formatPace(v)} /km`, lowerIsBetter: true }
 };
+
+/** Une activité = un type, plus son nom libre quand le type est « autre ». */
+const activityKey = (c) => c.type + '|' + store.cardioName(c);
+
+/** Les activités déjà enregistrées : [{ key, typeId, name }], la plus récente d'abord. */
+export function cardioActivities() {
+  const out = [];
+  const seen = new Set();
+  for (const c of store.cardioList()) {
+    const key = activityKey(c);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push({ key, typeId: c.type, name: store.cardioName(c) });
+  }
+  return out;
+}
+
+/** Les séances d'une activité, de la plus ancienne à la plus récente. */
+export function cardioEntries(key) {
+  return store.cardioList().filter((c) => activityKey(c) === key).slice().reverse();
+}
+
+/** Les mesures qui ont du sens ici : allure OU vitesse, et seulement si renseignées. */
+export function cardioUsableMetrics(typeId, entries) {
+  return Object.entries(CARDIO_METRICS).filter(([key, m]) => {
+    if (key === 'pace' && !store.cardioType(typeId).pace) return false;
+    if (key === 'speed' && store.cardioType(typeId).pace) return false;
+    return entries.some((c) => m.get(c));
+  });
+}
+
+export function cardioPoints(entries, metric) {
+  return entries
+    .map((c) => ({ iso: c.date, x: new Date(c.date + 'T12:00:00'), y: metric.get(c), detail: cardioSummary(c) }))
+    .filter((p) => p.y !== null && p.y !== undefined && Number.isFinite(p.y));
+}
 
 let chosenType = null;
 let chosenMetric = 'distance';
@@ -69,33 +114,27 @@ export function viewCardio(ctx) {
   }
 
   /* --- progression par activité ------------------------------------- */
-  const types = [...new Set(all.map((c) => c.type + '|' + store.cardioName(c)))];
-  if (!chosenType || !types.includes(chosenType)) chosenType = all[0].type + '|' + store.cardioName(all[0]);
-  const [typeId] = chosenType.split('|');
-  const ofType = all.filter((c) => c.type + '|' + store.cardioName(c) === chosenType).slice().reverse();
+  const activities = cardioActivities();
+  if (!chosenType || !activities.some((a) => a.key === chosenType)) chosenType = activities[0].key;
+  const activity = activities.find((a) => a.key === chosenType);
+  const ofType = cardioEntries(chosenType);
 
-  const usable = Object.entries(METRICS).filter(([key, m]) => {
-    if (key === 'pace' && !store.cardioType(typeId).pace) return false;
-    if (key === 'speed' && store.cardioType(typeId).pace) return false;
-    return ofType.some((c) => m.get(c));
-  });
+  const usable = cardioUsableMetrics(activity.typeId, ofType);
   if (!usable.some(([k]) => k === chosenMetric)) chosenMetric = usable.length ? usable[0][0] : 'duration';
-  const metric = METRICS[chosenMetric];
+  const metric = CARDIO_METRICS[chosenMetric];
 
-  const points = ofType
-    .map((c) => ({ iso: c.date, x: new Date(c.date + 'T12:00:00'), y: metric.get(c), detail: cardioSummary(c) }))
-    .filter((p) => p.y !== null && p.y !== undefined && Number.isFinite(p.y));
+  const points = cardioPoints(ofType, metric);
 
   const typeSelect = h('select', {
     class: 'filter-select', 'aria-label': 'Activité',
     onchange: () => { chosenType = typeSelect.value; ctx.render(); }
-  }, types.map((t) => h('option', { value: t, selected: t === chosenType }, t.split('|')[1])));
+  }, activities.map((a) => h('option', { value: a.key, selected: a.key === chosenType }, a.name)));
 
   const seg = h('div', { class: 'segmented', role: 'group', 'aria-label': 'Valeur affichée' },
     usable.map(([key, m]) => h('button', {
       type: 'button', 'aria-pressed': key === chosenMetric ? 'true' : 'false',
       onclick: () => { chosenMetric = key; ctx.render(); }
-    }, m.label.split(' (')[0]))
+    }, m.short))
   );
 
   const chartHost = h('div', {});
