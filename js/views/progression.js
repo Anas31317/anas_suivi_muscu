@@ -52,15 +52,12 @@ function navCard(href, ic, name, meta) {
 }
 
 function voirAussi() {
-  const state = store.getState();
-  const rmCount = (state.oneRM || []).length;
+  const rmCount = (store.getState().oneRM || []).length;
   return [
     h('div', { class: 'section-head' }, h('h2', {}, 'Voir aussi')),
     navCard('#/1rm', ICONS.trophy, '1RM',
       rmCount ? `${plural(rmCount, 'maxi enregistré', 'maxis enregistrés')} · estimé et réalisé`
-        : 'enregistre un maxi réalisé, compare-le à l’estimation'),
-    navCard('#/cardio', ICONS.pulse, 'Cardio',
-      'chiffres de la semaine, ajouter une séance')
+        : 'enregistre un maxi réalisé, compare-le à l’estimation')
   ];
 }
 

@@ -5,9 +5,9 @@
  *   #/cardio/nouveau    ajouter une séance cardio
  *   #/cardio/:id        modifier une séance cardio
  *
- * Les courbes sont toutes dans l'onglet Progrès, y compris celles du cardio :
- * ce fichier exporte de quoi les tracer (CARDIO_METRICS et les fonctions en
- * dessous), la page se contente d'y renvoyer.
+ * Aucune courbe ici : la progression, muscu comme cardio, se lit dans le seul
+ * onglet Progrès. Ce fichier exporte juste de quoi l'y tracer (CARDIO_METRICS
+ * et les fonctions en dessous).
  */
 
 import * as store from '../store.js';
@@ -113,18 +113,6 @@ export function viewCardio() {
     );
   }
 
-  /* --- renvoi vers la courbe ----------------------------------------- */
-  // la progression, muscu comme cardio, se lit dans l'onglet Progrès
-  const activity = cardioActivities()[0];
-  const progLink = h('a', { class: 'card nav-card', href: `#/progression/${encodeURIComponent('cardio:' + activity.key)}` },
-    h('span', { class: 'row-icon' }, icon(ICONS.chart, 18)),
-    h('div', { class: 'body' },
-      h('div', { class: 'name' }, 'Progression'),
-      h('div', { class: 'meta' }, `${activity.name} · distance, durée, allure`)
-    ),
-    h('span', { class: 'chev' }, icon(ICONS.chevron, 16))
-  );
-
   /* --- liste par mois ------------------------------------------------ */
   const groups = [];
   for (const c of all) {
@@ -158,7 +146,7 @@ export function viewCardio() {
 
   return h('div', { class: 'page' },
     pageHead('Cardio', { sub: 'Tapis, course, vélo, rameur…', actions: addBtn }),
-    h('div', { class: 'stack' }, tiles, progLink,
+    h('div', { class: 'stack' }, tiles,
       h('div', { class: 'section-head' }, h('h2', {}, 'Historique')),
       ...list)
   );
