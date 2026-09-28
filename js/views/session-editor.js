@@ -16,7 +16,7 @@ const SET_CHOICES = [1, 2, 3, 4, 5, 6, 7, 8, 10];
 
 export function viewSessionEditor(sessionId, ctx) {
   const sess = store.getSession(sessionId);
-  if (!sess) return emptyState('Séance introuvable', null, h('a', { class: 'btn', href: '#/seances' }, 'Séances'));
+  if (!sess) return emptyState('Séance introuvable', null, h('a', { class: 'btn', href: '#/muscu' }, 'Muscu'));
 
   const original = JSON.stringify({ name: sess.name, exercises: sess.exercises });
   const draft = JSON.parse(original);

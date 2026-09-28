@@ -6,7 +6,7 @@ import * as insights from '../insights.js';
 import { mountWeekBars } from '../charts.js';
 import { h, icon, ICONS } from '../ui.js';
 import { sessionTitle, plural, emptyState } from './common.js';
-import { startLabel } from './sessions.js';
+import { startLabel } from './muscu.js';
 
 export function viewDashboard(ctx) {
   const state = store.getState();
@@ -45,7 +45,7 @@ export function viewDashboard(ctx) {
       ),
       h('div', { class: 'btn-row' },
         h('a', { class: 'btn primary', href: `#/seance/${next.id}` }, icon(ICONS.play, 14), startLabel(next.id)),
-        h('a', { class: 'btn', href: '#/seances' }, 'Choisir une autre séance')
+        h('a', { class: 'btn', href: '#/muscu' }, 'Choisir une autre séance')
       )
     );
   } else {

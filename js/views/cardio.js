@@ -123,7 +123,7 @@ export function viewCardio(ctx) {
   const list = groups.map((g) =>
     h('section', { class: 'month-group' },
       h('div', { class: 'month-head' },
-        h('h2', {}, monthLabel(g.key)),
+        h('h3', {}, monthLabel(g.key)),
         h('span', { class: 'muted' }, plural(g.items.length, 'séance', 'séances'))
       ),
       h('div', { class: 'card list-card' },
@@ -146,7 +146,9 @@ export function viewCardio(ctx) {
 
   return h('div', { class: 'page' },
     pageHead('Cardio', { sub: 'Tapis, course, vélo, rameur…', actions: addBtn }),
-    h('div', { class: 'stack' }, tiles, chartCard, ...list)
+    h('div', { class: 'stack' }, tiles, chartCard,
+      h('div', { class: 'section-head' }, h('h2', {}, 'Historique')),
+      ...list)
   );
 }
 

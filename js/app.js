@@ -4,20 +4,24 @@
  * Application à une page, sans build. Les routes sont dans le hash pour
  * rester compatibles avec GitHub Pages. Chaque page est dans js/views/.
  *
+ * Chaque onglet suit la même logique : ce qu'on fait maintenant en haut, ce
+ * qu'on a déjà fait en dessous. Les courbes sont regroupées dans Progrès.
+ *
  *   #/                        accueil (prochaine séance, chiffres, records)
- *   #/seances                 liste des séances
+ *   #/muscu[?seance=id]       séances du programme + historique des séances
  *   #/seance/:id              séance du jour : saisie en direct, enregistrement auto
  *   #/seance/:id/modifier     modifier le programme de la séance (bouton Enregistrer)
  *   #/log/:logId              modification d'une séance passée (même page)
- *   #/cardio                  cardio : chiffres, progression, liste
+ *   #/cardio                  cardio : chiffres, progression, historique
  *   #/cardio/nouveau, /:id    ajouter / modifier une séance cardio
- *   #/historique[?seance=id]  toutes les séances enregistrées
- *   #/progression             vue d'ensemble des exercices
- *   #/progression/:exId       progression d'un exercice
+ *   #/progression[/:exId]     progression d'un exercice, choisi dans un sélecteur
  *   #/1rm, /nouveau, /:id     1RM réalisés (à part des séances)
  *   #/amis, #/amis/:code      suivi partagé d'un ami (lecture seule)
  *   #/programme               gestion des séances et exercices
  *   #/profil                  compte, apparence, données
+ *
+ * Anciennes adresses encore valables : #/seances et #/historique renvoient
+ * vers #/muscu, qui réunit les deux.
  *
  * Sans session, seules les pages publiques sont accessibles :
  *   #/connexion  #/inscription  #/mot-de-passe-oublie  #/nouveau-mot-de-passe
@@ -34,14 +38,13 @@ import { APP_VERSION, APP_AUTHOR } from './version.js';
 import { h, toast, icon, ICONS } from './ui.js';
 import { plural } from './views/common.js';
 import { viewDashboard } from './views/dashboard.js';
-import { viewSessions } from './views/sessions.js';
+import { viewMuscu } from './views/muscu.js';
 import { viewWorkout } from './views/workout.js';
 import { viewSessionEditor } from './views/session-editor.js';
 import { viewCardio, viewCardioForm } from './views/cardio.js';
 import { viewOneRM, viewOneRMForm } from './views/one-rm.js';
 import { viewFriends, viewFriend } from './views/friends.js';
-import { viewHistory } from './views/history.js';
-import { viewProgressionIndex, viewProgressionDetail } from './views/progression.js';
+import { viewProgression } from './views/progression.js';
 import { viewProgramme } from './views/programme.js';
 import { viewProfile } from './views/profile.js';
 
@@ -60,9 +63,8 @@ const PUBLIC_ROUTES = new Set(['connexion', 'inscription', 'mot-de-passe-oublie'
 
 const TABS = [
   { id: 'accueil', href: '#/', label: 'Accueil', icon: ICONS.home },
-  { id: 'seances', href: '#/seances', label: 'Séances', icon: ICONS.dumbbell },
+  { id: 'muscu', href: '#/muscu', label: 'Muscu', icon: ICONS.dumbbell },
   { id: 'cardio', href: '#/cardio', label: 'Cardio', icon: ICONS.pulse },
-  { id: 'historique', href: '#/historique', label: 'Historique', icon: ICONS.history },
   { id: 'progression', href: '#/progression', label: 'Progrès', icon: ICONS.chart },
   { id: 'amis', href: '#/amis', label: 'Amis', icon: ICONS.friends },
   { id: 'profil', href: '#/profil', label: 'Profil', icon: ICONS.user }
@@ -224,15 +226,19 @@ function privateView(parts, query, ctx) {
     case '':
     case 'accueil':
       return [viewDashboard(ctx), 'accueil'];
-    case 'seances':
-      return [viewSessions(), 'seances'];
+    case 'muscu':
+      return [viewMuscu(query), 'muscu'];
+    case 'seances':    // ancien onglet Séances
+    case 'historique': // ancien onglet Historique : les deux sont réunis dans Muscu
+      history.replaceState(null, '', query.seance ? `#/muscu?seance=${encodeURIComponent(query.seance)}` : '#/muscu');
+      return [viewMuscu(query), 'muscu'];
     case 'seance':
-      if (a && b === 'modifier') return [viewSessionEditor(a, ctx), 'seances'];
+      if (a && b === 'modifier') return [viewSessionEditor(a, ctx), 'muscu'];
       if (a && b) history.replaceState(null, '', `#/seance/${encodeURIComponent(a)}`); // anciens liens …/nouveau
-      if (a) return [viewWorkout({ sessionId: a }, ctx), 'seances'];
-      return [viewSessions(), 'seances'];
+      if (a) return [viewWorkout({ sessionId: a }, ctx), 'muscu'];
+      return [viewMuscu(query), 'muscu'];
     case 'log':
-      return [viewWorkout({ logId: a }, ctx), 'historique'];
+      return [viewWorkout({ logId: a }, ctx), 'muscu'];
     case 'cardio':
       if (a === 'nouveau') return [viewCardioForm(null), 'cardio'];
       if (a) return [viewCardioForm(a), 'cardio'];
@@ -241,20 +247,17 @@ function privateView(parts, query, ctx) {
       if (a === 'nouveau') return [viewOneRMForm(null, query), 'progression'];
       if (a) return [viewOneRMForm(a, query), 'progression'];
       return [viewOneRM(), 'progression'];
-    case 'historique':
-      return [viewHistory(query), 'historique'];
     case 'progression':
-      if (a) return [viewProgressionDetail(a, ctx), 'progression'];
-      if (query.ex) { // anciens liens #/progression?ex=…
+      if (!a && query.ex) { // anciens liens #/progression?ex=…
         history.replaceState(null, '', `#/progression/${encodeURIComponent(query.ex)}`);
-        return [viewProgressionDetail(query.ex, ctx), 'progression'];
+        return [viewProgression(query.ex, ctx), 'progression'];
       }
-      return [viewProgressionIndex(), 'progression'];
+      return [viewProgression(a, ctx), 'progression'];
     case 'amis':
       if (a) return [viewFriend(a, ctx), 'amis'];
       return [viewFriends(ctx), 'amis'];
     case 'programme':
-      return [viewProgramme(), 'profil'];
+      return [viewProgramme(), 'muscu'];
     case 'profil':
     case 'reglages':
       return [viewProfile(ctx), 'profil'];

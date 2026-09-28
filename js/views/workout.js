@@ -102,12 +102,12 @@ function cleanLog(draft) {
 export function viewWorkout({ sessionId, logId }, ctx) {
   const existing = logId ? store.getLog(logId) : null;
   if (logId && !existing) {
-    return emptyState('Séance introuvable', null, h('a', { class: 'btn', href: '#/historique' }, 'Historique'));
+    return emptyState('Séance introuvable', null, h('a', { class: 'btn', href: '#/muscu' }, 'Muscu'));
   }
   const sid = existing ? existing.sessionId : sessionId;
   const sess = store.getSession(sid);
   if (!sess && !existing) {
-    return emptyState('Séance introuvable', null, h('a', { class: 'btn', href: '#/seances' }, 'Séances'));
+    return emptyState('Séance introuvable', null, h('a', { class: 'btn', href: '#/muscu' }, 'Muscu'));
   }
 
   // Séance du jour déjà commencée ? On la reprend.
@@ -263,7 +263,7 @@ export function viewWorkout({ sessionId, logId }, ctx) {
       return;
     }
     toast('Séance enregistrée');
-    location.hash = existing ? '#/historique' : '#/';
+    location.hash = existing ? '#/muscu' : '#/';
   };
 
   const remove = () => {
@@ -272,7 +272,7 @@ export function viewWorkout({ sessionId, logId }, ctx) {
     pending = false;
     if (store.getLog(draft.id)) store.deleteLog(draft.id);
     toast('Séance supprimée');
-    location.hash = existing ? '#/historique' : '#/seances';
+    location.hash = '#/muscu';
   };
 
   const n = sess ? sessionNumber(sess.id) : null;
@@ -280,7 +280,7 @@ export function viewWorkout({ sessionId, logId }, ctx) {
 
   return h('div', { class: 'page page-form' },
     pageHead(sess ? sess.name : 'Séance', {
-      back: existing ? { href: '#/historique', label: 'Historique' } : { href: '#/seances', label: 'Séances' },
+      back: { href: '#/muscu', label: 'Muscu' },
       sub: h('span', { class: 'workout-sub' },
         n ? `Séance ${n} · ` : '',
         pastMode ? longDate(draft.date) : 'Aujourd’hui',
@@ -295,7 +295,7 @@ export function viewWorkout({ sessionId, logId }, ctx) {
       list,
       h('div', { class: 'card section' }, h('h2', {}, 'Note de séance'), sessionNote),
       others
-        ? h('a', { class: 'link centered', href: `#/historique?seance=${encodeURIComponent(sid)}` },
+        ? h('a', { class: 'link centered', href: `#/muscu?seance=${encodeURIComponent(sid)}` },
             `Voir les ${plural(others, 'séance précédente', 'séances précédentes')}`)
         : null
     ),

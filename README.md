@@ -8,21 +8,26 @@ En ligne : <https://anas31317.github.io/suivi_muscu_india/>
 
 ## Les onglets
 
+Chaque onglet suit la même logique : **ce qu'on fait maintenant en haut, ce qu'on a déjà
+fait en dessous**, et toutes les courbes de musculation sont réunies dans Progrès.
+
 - **Accueil** : la prochaine séance (ou celle du jour à reprendre), les chiffres de la
   semaine et du mois, le cardio des 7 derniers jours, l'activité sur 8 semaines et les
   derniers records.
-- **Séances** : une page par séance, avec tous les exercices, séries et reps. Chaque série
-  affiche à gauche ce qui a été fait la fois précédente (un tap la recopie). Tout
+- **Muscu** : les séances du programme à lancer, puis l'historique complet par mois,
+  filtrable par séance (c'est là qu'on modifie ou supprime une séance passée).
+  Une séance s'ouvre sur une page unique avec tous les exercices, séries et reps ; chaque
+  série affiche à gauche ce qui a été fait la fois précédente (un tap la recopie). Tout
   s'enregistre au fur et à mesure ; rouvrir la séance le même jour reprend où on en était.
   Le programme (exercices, séries, ordre) ne se change que dans « Modifier la séance », avec
   un bouton Enregistrer — **l'historique n'est jamais réécrit**.
 - **Cardio** : tapis, course, vélo, rameur… durée, vitesse **ou** distance (l'une calcule
   l'autre), inclinaison ; calories et fréquence cardiaque en option. Chiffres sur 7 et
-  30 jours, courbe par activité.
-- **Historique** : toutes les séances enregistrées, par mois, filtrables.
-- **Progrès** : tous les exercices d'un coup d'œil (dernière valeur, évolution,
-  mini-courbe), puis pour chacun charge max, volume, reps totales ou 1RM. Les **1RM
-  réellement réalisés** se saisissent à part et se comparent au 1RM estimé (deux courbes).
+  30 jours, courbe par activité, puis l'historique par mois.
+- **Progrès** : une courbe à la fois. L'exercice se choisit dans un sélecteur (groupé par
+  séance) : charge max, volume, reps totales ou 1RM, avec les tuiles et le détail des
+  séances. Les **1RM réellement réalisés** se saisissent à part et se comparent au 1RM
+  estimé (deux courbes).
 - **Amis** : ton code de partage se règle ici. Donne-le à qui tu veux et il verra ton
   programme, ta progression, ton cardio et tes 1RM, en lecture seule. Personne ne peut te
   trouver sans ce code, et en générer un nouveau coupe l'accès aux anciens.
@@ -91,7 +96,7 @@ Site statique : HTML, CSS et JavaScript à modules, sans build ni dépendance à
 | `js/seed.js` | programme type des nouveaux comptes |
 | `js/logo.js`, `js/theme.js`, `js/version.js` | logo, thème, nom / version / auteur |
 | `js/config.js` | URL et clé publique Supabase |
-| `js/views/` | une page par fichier : `dashboard`, `sessions`, `workout` (séance en cours), `session-editor`, `cardio`, `history`, `progression`, `one-rm`, `friends`, `programme`, `profile` |
+| `js/views/` | une page par fichier : `dashboard`, `muscu` (programme + historique), `workout` (séance en cours), `session-editor`, `cardio`, `progression`, `one-rm`, `friends`, `programme`, `profile` |
 | `js/vendor/` | supabase-js (copie locale vérifiée) |
 | `supabase/` | scripts SQL : tables, règles de sécurité, partage |
 | `sw.js`, `manifest.webmanifest` | installation sur mobile et mode hors ligne |

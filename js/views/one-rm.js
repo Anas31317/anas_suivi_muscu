@@ -27,7 +27,7 @@ export function viewOneRM() {
 
   if (!rows.length) {
     return h('div', { class: 'page' },
-      pageHead('1RM', { back: { href: '#/progression', label: 'Progression' }, actions: addBtn }),
+      pageHead('1RM', { back: { href: '#/progression', label: 'Progrès' }, actions: addBtn }),
       emptyState('Aucun 1RM',
         'Enregistre un maxi réalisé, ou fais quelques séances : le 1RM estimé se calcule tout seul.',
         h('a', { class: 'btn primary', href: '#/1rm/nouveau' }, icon(ICONS.plus, 14), 'Enregistrer un 1RM'))
@@ -74,7 +74,7 @@ export function viewOneRM() {
 
   return h('div', { class: 'page' },
     pageHead('1RM', {
-      back: { href: '#/progression', label: 'Progression' },
+      back: { href: '#/progression', label: 'Progrès' },
       sub: 'Ton maxi réalisé, et l’estimation calculée depuis tes séances.',
       actions: addBtn
     }),
