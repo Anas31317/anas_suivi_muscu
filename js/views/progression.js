@@ -57,7 +57,7 @@ function voirAussi() {
   return [
     h('div', { class: 'section-head' }, h('h2', {}, 'Voir aussi')),
     navCard('#/1rm', ICONS.trophy, '1RM',
-      rmCount ? `${plural(rmCount, 'maxi enregistré', 'maxis enregistrés')} · réalisé et estimé`
+      rmCount ? `${plural(rmCount, 'maxi enregistré', 'maxis enregistrés')} · estimé et réalisé`
         : 'enregistre un maxi réalisé, compare-le à l’estimation'),
     navCard('#/cardio', ICONS.pulse, 'Cardio',
       'chiffres de la semaine, ajouter une séance')
@@ -127,19 +127,10 @@ function exerciseView(exercise, ctx, head) {
       `${pct > 0 ? '+' : ''}${fmtNum(pct, 0)} % depuis le début`);
   }
 
-  // 1RM réalisés : saisis dans l'onglet 1RM, jamais dans les séances
-  const isRM = metric.key === 'e1rm';
-  const realRM = isRM ? store.oneRMForExercise(id) : [];
-  const bestReal = isRM ? store.bestOneRM(id) : null;
-
-  const tiles = h('div', { class: 'tiles' + (isRM ? ' tiles-4' : '') },
+  const tiles = h('div', { class: 'tiles' },
     numTile('Dernière', lastPt ? lastPt.y : null, metric.unit,
       lastPt && prevPt ? h('div', {}, deltaEl(lastPt.y - prevPt.y, metric.unit)) : h('div', { class: 'delta' }, lastPt ? 'première mesure' : '')),
-    numTile(isRM ? 'Record estimé' : 'Record', best, metric.unit, progress),
-    isRM
-      ? numTile('1RM réalisé', bestReal ? bestReal.weight : null, 'kg',
-          h('div', { class: 'delta' }, bestReal ? `le ${formatDate(bestReal.date)}` : 'aucun maxi enregistré'))
-      : null,
+    numTile('Record', best, metric.unit, progress),
     numTile('Séances', history.length, '',
       history.length ? h('div', { class: 'delta' }, `depuis le ${formatDate(history[0].date)}`) : null)
   );
@@ -154,33 +145,19 @@ function exerciseView(exercise, ctx, head) {
     )
   );
   const chartHost = h('div', {});
-  const rmPoints = realRM.map((r) => ({
-    iso: r.date, x: new Date(r.date + 'T12:00:00'), y: r.weight,
-    detail: r.note || 'maxi réalisé'
-  }));
-  const hasChart = points.length || rmPoints.length;
-
   const chartCard = h('section', { class: 'card chart-card' },
-    h('div', { class: 'chart-head' },
-      h('h2', { class: 'title' }, isRM ? '1RM estimé et réalisé' : metric.label),
-      h('span', { class: 'spacer' }),
-      isRM
-        ? h('a', { class: 'btn small', href: `#/1rm/nouveau?ex=${encodeURIComponent(id)}` },
-            icon(ICONS.plus, 14), 'Ajouter un 1RM')
-        : null
-    ),
+    h('div', { class: 'chart-head' }, h('h2', { class: 'title' }, metric.label)),
     h('div', { class: 'chart-seg' }, seg),
-    hasChart
+    points.length
       ? chartHost
       : h('p', { class: 'list-empty' }, 'Pas encore de données pour cet exercice.'),
-    points.length === 1 && !rmPoints.length
+    points.length === 1
       ? h('p', { class: 'chart-note' }, 'Une seule séance pour l’instant : la courbe se tracera dès la prochaine.')
       : null
   );
-  if (hasChart) {
-    const series = [{ label: isRM ? 'Estimé' : metric.short, points, cls: '' }];
-    if (rmPoints.length) series.push({ label: 'Réalisé', points: rmPoints, cls: 'alt' });
-    ctx.onCleanup(mountSeriesChart(chartHost, series, { unit: metric.unit, label: metric.label, mode: exercise.mode }));
+  if (points.length) {
+    ctx.onCleanup(mountSeriesChart(chartHost, [{ label: metric.short, points, cls: '' }],
+      { unit: metric.unit, label: metric.label, mode: exercise.mode }));
   }
 
   /* --- tableau (équivalent texte du graphe) -------------------------- */
