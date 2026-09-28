@@ -198,10 +198,25 @@ export function viewSignUp() {
 Je souhaite un accès à Suivi Muscu avec l’adresse ${address}.
 
 Merci !`);
+        // Le lien mailto ne marche que si un logiciel de mail est configuré :
+        // le bouton « Copier » sert de solution de repli, partout.
+        const copy = h('button', {
+          class: 'btn small', type: 'button',
+          onclick: async () => {
+            try {
+              await navigator.clipboard.writeText(SUPPORT_EMAIL);
+              toast('Adresse copiée');
+            } catch {
+              toast('Copie impossible : note l’adresse à la main.');
+            }
+          }
+        }, 'Copier l’adresse');
         msg.showParts('error',
-          'Cet email n’est pas encore autorisé à créer un compte. Écris à ',
-          h('a', { href: `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}` }, SUPPORT_EMAIL),
-          ' pour demander un accès.');
+          h('p', {}, 'Cet email n’est pas encore autorisé à créer un compte. Demande un accès à ',
+            h('a', { href: `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}` }, SUPPORT_EMAIL),
+            '.'),
+          h('div', { class: 'msg-actions' }, copy)
+        );
       } else {
         msg.show(auth.explain(error));
       }

@@ -840,6 +840,7 @@ td.note { white-space: normal; color: var(--ink-muted); }
   border-color: color-mix(in srgb, var(--critical) 28%, transparent);
 }
 .auth-msg a { color: inherit; font-weight: 700; }
+.auth-msg .msg-actions { margin-top: 10px; }
 .auth-msg.info {
   color: var(--ink-2);
   background: var(--accent-soft);
