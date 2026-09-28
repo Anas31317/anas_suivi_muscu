@@ -140,7 +140,11 @@ function normalize(raw) {
       date: r.date || todayISO(),
       weight: numOrNull(r.weight),
       note: String(r.note || '').slice(0, 300)
-    }))
+    })),
+    // exercices suivis dans la page 1RM. null = pas encore choisi, on affiche
+    // alors ceux qui ont une donnée. Retirer un exercice d'ici ne supprime
+    // jamais ses séances ni ses maxis enregistrés.
+    rmList: Array.isArray(s.rmList) ? s.rmList.filter((id) => typeof id === 'string' && id) : null
   };
 }
 
@@ -567,6 +571,33 @@ export function bestOneRM(exerciseId) {
     if (!best || r.weight > best.weight) best = { weight: r.weight, date: r.date };
   }
   return best;
+}
+
+/**
+ * Exercices affichés dans la page 1RM, dans l'ordre choisi.
+ * Tant que rien n'a été choisi, ce sont ceux qui ont déjà un 1RM estimé ou réalisé.
+ */
+export function oneRMWatchlist() {
+  const catalog = exerciseCatalog();
+  const chosen = getState().rmList;
+  if (Array.isArray(chosen)) {
+    return chosen.filter((id) => catalog.some((e) => e.id === id));
+  }
+  return catalog.filter((e) => bestOneRM(e.id) || latestEstimatedRM(e.id)).map((e) => e.id);
+}
+
+/** Ajoute un exercice à la page 1RM (et fige la liste au premier choix). */
+export function addToOneRMWatchlist(exerciseId) {
+  const next = oneRMWatchlist();
+  if (next.includes(exerciseId)) return;
+  next.push(exerciseId);
+  mutate((s) => { s.rmList = next; });
+}
+
+/** Retire un exercice de la page 1RM. Ses données ne bougent pas. */
+export function removeFromOneRMWatchlist(exerciseId) {
+  const next = oneRMWatchlist().filter((id) => id !== exerciseId);
+  mutate((s) => { s.rmList = next; });
 }
 
 /** 1RM estimé le plus à jour : calculé sur la dernière séance qui s'y prête. */
