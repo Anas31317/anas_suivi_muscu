@@ -22,6 +22,7 @@ export function cardioSummary(c) {
   if (c.distance && c.duration) {
     parts.push(t.pace ? `${store.formatPace(store.cardioPace(c))} /km` : `${fmtNum(store.cardioSpeed(c), 1)} km/h`);
   }
+  if (c.incline) parts.push(`${fmtNum(c.incline, 1)} %`);
   if (c.calories) parts.push(`${fmtNum(c.calories, 0)} kcal`);
   return parts.join(' · ') || '—';
 }
@@ -149,6 +150,8 @@ export function viewCardio(ctx) {
 
 /* ---------------------------------------------------------- formulaire */
 
+const fieldNum = (n) => (n === null || n === undefined ? '' : String(Math.round(n * 100) / 100).replace('.', ','));
+
 export function viewCardioForm(id) {
   const existing = id ? store.getCardio(id) : null;
   if (id && !existing) return emptyState('Séance introuvable', null, h('a', { class: 'btn', href: '#/cardio' }, 'Cardio'));
@@ -157,7 +160,7 @@ export function viewCardioForm(id) {
   const draft = existing
     ? { ...existing }
     : { id: store.uid('cardio'), date: store.todayISO(), type: last ? last.type : 'tapis', label: last ? last.label : '',
-        duration: null, distance: null, calories: null, heartRate: null, note: '' };
+        duration: null, distance: null, incline: null, calories: null, heartRate: null, note: '' };
 
   const msg = h('div', { class: 'auth-msg error', role: 'alert', hidden: true });
   const computed = h('p', { class: 'computed' });
@@ -171,38 +174,67 @@ export function viewCardioForm(id) {
   const totalSec = draft.duration ? Math.round(draft.duration * 60) : null;
   const minIn = numInput({ value: totalSec !== null ? String(Math.floor(totalSec / 60)) : '', placeholder: 'min', inputmode: 'numeric', 'aria-label': 'Durée, minutes' });
   const secIn = numInput({ value: totalSec !== null && totalSec % 60 ? String(totalSec % 60) : '', placeholder: 's', inputmode: 'numeric', 'aria-label': 'Durée, secondes' });
-  const distIn = numInput({ value: draft.distance !== null ? String(draft.distance).replace('.', ',') : '', placeholder: 'ex : 5,2' });
+  const speedIn = numInput({ value: '', placeholder: 'ex : 10', 'aria-label': 'Vitesse en km/h' });
+  const distIn = numInput({ value: fieldNum(draft.distance), placeholder: 'ex : 5,2', 'aria-label': 'Distance en km' });
+  const inclineIn = numInput({ value: fieldNum(draft.incline), placeholder: 'optionnel', 'aria-label': 'Inclinaison en pourcent' });
   const calIn = numInput({ value: draft.calories !== null ? String(draft.calories) : '', inputmode: 'numeric', placeholder: 'optionnel' });
   const hrIn = numInput({ value: draft.heartRate !== null ? String(draft.heartRate) : '', inputmode: 'numeric', placeholder: 'optionnel' });
-  const noteIn = h('textarea', { maxlength: 500, placeholder: 'Inclinaison, résistance, ressenti…' });
+  const noteIn = h('textarea', { maxlength: 500, placeholder: 'Résistance, sensations, fractionné…' });
   noteIn.value = draft.note || '';
 
-  const read = () => {
+  const readDuration = () => {
     const min = parseNum(minIn.value);
     const sec = parseNum(secIn.value);
-    const duration = min === null && sec === null ? null : (min || 0) + (sec || 0) / 60;
-    return {
-      ...draft,
-      type: typeSel.value,
-      label: typeSel.value === 'autre' ? labelIn.value.trim() : '',
-      date: dateIn.value || store.todayISO(),
-      duration,
-      distance: parseNum(distIn.value),
-      calories: parseNum(calIn.value),
-      heartRate: parseNum(hrIn.value),
-      note: noteIn.value.trim()
-    };
+    return min === null && sec === null ? null : (min || 0) + (sec || 0) / 60;
   };
+
+  /*
+   * Vitesse et distance disent la même chose : on garde celle que tu saisis
+   * (`source`) et on recalcule l'autre à partir de la durée. Seule la distance
+   * est enregistrée, comme avant, donc les séances déjà saisies restent valables.
+   */
+  let source = draft.distance !== null ? 'distance' : null;
+
+  const recompute = () => {
+    const hours = (readDuration() || 0) / 60;
+    speedIn.classList.toggle('derived', source === 'distance');
+    distIn.classList.toggle('derived', source === 'speed');
+    if (source === 'speed') {
+      const speed = parseNum(speedIn.value);
+      distIn.value = speed !== null && hours ? fieldNum(speed * hours) : '';
+    } else if (source === 'distance') {
+      const dist = parseNum(distIn.value);
+      speedIn.value = dist !== null && hours ? fieldNum(dist / hours) : '';
+    }
+  };
+
+  const read = () => ({
+    ...draft,
+    type: typeSel.value,
+    label: typeSel.value === 'autre' ? labelIn.value.trim() : '',
+    date: dateIn.value || store.todayISO(),
+    duration: readDuration(),
+    distance: parseNum(distIn.value),
+    incline: parseNum(inclineIn.value),
+    calories: parseNum(calIn.value),
+    heartRate: parseNum(hrIn.value),
+    note: noteIn.value.trim()
+  });
 
   const refresh = () => {
     labelField.hidden = typeSel.value !== 'autre';
+    recompute();
     const c = read();
     const t = store.cardioType(c.type);
     computed.textContent = c.distance && c.duration
-      ? (t.pace ? `Allure ${store.formatPace(store.cardioPace(c))} /km · ` : '') + `Vitesse moyenne ${fmtNum(store.cardioSpeed(c), 1)} km/h`
+      ? (t.pace ? `Allure ${store.formatPace(store.cardioPace(c))} /km · ` : '') +
+        `Vitesse moyenne ${fmtNum(store.cardioSpeed(c), 1)} km/h · ${fmtNum(c.distance, 2)} km`
       : '';
   };
-  for (const el of [typeSel, minIn, secIn, distIn]) el.addEventListener('input', refresh);
+
+  speedIn.addEventListener('input', () => { source = 'speed'; refresh(); });
+  distIn.addEventListener('input', () => { source = 'distance'; refresh(); });
+  for (const el of [minIn, secIn, inclineIn]) el.addEventListener('input', refresh);
   typeSel.addEventListener('change', refresh);
   refresh();
 
@@ -210,6 +242,7 @@ export function viewCardioForm(id) {
     if (!c.duration || c.duration <= 0) return 'Renseigne la durée.';
     if (c.duration > 24 * 60) return 'Durée trop longue.';
     if (c.distance !== null && (c.distance < 0 || c.distance > 500)) return 'Distance invalide.';
+    if (c.incline !== null && (c.incline < -10 || c.incline > 30)) return 'Inclinaison invalide (entre -10 et 30 %).';
     if (c.calories !== null && (c.calories < 0 || c.calories > 20000)) return 'Calories invalides.';
     if (c.heartRate !== null && (c.heartRate < 30 || c.heartRate > 250)) return 'Fréquence cardiaque invalide.';
     if (c.type === 'autre' && !c.label) return 'Donne un nom à l’activité.';
@@ -244,7 +277,9 @@ export function viewCardioForm(id) {
         labelField,
         field('Date', dateIn),
         field('Durée', h('div', { class: 'duration' }, minIn, h('span', {}, 'min'), secIn, h('span', {}, 's'))),
-        field('Distance (km)', distIn, 'Optionnelle, pour la vitesse et l’allure.'),
+        field('Vitesse (km/h)', speedIn, 'Vitesse ou distance : l’autre se calcule.'),
+        field('Distance (km)', distIn),
+        field('Inclinaison (%)', inclineIn, 'Optionnelle.'),
         field('Calories', calIn),
         field('Fréquence cardiaque moyenne', hrIn, 'En battements par minute.')
       ),
