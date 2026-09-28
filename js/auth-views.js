@@ -7,7 +7,7 @@
  */
 
 import * as auth from './auth.js';
-import { PASSWORD_MIN_LENGTH } from './config.js';
+import { PASSWORD_MIN_LENGTH, SUPPORT_EMAIL } from './config.js';
 import { h, toast, icon, ICONS } from './ui.js';
 import { logo } from './logo.js';
 
@@ -72,6 +72,13 @@ function messageBox() {
   const el = h('div', { class: 'auth-msg', role: 'alert', hidden: true });
   el.show = (text, kind = 'error') => {
     el.textContent = text;
+    el.className = 'auth-msg ' + kind;
+    el.hidden = false;
+  };
+  /** Même chose, mais avec des éléments (un lien, par exemple). */
+  el.showParts = (kind, ...parts) => {
+    el.textContent = '';
+    el.append(...parts);
     el.className = 'auth-msg ' + kind;
     el.hidden = false;
   };
@@ -183,7 +190,23 @@ export function viewSignUp() {
     const { session, error } = await auth.signUp(address, pw.input.value);
     pw.input.value = '';
     pw2.input.value = '';
-    if (error) { msg.show(auth.explain(error)); return; }
+    if (error) {
+      if (auth.isNotAllowed(error)) {
+        const subject = encodeURIComponent('Demande d’accès à Suivi Muscu');
+        const body = encodeURIComponent(`Bonjour,
+
+Je souhaite un accès à Suivi Muscu avec l’adresse ${address}.
+
+Merci !`);
+        msg.showParts('error',
+          'Cet email n’est pas encore autorisé à créer un compte. Écris à ',
+          h('a', { href: `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}` }, SUPPORT_EMAIL),
+          ' pour demander un accès.');
+      } else {
+        msg.show(auth.explain(error));
+      }
+      return;
+    }
     if (session) return; // confirmation désactivée côté Supabase : connecté directement
 
     form.replaceWith(

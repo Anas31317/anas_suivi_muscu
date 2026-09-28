@@ -14,5 +14,8 @@ export const SUPABASE_URL = 'https://xkdsoqgqwhqnszbbpgen.supabase.co';
 // Supabase > Project Settings > API Keys : clé "anon" (eyJ…) ou "publishable" (sb_publishable_…)
 export const SUPABASE_ANON_KEY = 'sb_publishable_hlJbeCSEhyeuxzTlgV2-9w_zq4gZ-Zj';
 
+/** Adresse à contacter pour demander un accès (email hors liste blanche). */
+export const SUPPORT_EMAIL = 'anas.suivimuscu@gmail.com';
+
 /** Longueur minimale des mots de passe (à régler aussi côté Supabase). */
 export const PASSWORD_MIN_LENGTH = 10;

@@ -36,6 +36,10 @@ delete from public.allowed_emails where email = 'ancien@exemple.com';
 Pour supprimer un compte existant : **Authentication** > **Users** > `…` > **Delete user**.
 Ses données sont supprimées avec lui.
 
+Quelqu'un dont l'email n'est pas sur la liste voit, à l'inscription, un message l'invitant
+à écrire à l'adresse de contact. Cette adresse se change dans
+[`js/config.js`](../js/config.js) (`SUPPORT_EMAIL`).
+
 ### Activer le partage entre utilisateurs
 
 Pour l'onglet « Suivi Amis », colle aussi [`supabase/partage.sql`](../supabase/partage.sql)

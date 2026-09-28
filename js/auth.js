@@ -7,7 +7,7 @@
  * - Le client Supabase vient de js/vendor (version figée, vérifiée), pas d'un CDN.
  */
 
-import { SUPABASE_URL, SUPABASE_ANON_KEY, PASSWORD_MIN_LENGTH } from './config.js';
+import { SUPABASE_URL, SUPABASE_ANON_KEY, PASSWORD_MIN_LENGTH, SUPPORT_EMAIL } from './config.js';
 
 export const isConfigured =
   /^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(SUPABASE_URL) &&
@@ -54,6 +54,13 @@ export function checkPassword(password, email) {
   return null;
 }
 
+/** Vrai si l'inscription est refusée parce que l'email n'est pas sur la liste blanche. */
+export function isNotAllowed(error) {
+  if (!error) return false;
+  const msg = String(error.message || '');
+  return /email_not_allowed|database error saving new user/i.test(msg) || error.code === 'unexpected_failure';
+}
+
 /** Traduit une erreur Supabase en message neutre et utile. */
 export function explain(error) {
   if (!error) return '';
@@ -74,8 +81,8 @@ export function explain(error) {
   if (code === 'email_not_confirmed' || /email not confirmed/i.test(msg)) {
     return 'Ton email n’est pas encore confirmé. Clique sur le lien reçu par email.';
   }
-  if (/email_not_allowed|database error saving new user/i.test(msg) || code === 'unexpected_failure') {
-    return 'Cet email n’est pas autorisé à créer un compte. Demande à l’administrateur de l’ajouter.';
+  if (isNotAllowed(error)) {
+    return `Cet email n’est pas encore autorisé. Écris à ${SUPPORT_EMAIL} pour demander un accès.`;
   }
   if (code === 'weak_password' || /password/i.test(msg) && /weak|short|characters/i.test(msg)) {
     return 'Mot de passe trop faible : allonge-le ou varie les caractères.';
