@@ -303,6 +303,9 @@ body:not(.signed-in) .topbar { display: none; }
   border-top: 1px solid var(--grid);
 }
 a.list-row:hover { background: var(--surface-sunk); }
+/* ligne de liste dont le texte est un lien et qui garde une action à droite */
+.list-row .row-link { display: flex; align-items: center; gap: 12px; flex: 1 1 auto; min-width: 0; text-decoration: none; }
+.list-row .row-link:hover { color: var(--accent-ink); }
 .list-row .body { min-width: 0; flex: 1 1 auto; }
 .list-row .name, .nav-card .name, .profile-card .name {
   font-weight: 550;

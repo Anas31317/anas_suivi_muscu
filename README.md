@@ -29,9 +29,10 @@ fait en dessous**, et toutes les courbes de musculation sont réunies dans Progr
   sélecteur groupé par séance — volume, charge max ou reps totales — avec les tuiles et le
   détail des séances. Les activités cardio figurent à la fin du sélecteur sous « Séance
   cardio », avec distance, durée, vitesse ou allure.
-- **1RM** (depuis « Voir aussi », en bas de Progrès) : pour chaque exercice, le 1RM
+- **1RM** (depuis « Voir aussi », en bas de Progrès) : pour chaque exercice suivi, le 1RM
   **estimé** tiré de la dernière séance et le 1RM **réellement réalisé**, saisi à part des
-  séances.
+  séances. La liste des exercices suivis se choisit à la main ; en retirer un ne supprime
+  ni ses séances ni ses maxis enregistrés.
 - **Amis** : ton code de partage se règle ici. Donne-le à qui tu veux et il verra ton
   programme, ta progression, ton cardio et tes 1RM, en lecture seule. Personne ne peut te
   trouver sans ce code, et en générer un nouveau coupe l'accès aux anciens.

@@ -2,45 +2,72 @@
  * 1RM : les maxis réellement réalisés, saisis à part des séances, et comparés
  * au 1RM estimé (Epley) calculé sur l'historique.
  *
- *   #/1rm             liste par exercice + maxis enregistrés
+ *   #/1rm             les exercices suivis + maxis enregistrés
  *   #/1rm/nouveau     enregistrer un 1RM (?ex=<exerciseId> pré-sélectionne)
  *   #/1rm/:id         modifier / supprimer
  *
  * Un 1RM n'est pas une séance : il n'apparaît ni dans l'historique ni dans les
  * compteurs de séances.
+ *
+ * La liste des exercices suivis est choisie à la main (store.oneRMWatchlist) :
+ * tout afficher faisait une page interminable. En retirer un ne supprime rien.
  */
 
 import * as store from '../store.js';
 import { fmtNum, formatDate } from '../store.js';
 import { h, numInput, parseNum, toast, icon, ICONS } from '../ui.js';
-import { pageHead, emptyState, longDate, plural } from './common.js';
+import { pageHead, emptyState, longDate, plural, miniBtn } from './common.js';
 
 /* ----------------------------------------------------------- la page */
 
 export function viewOneRM() {
   const entries = store.oneRMList();
-  // l'estimé le plus à jour (dernière séance), pas le meilleur de tous les temps
-  const rows = store.exerciseCatalog()
-    .map((ex) => ({ ex, real: store.bestOneRM(ex.id), est: store.latestEstimatedRM(ex.id) }))
-    .filter((r) => r.real || r.est);
+  const catalog = store.exerciseCatalog();
+  // la liste est choisie : tous les exercices n'ont pas d'intérêt en 1RM
+  const watched = store.oneRMWatchlist();
+  const rows = watched
+    .map((id) => catalog.find((e) => e.id === id))
+    .filter(Boolean)
+    // l'estimé le plus à jour (dernière séance), pas le meilleur de tous les temps
+    .map((ex) => ({ ex, real: store.bestOneRM(ex.id), est: store.latestEstimatedRM(ex.id) }));
 
   const addBtn = h('a', { class: 'btn primary', href: '#/1rm/nouveau' }, icon(ICONS.plus, 14), 'Enregistrer un 1RM');
 
-  if (!rows.length) {
-    return h('div', { class: 'page' },
-      pageHead('1RM', { back: { href: '#/progression', label: 'Progrès' }, actions: addBtn }),
-      emptyState('Aucun 1RM',
-        'Enregistre un maxi réalisé, ou fais quelques séances : le 1RM estimé se calcule tout seul.',
-        h('a', { class: 'btn primary', href: '#/1rm/nouveau' }, icon(ICONS.plus, 14), 'Enregistrer un 1RM'))
-    );
+  /* --- choisir les exercices suivis ---------------------------------- */
+  const absent = catalog.filter((e) => !watched.includes(e.id));
+  const pick = h('select', { 'aria-label': 'Exercice à suivre en 1RM' },
+    h('option', { value: '' }, 'Choisir un exercice…'));
+  const groups = new Map();
+  for (const e of absent) {
+    const key = e.inProgramme ? e.sessionName : 'Retirés du programme';
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(e);
   }
+  for (const [label, items] of groups) {
+    pick.append(h('optgroup', { label }, items.map((e) => h('option', { value: e.id }, e.name))));
+  }
+  pick.addEventListener('change', () => {
+    const found = absent.find((e) => e.id === pick.value);
+    if (!found) return;
+    store.addToOneRMWatchlist(found.id);
+    toast(`${found.name} suivi en 1RM`);
+  });
+
+  const chooser = h('section', { class: 'card section' },
+    h('h2', {}, 'Choisir les exercices suivis'),
+    h('p', { class: 'desc' },
+      'Seuls les exercices de cette liste apparaissent ici. En retirer un ne supprime ' +
+      'ni ses séances ni ses maxis enregistrés.'),
+    absent.length
+      ? h('div', { class: 'reuse' }, pick)
+      : h('p', { class: 'list-empty' }, 'Tous tes exercices sont déjà suivis.')
+  );
 
   // deux chiffres par exercice, sous le nom : sur un téléphone, une colonne de
   // droite écraserait le nom de l'exercice
-  const byExercise = h('section', { class: 'card list-card' },
-    h('div', { class: 'list-head' }, h('h2', {}, 'Par exercice')),
-    rows.map(({ ex, real, est }) =>
-      h('a', { class: 'list-row', href: `#/1rm/nouveau?ex=${encodeURIComponent(ex.id)}` },
+  const row = ({ ex, real, est }) =>
+    h('div', { class: 'list-row' },
+      h('a', { class: 'row-link', href: `#/1rm/nouveau?ex=${encodeURIComponent(ex.id)}` },
         h('div', { class: 'body' },
           h('div', { class: 'name' }, ex.name, ex.inProgramme ? null : h('span', { class: 'tag' }, 'retiré')),
           h('div', { class: 'meta stats' },
@@ -49,11 +76,19 @@ export function viewOneRM() {
             `Réalisé ${real ? `${fmtNum(real.weight, 1)} kg` : '—'}`
           ),
           real ? h('div', { class: 'meta' }, `réalisé le ${formatDate(real.date)}`) : null
-        ),
-        h('span', { class: 'chev' }, icon(ICONS.chevron, 16))
-      )
-    )
-  );
+        )
+      ),
+      miniBtn(ICONS.close, `Retirer ${ex.name} de la liste 1RM`, () => {
+        store.removeFromOneRMWatchlist(ex.id);
+        toast(`${ex.name} retiré de la liste`);
+      })
+    );
+
+  const byExercise = rows.length
+    ? h('section', { class: 'card list-card' },
+        h('div', { class: 'list-head' }, h('h2', {}, 'Par exercice')),
+        rows.map(row))
+    : emptyState('Aucun exercice suivi', 'Choisis ci-dessous ceux dont tu veux suivre le maxi.');
 
   const recorded = entries.length
     ? h('section', { class: 'card list-card' },
@@ -81,7 +116,7 @@ export function viewOneRM() {
       sub: 'Ton maxi réalisé, et l’estimation tirée de ta dernière séance.',
       actions: addBtn
     }),
-    h('div', { class: 'stack' }, byExercise, recorded)
+    h('div', { class: 'stack' }, byExercise, chooser, recorded)
   );
 }
 
