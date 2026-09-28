@@ -26,6 +26,7 @@
 import * as store from './store.js';
 import * as sync from './sync.js';
 import * as auth from './auth.js';
+import * as share from './share.js';
 import * as authViews from './auth-views.js';
 import { initTheme } from './theme.js';
 import { logo, APP_NAME } from './logo.js';
@@ -111,6 +112,7 @@ async function startUser(user) {
 function endUser({ wipe }) {
   sync.stop();
   store.closeUser({ wipe });
+  if (wipe && currentUser) share.clearCache(currentUser.id); // suivis d'amis mis en cache
   if (wipe) localStorage.removeItem(LAST_USER_KEY);
   currentUser = null;
   updateChrome();

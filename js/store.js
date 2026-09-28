@@ -282,15 +282,6 @@ export function historyForExercise(exerciseId, excludeLogId = null) {
 }
 
 /**
- * Dernière perf connue d'un exercice (pour préremplir la saisie).
- * `excludeLogId` : ignore la séance en cours, pour comparer à la précédente.
- */
-export function lastEntryForExercise(exerciseId, excludeLogId = null) {
-  const h = historyForExercise(exerciseId, excludeLogId);
-  return h.length ? h[h.length - 1] : null;
-}
-
-/**
  * Tous les exercices connus : ceux du programme, plus ceux qui n'existent que
  * dans l'historique ou dans les 1RM (exercices retirés du programme).
  * Sert à la progression, au choix d'un exercice et à la remise d'un exercice
@@ -415,13 +406,6 @@ export function addSession(name) {
   return id;
 }
 
-export function renameSession(id, name) {
-  mutate((s) => {
-    const sess = s.sessions.find((x) => x.id === id);
-    if (sess) sess.name = name;
-  });
-}
-
 /**
  * Retire une séance du programme. Son historique est CONSERVÉ : les séances
  * déjà enregistrées restent dans Historique et Progression.
@@ -456,48 +440,6 @@ export function moveSession(id, dir) {
     const j = i + dir;
     if (i < 0 || j < 0 || j >= s.sessions.length) return;
     [s.sessions[i], s.sessions[j]] = [s.sessions[j], s.sessions[i]];
-  });
-}
-
-export function addExercise(sessionId, { name, mode = 'kg', defaultSets = 3 }) {
-  const id = uid('e');
-  mutate((s) => {
-    const sess = s.sessions.find((x) => x.id === sessionId);
-    if (sess) sess.exercises.push({ id, name: name || 'Nouvel exercice', mode, defaultSets });
-  });
-  return id;
-}
-
-export function updateExercise(sessionId, exerciseId, patch) {
-  mutate((s) => {
-    const sess = s.sessions.find((x) => x.id === sessionId);
-    const ex = sess && sess.exercises.find((x) => x.id === exerciseId);
-    if (ex) Object.assign(ex, patch);
-  });
-}
-
-/**
- * Retire un exercice du programme. L'historique déjà enregistré est conservé
- * (il reste visible dans Progression) sauf si `purgeHistory` est demandé.
- */
-export function deleteExercise(sessionId, exerciseId, { purgeHistory = false } = {}) {
-  mutate((s) => {
-    const sess = s.sessions.find((x) => x.id === sessionId);
-    if (sess) sess.exercises = sess.exercises.filter((x) => x.id !== exerciseId);
-    if (purgeHistory) {
-      for (const log of s.logs) log.entries = log.entries.filter((e) => e.exerciseId !== exerciseId);
-    }
-  });
-}
-
-export function moveExercise(sessionId, exerciseId, dir) {
-  mutate((s) => {
-    const sess = s.sessions.find((x) => x.id === sessionId);
-    if (!sess) return;
-    const i = sess.exercises.findIndex((x) => x.id === exerciseId);
-    const j = i + dir;
-    if (i < 0 || j < 0 || j >= sess.exercises.length) return;
-    [sess.exercises[i], sess.exercises[j]] = [sess.exercises[j], sess.exercises[i]];
   });
 }
 

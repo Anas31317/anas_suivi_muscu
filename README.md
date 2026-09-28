@@ -1,61 +1,67 @@
-# Suivi Musculation
+# Suivi Muscu
 
-Site de suivi de musculation pour un petit groupe : chacun a son compte et son suivi
-privé (séries, charges, répétitions), un historique complet et des courbes de progression.
+Appli de suivi de musculation et de cardio pour un petit groupe : chacun a son compte et
+son suivi privé, un historique complet et des courbes de progression. Elle s'installe sur
+le téléphone et reste utilisable sans réseau, à la salle.
 
-- **Accueil** : prochaine séance à faire, chiffres de la semaine et du mois, activité des
-  8 dernières semaines, derniers records.
-- **Séances** : chaque séance s'ouvre sur une page unique avec tous ses exercices, séries
-  et reps. Chaque série affiche à gauche ce qui a été fait la séance précédente (un tap la
-  recopie). Tout s'enregistre automatiquement pendant la saisie, et « Enregistrer la
-  séance » valide ; rouvrir la séance le même jour reprend là où on en était.
-  Le programme (exercices, nombre de séries, ordre) ne se change que via
-  « Modifier la séance », avec un bouton Enregistrer ; l'historique n'est jamais modifié.
+En ligne : <https://anas31317.github.io/suivi_muscu_india/>
+
+## Les onglets
+
+- **Accueil** : la prochaine séance (ou celle du jour à reprendre), les chiffres de la
+  semaine et du mois, le cardio des 7 derniers jours, l'activité sur 8 semaines et les
+  derniers records.
+- **Séances** : une page par séance, avec tous les exercices, séries et reps. Chaque série
+  affiche à gauche ce qui a été fait la fois précédente (un tap la recopie). Tout
+  s'enregistre au fur et à mesure ; rouvrir la séance le même jour reprend où on en était.
+  Le programme (exercices, séries, ordre) ne se change que dans « Modifier la séance », avec
+  un bouton Enregistrer — **l'historique n'est jamais réécrit**.
 - **Cardio** : tapis, course, vélo, rameur… durée, vitesse **ou** distance (l'une calcule
-  l'autre), inclinaison, calories et fréquence cardiaque en option ; chiffres sur 7 et
-  30 jours et courbe de progression par activité.
-- **Historique** : toutes les séances enregistrées, par mois, filtrables par séance.
-- **Progression** : vue d'ensemble de tous les exercices (dernière valeur, évolution,
-  mini-courbe), puis pour chacun : charge max, volume, reps totales ou 1RM.
-- **1RM** : les maxis réellement réalisés se saisissent à part (jamais dans une séance) et
-  se comparent au 1RM estimé sur un graphe à deux courbes.
-- **Suivi Amis** : ton code de partage se règle ici. Donne-le à quelqu'un et il voit ton programme, ta progression,
-  ton cardio et tes 1RM, en lecture seule. Personne ne peut te trouver sans ce code, et
-  générer un nouveau code coupe l'accès aux anciens.
+  l'autre), inclinaison ; calories et fréquence cardiaque en option. Chiffres sur 7 et
+  30 jours, courbe par activité.
+- **Historique** : toutes les séances enregistrées, par mois, filtrables.
+- **Progrès** : tous les exercices d'un coup d'œil (dernière valeur, évolution,
+  mini-courbe), puis pour chacun charge max, volume, reps totales ou 1RM. Les **1RM
+  réellement réalisés** se saisissent à part et se comparent au 1RM estimé (deux courbes).
+- **Amis** : ton code de partage se règle ici. Donne-le à qui tu veux et il verra ton
+  programme, ta progression, ton cardio et tes 1RM, en lecture seule. Personne ne peut te
+  trouver sans ce code, et en générer un nouveau coupe l'accès aux anciens.
 - **Profil** : programme, apparence (auto / clair / sombre), export / import des données,
   mot de passe, déconnexion.
-- **Compte** : inscription réservée aux emails autorisés, connexion, mot de passe oublié.
 
-Site statique (HTML, CSS, JavaScript, sans build), hébergé sur GitHub Pages ; comptes et
-données sur Supabase. Il s'installe sur le téléphone comme une appli et reste utilisable
-hors ligne.
+Inscription réservée aux emails autorisés, connexion et mot de passe oublié par email.
 
 ## Mise en service
 
-1. **Supabase** : suivre [docs/SUPABASE.md](docs/SUPABASE.md) (tables, liste blanche,
-   partage entre utilisateurs, réglages d'authentification, envoi des emails, clé dans
-   `js/config.js`).
+1. **Supabase** : suivre [docs/SUPABASE.md](docs/SUPABASE.md) — tables et règles de
+   sécurité ([`supabase/`](supabase/)), liste blanche des emails, partage entre
+   utilisateurs, réglages d'authentification, envoi des emails, puis la clé publique dans
+   [`js/config.js`](js/config.js).
 2. **GitHub Pages** : **Settings** > **Pages** > Source = *Deploy from a branch*,
    Branch = `main`, dossier `/ (root)`.
-3. Le site est en ligne sur `https://anas31317.github.io/suivi_muscu_india/`.
 
 ### Installer sur le téléphone
 
 - **Android (Chrome)** : menu ⋮ > *Installer l'application*
 - **iPhone (Safari)** : Partager > *Sur l'écran d'accueil*
 
+Une fois connecté, l'appli fonctionne hors ligne : saisie, historique, graphes et cardio.
+Tout repart vers le compte au retour du réseau.
+
 ## Sécurité
 
 - Inscription limitée aux emails de la liste blanche, vérifiée par la base de données.
 - Chaque utilisateur ne peut lire et modifier que ses propres données (Row Level Security).
+- Un suivi partagé n'est lisible qu'en fournissant le code exact : impossible de lister les
+  suivis des autres, même avec la clé publique.
 - Confirmation d'email obligatoire ; liens email en flux PKCE, à usage unique.
 - Content-Security-Policy stricte ; librairie Supabase hébergée dans le dépôt
   (`js/vendor`, version 2.116.0 vérifiée) plutôt que chargée depuis un CDN.
-- À la déconnexion, les données locales de l'appareil sont effacées.
+- À la déconnexion, les données locales de l'appareil sont effacées, y compris les suivis
+  d'amis mis en cache.
 
 Le détail est dans [docs/SUPABASE.md](docs/SUPABASE.md#ce-qui-protège-les-données).
-
-La clé présente dans `js/config.js` est la clé **publique** (anon) : elle est faite pour
+La clé de [`js/config.js`](js/config.js) est la clé **publique** (anon) : elle est faite pour
 être visible. Ne jamais y mettre la clé `service_role`.
 
 ## Tester en local
@@ -69,27 +75,27 @@ de Supabase pour que les liens email fonctionnent en local).
 
 ## Organisation du code
 
+Site statique : HTML, CSS et JavaScript à modules, sans build ni dépendance à installer.
+
 | Fichier | Rôle |
 |---|---|
 | `index.html` | squelette de la page, Content-Security-Policy |
 | `css/style.css` | tout le style (thème clair / sombre) |
 | `js/app.js` | routeur, onglets, garde d'accès, cycle de connexion |
-| `js/views/` | une page par fichier : accueil, séances, séance en cours (`workout.js`), modifier la séance (`session-editor.js`), cardio, historique, progression, programme, profil |
-| `js/auth.js` | connexion, inscription, mots de passe (Supabase Auth) |
-| `js/auth-views.js` | écrans de connexion, inscription, mot de passe oublié, sécurité |
-| `js/sync.js` | synchronisation des données du compte |
 | `js/store.js` | état, cache local par compte, métriques, import / export |
-| `js/views/one-rm.js` | 1RM réalisés, comparés au 1RM estimé |
-| `js/views/friends.js`, `js/share.js` | suivi partagé : mon code, lecture du suivi d'un ami |
-| `js/version.js` | nom, version et auteur affichés en pied de page |
+| `js/sync.js` | synchronisation du compte avec Supabase |
+| `js/auth.js`, `js/auth-views.js` | comptes : connexion, inscription, mots de passe |
+| `js/share.js` | partage : publication de ma copie, lecture du suivi d'un ami |
 | `js/insights.js` | calculs de l'accueil : prochaine séance, activité, records |
+| `js/charts.js` | graphes SVG (courbes, barres, mini-courbes) |
 | `js/seed.js` | programme type des nouveaux comptes |
-| `js/charts.js` | graphes SVG (progression, activité, mini-courbes) |
-| `js/logo.js`, `js/theme.js` | logo, thème clair / sombre |
+| `js/logo.js`, `js/theme.js`, `js/version.js` | logo, thème, nom / version / auteur |
 | `js/config.js` | URL et clé publique Supabase |
-| `js/vendor/` | supabase-js (copie locale) |
-| `supabase/` | scripts SQL (tables, règles de sécurité) |
+| `js/views/` | une page par fichier : `dashboard`, `sessions`, `workout` (séance en cours), `session-editor`, `cardio`, `history`, `progression`, `one-rm`, `friends`, `programme`, `profile` |
+| `js/vendor/` | supabase-js (copie locale vérifiée) |
+| `supabase/` | scripts SQL : tables, règles de sécurité, partage |
 | `sw.js`, `manifest.webmanifest` | installation sur mobile et mode hors ligne |
 
-Si tu ajoutes un fichier JS ou CSS, ajoute-le aussi à la liste `SHELL` de `sw.js` et
-incrémente `CACHE` pour qu'il soit disponible hors ligne.
+En ajoutant un fichier JS ou CSS : l'ajouter à la liste `SHELL` de `sw.js` et incrémenter
+`CACHE`, pour qu'il soit disponible hors ligne. La version affichée en pied de page est
+dans [`js/version.js`](js/version.js).
