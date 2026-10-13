@@ -55,7 +55,10 @@ neutre », « Développé incliné ».
 
 Chaque exercice affiche **les muscles qu'il travaille** sur deux silhouettes, de face et de
 dos, reconnaissables au premier coup d'œil : muscles principaux en couleur pleine,
-secondaires en teinte claire, beaucoup d'exercices étant polyarticulaires. La barre de
+secondaires en teinte claire, beaucoup d'exercices étant polyarticulaires. Le dos est
+détaillé en quatre muscles — trapèzes, grand dorsal, grand rond, rhomboïdes — parce qu'un
+tirage vertical et des shrugs n'ont rien à voir ; les douze catégories qui servent à ranger
+les exercices restent larges, elles. La barre de
 recherche comprend le français comme l'anglais : « bench press » trouve le développé
 couché.
 

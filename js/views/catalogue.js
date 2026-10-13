@@ -43,7 +43,7 @@ export function cataloguePanel({ onAdd, has }) {
   const row = (e) => {
     const already = has(e);
     const tags = GEAR[e.gear];
-    const label = (m) => muscleLabel(m, { short: true });
+    const label = muscleLabel;
     const muscles = [...e.primary.map(label), ...e.secondary.map(label)].join(', ');
     /*
      * Les illustrations wger sont au trait, sans muscles en couleur : les
