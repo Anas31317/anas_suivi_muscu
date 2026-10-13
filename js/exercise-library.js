@@ -23,8 +23,7 @@
 
 export const MUSCLES = [
   { id: 'pecs', label: 'Pectoraux', view: 'front' },
-  { id: 'dos', label: 'Dos', view: 'back' },
-  { id: 'trapezes', label: 'Trapèzes', view: 'back' },
+  { id: 'dos', label: 'Dos et trapèzes', short: 'Dos', view: 'back' },
   { id: 'epaules', label: 'Épaules', view: 'front' },
   { id: 'biceps', label: 'Biceps', view: 'front' },
   { id: 'triceps', label: 'Triceps', view: 'back' },
@@ -78,26 +77,26 @@ const RAW = [
   ['tirage-vertical-supi', 'Tirage vertical supination', 'poulie', 'kg', ['dos'], ['biceps']],
   ['tirage-vertical-neutre', 'Tirage vertical prise neutre', 'poulie', 'kg', ['dos'], ['biceps']],
   ['tirage-vertical-large', 'Tirage vertical prise large', 'poulie', 'kg', ['dos'], ['epaules', 'biceps']],
-  ['rowing-barre-pro', 'Rowing barre pronation', 'barre', 'kg', ['dos'], ['trapezes', 'biceps', 'lombaires']],
+  ['rowing-barre-pro', 'Rowing barre pronation', 'barre', 'kg', ['dos'], ['biceps', 'lombaires']],
   ['rowing-barre-supi', 'Rowing barre supination (Yates)', 'barre', 'kg', ['dos'], ['biceps', 'lombaires']],
-  ['rowing-t-bar', 'Rowing T-bar', 'barre', 'kg', ['dos'], ['trapezes', 'biceps']],
-  ['rowing-haltere', 'Rowing haltère un bras', 'halteres', 'kg', ['dos'], ['biceps', 'trapezes']],
+  ['rowing-t-bar', 'Rowing T-bar', 'barre', 'kg', ['dos'], ['biceps']],
+  ['rowing-haltere', 'Rowing haltère un bras', 'halteres', 'kg', ['dos'], ['biceps']],
   ['rowing-halteres-2', 'Rowing haltères deux bras', 'halteres', 'kg', ['dos'], ['biceps', 'lombaires']],
-  ['seal-row', 'Seal row (banc)', 'halteres', 'kg', ['dos'], ['biceps', 'trapezes']],
-  ['rowing-machine', 'Rowing machine', 'machine', 'kg', ['dos'], ['biceps', 'trapezes']],
-  ['tirage-horizontal', 'Tirage horizontal poulie', 'poulie', 'kg', ['dos'], ['biceps', 'trapezes']],
-  ['tirage-horizontal-large', 'Tirage horizontal prise large', 'poulie', 'kg', ['dos'], ['trapezes', 'epaules']],
+  ['seal-row', 'Seal row (banc)', 'halteres', 'kg', ['dos'], ['biceps']],
+  ['rowing-machine', 'Rowing machine', 'machine', 'kg', ['dos'], ['biceps']],
+  ['tirage-horizontal', 'Tirage horizontal poulie', 'poulie', 'kg', ['dos'], ['biceps']],
+  ['tirage-horizontal-large', 'Tirage horizontal prise large', 'poulie', 'kg', ['dos'], ['epaules']],
   ['rowing-inverse', 'Rowing inversé (barre basse)', 'corps', 'bw', ['dos'], ['biceps', 'abdos']],
   ['pull-over-poulie', 'Pull over poulie haute', 'poulie', 'kg', ['dos'], ['triceps']],
   ['pull-over-haltere', 'Pull over haltère', 'halteres', 'kg', ['dos'], ['pecs', 'triceps']],
-  ['sdt', 'Soulevé de terre', 'barre', 'kg', ['dos', 'lombaires'], ['fessiers', 'ischios', 'trapezes']],
+  ['sdt', 'Soulevé de terre', 'barre', 'kg', ['dos', 'lombaires'], ['fessiers', 'ischios']],
 
-  /* ----------------------------------------------------------- trapèzes */
-  ['shrugs-barre', 'Shrugs barre', 'barre', 'kg', ['trapezes'], ['avant-bras']],
-  ['shrugs-halteres', 'Shrugs haltères', 'halteres', 'kg', ['trapezes'], ['avant-bras']],
-  ['shrugs-machine', 'Shrugs machine', 'machine', 'kg', ['trapezes'], []],
-  ['face-pull', 'Face pull', 'poulie', 'kg', ['trapezes', 'epaules'], ['dos']],
-  ['rowing-menton', 'Rowing menton', 'barre', 'kg', ['trapezes', 'epaules'], ['biceps']],
+  /* --------------------------------------------- dos : trapèzes et cou */
+  ['shrugs-barre', 'Shrugs barre', 'barre', 'kg', ['dos'], ['avant-bras']],
+  ['shrugs-halteres', 'Shrugs haltères', 'halteres', 'kg', ['dos'], ['avant-bras']],
+  ['shrugs-machine', 'Shrugs machine', 'machine', 'kg', ['dos'], []],
+  ['face-pull', 'Face pull', 'poulie', 'kg', ['dos', 'epaules'], []],
+  ['rowing-menton', 'Rowing menton', 'barre', 'kg', ['dos', 'epaules'], ['biceps']],
 
   /* ------------------------------------------------------------ épaules */
   ['militaire-debout', 'Développé militaire debout', 'barre', 'kg', ['epaules'], ['triceps', 'abdos']],
@@ -110,13 +109,13 @@ const RAW = [
   ['elev-lat-halteres', 'Élévations latérales haltères', 'halteres', 'kg', ['epaules'], []],
   ['elev-lat-poulie', 'Élévation latérale poulie', 'poulie', 'kg', ['epaules'], []],
   ['elev-lat-machine', 'Élévations latérales machine', 'machine', 'kg', ['epaules'], []],
-  ['elev-lat-penche', 'Élévations latérales buste penché', 'halteres', 'kg', ['epaules'], ['trapezes']],
+  ['elev-lat-penche', 'Élévations latérales buste penché', 'halteres', 'kg', ['epaules'], ['dos']],
   ['elev-front-halteres', 'Élévations frontales haltères', 'halteres', 'kg', ['epaules'], ['pecs']],
   ['elev-front-barre', 'Élévations frontales barre', 'barre', 'kg', ['epaules'], []],
   ['elev-front-poulie', 'Élévations frontales poulie', 'poulie', 'kg', ['epaules'], []],
-  ['oiseau-halteres', 'Oiseau haltères', 'halteres', 'kg', ['epaules'], ['trapezes', 'dos']],
-  ['oiseau-machine', 'Oiseau machine (reverse pec deck)', 'machine', 'kg', ['epaules'], ['trapezes']],
-  ['oiseau-poulie', 'Oiseau poulie', 'poulie', 'kg', ['epaules'], ['trapezes']],
+  ['oiseau-halteres', 'Oiseau haltères', 'halteres', 'kg', ['epaules'], ['dos']],
+  ['oiseau-machine', 'Oiseau machine (reverse pec deck)', 'machine', 'kg', ['epaules'], ['dos']],
+  ['oiseau-poulie', 'Oiseau poulie', 'poulie', 'kg', ['epaules'], ['dos']],
 
   /* ------------------------------------------------------------- biceps */
   ['curl-barre', 'Curl barre droite', 'barre', 'kg', ['biceps'], ['avant-bras']],
@@ -158,7 +157,7 @@ const RAW = [
   ['reverse-curl', 'Reverse curl barre EZ', 'barre', 'kg', ['avant-bras'], ['biceps']],
   ['curl-poignets', 'Curl poignets', 'barre', 'kg', ['avant-bras'], []],
   ['curl-poignets-inverse', 'Curl poignets inversé', 'barre', 'kg', ['avant-bras'], []],
-  ['farmer-walk', 'Marche du fermier', 'halteres', 'kg', ['avant-bras'], ['trapezes', 'abdos']],
+  ['farmer-walk', 'Marche du fermier', 'halteres', 'kg', ['avant-bras'], ['dos', 'abdos']],
   ['suspension', 'Suspension à la barre', 'corps', 'bw', ['avant-bras'], ['dos']],
 
   /* --------------------------------------------------------- abdominaux */
@@ -236,35 +235,111 @@ export function libraryEntry(libId) {
   return LIBRARY.find((e) => e.id === libId) || null;
 }
 
-/** Recherche sur le nom et le matériel, accents et casse ignorés. */
 const plain = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
+/*
+ * Beaucoup de monde dit « bench press » ou « lat pulldown » : on traduit la
+ * recherche avant de comparer, pour reconnaître l'exercice qu'il soit écrit en
+ * français ou en anglais. Les expressions les plus longues passent d'abord,
+ * sinon « press » mangerait « bench press ».
+ */
+const EN_FR = [
+  ['romanian deadlift', 'souleve de terre roumain'],
+  ['stiff leg deadlift', 'souleve de terre jambes tendues'],
+  ['sumo deadlift', 'souleve de terre sumo'],
+  ['incline bench press', 'developpe incline'], ['decline bench press', 'developpe decline'],
+  ['incline press', 'developpe incline'], ['decline press', 'developpe decline'],
+  ['incline dumbbell press', 'developpe incline halteres'],
+  ['bench press', 'developpe couche'], ['chest press', 'developpe machine'],
+  ['shoulder press', 'developpe epaules'], ['military press', 'developpe militaire'],
+  ['overhead press', 'developpe militaire'], ['lat pulldown', 'tirage vertical'],
+  ['pulldown', 'tirage vertical'], ['seated row', 'tirage horizontal'],
+  ['cable row', 'tirage horizontal'], ['pull over', 'pull over'],
+  ['pull up', 'tractions'], ['pullup', 'tractions'], ['chin up', 'tractions supination'],
+  ['chinup', 'tractions supination'], ['push up', 'pompes'], ['pushup', 'pompes'],
+  ['deadlift', 'souleve de terre'], ['leg press', 'presse a cuisses'],
+  ['leg curl', 'leg curl'], ['leg extension', 'leg extension'],
+  ['calf raise', 'mollets'], ['calf', 'mollets'],
+  ['lateral raise', 'elevations laterales'], ['side raise', 'elevations laterales'],
+  ['front raise', 'elevations frontales'], ['rear delt', 'oiseau'],
+  ['reverse fly', 'oiseau'], ['upright row', 'rowing menton'],
+  ['shrug', 'shrugs'], ['hammer curl', 'curl marteau'],
+  ['preacher curl', 'curl pupitre'], ['concentration curl', 'curl concentre'],
+  ['skullcrusher', 'barre au front'], ['triceps pushdown', 'extension poulie'],
+  ['pushdown', 'extension poulie'], ['triceps extension', 'extension triceps'],
+  ['overhead extension', 'extension au-dessus de la tete'],
+  ['close grip', 'prise serree'], ['wide grip', 'prise large'],
+  ['neutral grip', 'prise neutre'], ['reverse grip', 'prise inversee'],
+  ['hip thrust', 'hip thrust'], ['glute bridge', 'pont fessier'],
+  ['good morning', 'good morning'], ['back extension', 'extension lombaire'],
+  ['hyperextension', 'extension lombaire'], ['ab wheel', 'roue abdominale'],
+  ['leg raise', 'releve de jambes'], ['plank', 'gainage'],
+  ['front squat', 'squat avant'], ['goblet squat', 'squat gobelet'],
+  ['split squat', 'fente bulgare'], ['step up', 'montee sur banc'],
+  ['walking lunge', 'fente marchee'], ['lunge', 'fente'],
+  ['row', 'rowing'], ['fly', 'ecarte'], ['dips', 'dips'], ['dip', 'dips'],
+  ['squat', 'squat'], ['curl', 'curl'], ['press', 'developpe'],
+  ['barbell', 'barre'], ['dumbbell', 'halteres'], ['cable', 'poulie'],
+  ['bodyweight', 'poids du corps'], ['smith machine', 'smith'],
+  ['incline', 'incline'], ['decline', 'decline'], ['seated', 'assis'],
+  ['standing', 'debout'], ['lying', 'couche'], ['bent over', 'penche'],
+  ['single arm', 'un bras'], ['one arm', 'un bras'], ['single leg', 'une jambe'],
+  ['chest', 'pectoraux'], ['back', 'dos'], ['shoulder', 'epaules'],
+  ['biceps', 'biceps'], ['triceps', 'triceps'], ['legs', 'jambes'],
+  ['glute', 'fessiers'], ['hamstring', 'ischios'], ['quad', 'quadriceps'],
+  ['abs', 'abdominaux'], ['trap', 'trapezes'], ['forearm', 'avant-bras']
+];
+
+/*
+ * Remplacement sur les mots entiers, jamais sur les morceaux : sinon le
+ * français « presse à cuisses » contiendrait l'anglais « press ».
+ */
+const EN_RE = EN_FR.map(([en, fr]) => [new RegExp('\\b' + en.replace(/[-]/g, '\\-') + '\\b', 'g'), fr]);
+
+/** Normalise et traduit : « Bench Press » et « développé couché » se rejoignent. */
+function normalizeQuery(text) {
+  let q = plain(text).replace(/[^a-z0-9 -]+/g, ' ').replace(/\s+/g, ' ').trim();
+  for (const [re, fr] of EN_RE) q = q.replace(re, fr);
+  return q.replace(/\s+/g, ' ').trim();
+}
+
+/** Nom d'un exercice, normalisé de la même façon que la recherche. */
+const libKey = (e) => normalizeQuery(e.name);
+
+/** Recherche sur le nom et le matériel, en français comme en anglais. */
 export function searchLibrary(query) {
-  const words = plain(query).split(/\s+/).filter(Boolean);
+  const words = normalizeQuery(query).split(' ').filter(Boolean);
   if (!words.length) return [];
   return LIBRARY.filter((e) => {
-    const hay = plain(`${e.name} ${GEAR[e.gear]}`);
+    const hay = libKey(e) + ' ' + normalizeQuery(GEAR[e.gear]);
     return words.every((w) => hay.includes(w));
   });
 }
 
 /**
- * Exercice du catalogue portant le même nom (à l'accent et à la casse près),
- * ou dont le nom contient celui cherché. Sert à proposer l'exercice du
- * catalogue plutôt que d'en créer un doublon à la main.
+ * Exercice du catalogue qui porte le même nom, à l'accent, à la casse et à la
+ * langue près. Sert à proposer l'exercice du catalogue plutôt que d'en créer
+ * un doublon à la main.
  */
 export function findByName(name) {
-  const q = plain(name).trim().replace(/\s+/g, ' ');
-  if (q.length < 3) return null;
-  const exact = LIBRARY.find((e) => plain(e.name).replace(/\s+/g, ' ') === q);
-  if (exact) return exact;
-  return LIBRARY.find((e) => {
-    const n = plain(e.name).replace(/\s+/g, ' ');
-    return n === q || n.includes(q) || q.includes(n);
-  }) || null;
+  const q = new Set(normalizeQuery(name).split(' ').filter(Boolean));
+  if (!q.size) return null;
+  // comparaison par mots, pas par morceaux de phrase : l'anglais met le
+  // qualificatif devant (« incline bench press »), le français derrière
+  let best = null;
+  let score = 0;
+  for (const e of LIBRARY) {
+    const n = new Set(libKey(e).split(' ').filter(Boolean));
+    let shared = 0;
+    for (const w of q) if (n.has(w)) shared += 1;
+    const s = shared / Math.max(q.size, n.size);
+    if (s > score) { score = s; best = e; }
+  }
+  return score >= 0.8 ? best : null;
 }
 
-export function muscleLabel(id) {
+export function muscleLabel(id, { short = false } = {}) {
   const m = MUSCLES.find((x) => x.id === id);
-  return m ? m.label : id;
+  if (!m) return id;
+  return short && m.short ? m.short : m.label;
 }

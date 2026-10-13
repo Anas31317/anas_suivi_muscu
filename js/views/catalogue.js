@@ -1,9 +1,9 @@
 /**
  * Catalogue d'exercices : une base commune à tout le monde.
  *
- * On cherche par le nom, ou on parcourt muscle par muscle. Chaque ligne montre
- * le mouvement, le matériel et les muscles travaillés (principaux en évidence,
- * secondaires en gris).
+ * On cherche par le nom — en français ou en anglais — ou on parcourt muscle par
+ * muscle. Chaque ligne montre le matériel et les muscles travaillés, en couleur
+ * sur une silhouette de face et une de dos.
  *
  * « Ajouter » met l'exercice tel quel dans la séance ; « Renommer » l'ajoute
  * sous un autre nom, ce qui en fait un exercice à part, avec sa propre courbe.
@@ -13,7 +13,6 @@
  */
 
 import { MUSCLES, GEAR, LIBRARY, libraryFor, searchLibrary, muscleLabel } from '../exercise-library.js';
-import { exerciseImage, IMAGE_SOURCE } from '../exercise-images.js';
 import { bodyMap } from '../body-map.js';
 import { h, icon, ICONS } from '../ui.js';
 
@@ -44,38 +43,20 @@ export function cataloguePanel({ onAdd, has }) {
   const row = (e) => {
     const already = has(e);
     const tags = GEAR[e.gear];
-    const muscles = [...e.primary.map(muscleLabel), ...e.secondary.map(muscleLabel)].join(', ');
+    const label = (m) => muscleLabel(m, { short: true });
+    const muscles = [...e.primary.map(label), ...e.secondary.map(label)].join(', ');
     /*
      * Les illustrations wger sont au trait, sans muscles en couleur : les
      * muscles se lisent donc ici, les principaux en évidence, les secondaires
      * en gris. La silhouette colorée reste en en-tête de muscle.
      */
     const muscleLine = h('div', { class: 'meta muscles' },
-      e.primary.map((m, i) => h('span', { class: 'm1' }, (i ? ', ' : '') + muscleLabel(m))),
-      e.secondary.map((m, i) => h('span', {}, (i || e.primary.length ? ', ' : '') + muscleLabel(m)))
+      e.primary.map((m, i) => h('span', { class: 'm1' }, (i ? ', ' : '') + label(m))),
+      e.secondary.map((m, i) => h('span', {}, (i || e.primary.length ? ', ' : '') + label(m)))
     );
 
-    /*
-     * Quand on a une illustration, elle montre le mouvement ET les muscles en
-     * rouge : elle remplace la silhouette, qui reste le repli pour les
-     * exercices sans image.
-     */
-    const img = exerciseImage(e.id);
-    const fallback = () => bodyMap(e.primary, e.secondary, { height: 56, label: muscles });
-    let visual = fallback();
-    if (img) {
-      const el = h('img', {
-        class: 'cat-img', src: img.src, width: 72, height: 72, loading: 'lazy', decoding: 'async',
-        alt: `${e.name} — muscles travaillés : ${muscles}`,
-        title: `© ${img.author}, ${img.license}`
-      });
-      // image absente du cache hors ligne : on retombe sur la silhouette
-      el.addEventListener('error', () => el.replaceWith(fallback()));
-      visual = el;
-    }
-
     return h('div', { class: 'list-row cat-row' },
-      visual,
+      bodyMap(e.primary, e.secondary, { height: 60, label: muscles }),
       h('div', { class: 'body' },
         h('div', { class: 'name' }, e.name),
         h('div', { class: 'meta' }, icon(GEAR_ICON[e.gear] || ICONS.dumbbell, 13), tags),
@@ -138,18 +119,8 @@ export function cataloguePanel({ onAdd, has }) {
     timer = setTimeout(() => { query = search.value.trim(); draw(); }, 120);
   });
 
-  /* --- crédit des illustrations (obligatoire en CC BY-SA) ------------ */
-  const credit = h('p', { class: 'cat-credit' },
-    'Illustrations : ',
-    h('a', { href: IMAGE_SOURCE.url, target: '_blank', rel: 'noopener noreferrer' }, IMAGE_SOURCE.site),
-    `, ${IMAGE_SOURCE.authors.length} contributeurs — `,
-    IMAGE_SOURCE.licenses.map((l, i) =>
-      h('span', {}, i ? ' / ' : '', h('a', { href: l.url, target: '_blank', rel: 'noopener noreferrer' }, l.name))),
-    '. Chaque image indique son auteur au survol ; la liste complète est dans le README.'
-  );
-
   draw();
   return h('div', { class: 'catalogue' },
     h('div', { class: 'cat-search' }, search),
-    chipsWrap, head, listWrap, credit);
+    chipsWrap, head, listWrap);
 }

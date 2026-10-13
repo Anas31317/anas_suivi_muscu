@@ -255,7 +255,7 @@ export function viewSessionEditor(sessionId, ctx) {
     const lib = findByName(value);
     const already = lib && draft.exercises.some((x) => x.libId === lib.id);
     if (lib && !already && confirm(`« ${lib.name} » est au catalogue (${GEAR[lib.gear]}).\n\n` +
-      'L’ajouter depuis le catalogue ? Il arrive avec son illustration et ses muscles.')) {
+      'L’ajouter depuis le catalogue ? Il arrive avec les muscles qu’il travaille.')) {
       pushExercise({
         id: store.uid('e'), name: lib.name, mode: lib.mode, defaultSets: Number(newSets.value), libId: lib.id
       });

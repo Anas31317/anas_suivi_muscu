@@ -2,15 +2,20 @@
  * Deux silhouettes, de face et de dos, avec les muscles travaillés en couleur.
  *
  * Volontairement schématique : l'idée est de repérer d'un coup d'œil ce que
- * l'exercice fait travailler, y compris quand il fait travailler plusieurs
- * choses à la fois. Muscles principaux en accent, secondaires en teinte claire.
+ * l'exercice fait travailler, y compris quand il en fait travailler plusieurs
+ * à la fois. Muscles principaux en accent, secondaires en teinte claire.
+ *
+ * Les deux vues se distinguent sans lire : celle de face a un visage, celle de
+ * dos a la colonne et les omoplates. À partir d'une certaine taille, elles
+ * portent aussi leur étiquette.
  *
  * Les couleurs viennent de classes CSS (.bm-*), donc elles suivent le thème.
  */
 
 const NS = 'http://www.w3.org/2000/svg';
-const FRONT = 0;   // décalage horizontal de la silhouette de face
-const BACK = 68;   // et de celle de dos
+const FRONT = 0;    // décalage horizontal de la silhouette de face
+const BACK = 68;    // et de celle de dos
+const LABEL_FROM = 68;  // hauteur à partir de laquelle on écrit « Face » et « Dos »
 
 function node(name, attrs) {
   const el = document.createElementNS(NS, name);
@@ -35,6 +40,23 @@ function figure(dx) {
   ];
 }
 
+/** Le visage : deux yeux suffisent à dire « on le voit de face ». */
+function faceMarks() {
+  return [
+    ell(FRONT + 27, 10, 1.2, 1.4, 'bm-trait'),
+    ell(FRONT + 33, 10, 1.2, 1.4, 'bm-trait')
+  ];
+}
+
+/** De dos : la colonne et les omoplates. */
+function backMarks() {
+  return [
+    box(BACK + 29.2, 26, 1.6, 36, 0.8, 'bm-trait'),
+    node('path', { class: 'bm-trait-line', d: `M${BACK + 22} 29 l5 7` }),
+    node('path', { class: 'bm-trait-line', d: `M${BACK + 38} 29 l-5 7` })
+  ];
+}
+
 /** Zone allumée d'un muscle, sur la silhouette qui convient. */
 const ZONES = {
   pecs: (c) => [box(FRONT + 20, 28, 20, 12, 5, c)],
@@ -43,14 +65,20 @@ const ZONES = {
   'avant-bras': (c) => [ell(FRONT + 9, 59, 4, 10, c), ell(FRONT + 51, 59, 4, 10, c)],
   abdos: (c) => [box(FRONT + 25, 42, 10, 20, 4, c)],
   quadriceps: (c) => [ell(FRONT + 23.5, 84, 6.5, 14, c), ell(FRONT + 36.5, 84, 6.5, 14, c)],
-  trapezes: (c) => [node('path', { class: c, d: `M${BACK + 19} 25 h22 l-5 11 h-12 Z` })],
-  dos: (c) => [box(BACK + 19, 33, 22, 18, 5, c)],
+  // dos et trapèzes : une seule zone, du cou au bas des côtes
+  dos: (c) => [node('path', { class: c, d: `M${BACK + 19} 25 h22 l1 10 l-2 16 h-20 l-2 -16 Z` })],
   triceps: (c) => [ell(BACK + 12.5, 38, 4.5, 9, c), ell(BACK + 47.5, 38, 4.5, 9, c)],
-  lombaires: (c) => [box(BACK + 23, 50, 14, 11, 4, c)],
+  lombaires: (c) => [box(BACK + 23, 51, 14, 10, 4, c)],
   fessiers: (c) => [box(BACK + 19, 62, 22, 10, 4, c)],
   ischios: (c) => [ell(BACK + 23.5, 88, 6.5, 13, c), ell(BACK + 36.5, 88, 6.5, 13, c)],
   mollets: (c) => [ell(BACK + 23.5, 108, 4.5, 10, c), ell(BACK + 36.5, 108, 4.5, 10, c)]
 };
+
+function caption(dx, text) {
+  const el = node('text', { x: dx + 30, y: 131, class: 'bm-label', 'text-anchor': 'middle' });
+  el.textContent = text;
+  return el;
+}
 
 /**
  * Silhouettes de face et de dos.
@@ -58,9 +86,11 @@ const ZONES = {
  * @param {string[]} secondary  muscles secondaires, en teinte claire
  */
 export function bodyMap(primary = [], secondary = [], { height = 64, label = '' } = {}) {
+  const withLabels = height >= LABEL_FROM;
+  const vbHeight = withLabels ? 136 : 124;
   const svg = node('svg', {
-    viewBox: '0 0 128 122',
-    width: Math.round((height * 128) / 122),
+    viewBox: `0 0 128 ${vbHeight}`,
+    width: Math.round((height * 128) / vbHeight),
     height,
     class: 'body-map',
     role: 'img'
@@ -80,6 +110,15 @@ export function bodyMap(primary = [], secondary = [], { height = 64, label = '' 
   for (const id of primary) {
     const zone = ZONES[id];
     if (zone) for (const part of zone('bm-on')) svg.append(part);
+  }
+
+  // repères de vue par-dessus les zones, pour rester lisibles
+  for (const part of faceMarks()) svg.append(part);
+  for (const part of backMarks()) svg.append(part);
+
+  if (withLabels) {
+    svg.append(caption(FRONT, 'Face'));
+    svg.append(caption(BACK, 'Dos'));
   }
   return svg;
 }
