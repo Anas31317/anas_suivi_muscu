@@ -49,18 +49,20 @@ Inscription réservée aux emails autorisés, connexion et mot de passe oublié 
 « Modifier la séance » contient un **catalogue** de plus de 140 exercices : une ligne par
 variante, parce que le même mouvement à la barre, aux haltères, à la machine ou à la poulie
 ne se charge pas pareil et ne se suit pas sur la même courbe. L'inclinaison et l'angle des
-poignées (pronation, supination, neutre) sont précisés quand ils changent le mouvement.
+poignées ne sont pas des colonnes — ils ne concernent qu'une partie des exercices — mais
+sont dans le nom quand ils distinguent vraiment un mouvement : « Tirage vertical prise
+neutre », « Développé incliné ».
 
-Chaque exercice affiche **les muscles qu'il travaille** sur deux silhouettes, de face et de
-dos : muscles principaux en couleur pleine, secondaires en teinte claire — beaucoup
-d'exercices sont polyarticulaires. Une barre de recherche filtre sur le nom, le matériel, la
-position et la prise.
+Chaque exercice affiche **les muscles qu'il travaille** : les principaux en évidence, les
+secondaires en gris, beaucoup d'exercices étant polyarticulaires. Une barre de recherche
+filtre sur le nom et le matériel.
 
 Pas de nombre de séries dans le catalogue : il se règle dans la séance, après l'ajout.
-Tout le monde part de la même base, il n'y a pas de création libre ; pour une version à soi,
-**Renommer** ajoute l'exercice sous un autre nom, et c'est alors un exercice à part avec sa
-propre courbe. Dans la liste des exercices d'une séance, « Renommer » fait la même chose :
-il crée un nouvel exercice, l'ancien gardant son historique.
+Tout le monde part de la même base, il n'y a pas de création libre ; **Renommer** ajoute un
+exercice du catalogue sous le nom qu'on veut, pour coller au matériel de sa salle. Dans la
+liste des exercices d'une séance, « Renommer » change seulement l'étiquette : l'exercice
+garde son identifiant, donc ses séances passées et sa courbe, et les séances déjà
+enregistrées gardent le nom qu'elles portaient ce jour-là.
 
 Une centaine d'exercices ont en plus une **illustration du mouvement**. Les autres gardent
 les silhouettes, qui restent aussi le repli si une image manque.

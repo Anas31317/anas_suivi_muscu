@@ -2,8 +2,8 @@
  * Catalogue d'exercices : une base commune à tout le monde.
  *
  * On cherche par le nom, ou on parcourt muscle par muscle. Chaque ligne montre
- * les muscles travaillés (principaux en couleur, secondaires en teinte claire),
- * le matériel, la position et l'angle des poignées.
+ * le mouvement, le matériel et les muscles travaillés (principaux en évidence,
+ * secondaires en gris).
  *
  * « Ajouter » met l'exercice tel quel dans la séance ; « Renommer » l'ajoute
  * sous un autre nom, ce qui en fait un exercice à part, avec sa propre courbe.
@@ -43,7 +43,7 @@ export function cataloguePanel({ onAdd, has }) {
 
   const row = (e) => {
     const already = has(e);
-    const tags = [GEAR[e.gear], e.position, e.grip].filter(Boolean).join(' · ');
+    const tags = GEAR[e.gear];
     const muscles = [...e.primary.map(muscleLabel), ...e.secondary.map(muscleLabel)].join(', ');
     /*
      * Les illustrations wger sont au trait, sans muscles en couleur : les
@@ -93,9 +93,7 @@ export function cataloguePanel({ onAdd, has }) {
           class: 'btn ghost small', type: 'button',
           'aria-label': `Ajouter ${e.name} sous un autre nom`,
           onclick: () => {
-            const name = prompt(
-              'Nom de ta version de cet exercice :\n\n' +
-              'Elle sera suivie à part, avec sa propre courbe.', e.name);
+            const name = prompt('Sous quel nom ajouter cet exercice ?', e.name);
             if (name === null) return;
             const clean = name.trim();
             if (clean) { onAdd(e, clean); draw(); }
