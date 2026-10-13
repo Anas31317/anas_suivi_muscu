@@ -86,8 +86,9 @@ Les comptes ouverts avant le catalogue avaient des exercices écrits à la main 
 automatiquement à l'exercice du catalogue correspondant, par leur identifiant pour le
 programme type, par leur nom quand il désigne un exercice sans ambiguïté. L'identifiant ne
 change pas — courbes, 1RM et séances passées suivent — et l'historique garde les noms figés
-au moment de la saisie. Un nom trop large pour désigner une fiche précise (« Rowing ») reste
-tel quel : c'est à chacun de choisir sa variante dans le catalogue.
+au moment de la saisie. Les vingt exercices du programme type ont tous leur fiche ; un
+exercice ajouté à la main dont le nom ne correspond à aucune fiche reste tel quel, et c'est
+très bien : c'est là que sert la création d'exercice.
 
 Le nom d'un exercice se corrige directement dans la liste : l'exercice garde son identifiant,
 donc ses séances passées et sa courbe. Les séances déjà enregistrées gardent le nom qu'elles

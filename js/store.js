@@ -90,8 +90,21 @@ export function fmtNum(n, digits = 1) {
  */
 const SEED_LINKS = templateLinks();
 
+/*
+ * Correction d'un rattachement précédent : [id d'exercice, fiche posée à tort,
+ * fiche juste]. On ne corrige que si la fiche actuelle est bien celle qu'on
+ * remplace, pour ne jamais écraser un choix fait à la main depuis.
+ */
+const RELINK = [
+  ['e-reverse-curl', 'reverse-curl', 'reverse-curl-poulie']
+];
+
 function linkToCatalog(ex) {
-  if (ex.libId) return ex;
+  if (ex.libId) {
+    const fix = RELINK.find(([id, from]) => id === ex.id && from === ex.libId);
+    const lib = fix && libraryEntry(fix[2]);
+    return lib ? { ...ex, name: lib.name, libId: lib.id } : ex;
+  }
   const lib = (SEED_LINKS[ex.id] && libraryEntry(SEED_LINKS[ex.id])) || findByName(ex.name);
   return lib ? { ...ex, name: lib.name, libId: lib.id } : ex;
 }

@@ -105,6 +105,7 @@ const RAW = [
   ['rowing-inverse', 'Rowing inversé (barre basse)', 'corps', 'bw', ['grand-dorsal', 'rhomboides'], ['biceps', 'abdos']],
   ['pull-over-poulie', 'Pull over poulie haute', 'poulie', 'kg', ['grand-dorsal'], ['grand-rond', 'triceps']],
   ['pull-over-haltere', 'Pull over haltère', 'halteres', 'kg', ['grand-dorsal'], ['grand-rond', 'pecs', 'triceps']],
+  ['pull-over-machine', 'Pull over machine', 'machine', 'kg', ['grand-dorsal'], ['grand-rond', 'triceps']],
   ['sdt', 'Soulevé de terre', 'barre', 'kg', ['lombaires', 'fessiers', 'ischios'], ['grand-dorsal', 'trapezes', 'quadriceps']],
 
   /* --------------------------------------------- dos : trapèzes et cou */
@@ -171,6 +172,7 @@ const RAW = [
 
   /* --------------------------------------------------------- avant-bras */
   ['reverse-curl', 'Reverse curl barre EZ', 'barre', 'kg', ['avant-bras'], ['biceps']],
+  ['reverse-curl-poulie', 'Reverse curl poulie basse', 'poulie', 'kg', ['avant-bras'], ['biceps']],
   ['curl-poignets', 'Curl poignets', 'barre', 'kg', ['avant-bras'], []],
   ['curl-poignets-inverse', 'Curl poignets inversé', 'barre', 'kg', ['avant-bras'], []],
   ['farmer-walk', 'Marche du fermier', 'halteres', 'kg', ['avant-bras'], ['trapezes', 'abdos']],
