@@ -90,6 +90,7 @@ function cleanLog(draft) {
     sessionId: draft.sessionId,
     date: draft.date,
     note: draft.note || '',
+    done: Boolean(draft.done),
     entries: draft.entries
       .map((en) => ({
         exerciseId: en.exerciseId, name: en.name, mode: en.mode, note: en.note || '',
@@ -221,7 +222,11 @@ export function viewWorkout({ sessionId, logId }, ctx) {
       h('div', { class: 'ex-head' },
         h('span', { class: 'ex-num' }, String(entryIndex + 1)),
         h('div', { class: 'ex-title' },
-          h('h2', {}, entry.name, isBW ? h('span', { class: 'tag' }, 'PdC') : null)
+          h('h2', {}, entry.name, isBW ? h('span', { class: 'tag' }, 'PdC') : null),
+          // la note laissée la dernière fois sur cet exercice, s'il y en a une
+          prev && prev.note
+            ? h('p', { class: 'prev-note' }, `${formatDateShort(prev.date)} · ${prev.note}`)
+            : null
         ),
         h('span', { class: 'done-mark', title: 'Exercice fait' }, icon('M5 12.5l4.5 4.5L19 7.5', 14)),
         h('a', {
@@ -249,6 +254,9 @@ export function viewWorkout({ sessionId, logId }, ctx) {
     type: 'date', value: draft.date, max: store.todayISO(), 'aria-label': 'Date de la séance',
     onchange: () => { draft.date = dateInput.value || store.todayISO(); changed(); }
   });
+  // note laissée à la séance précédente du même programme
+  const prevLog = store.previousLogForSession(sid, draft.id);
+  const prevNote = prevLog && prevLog.note ? prevLog : null;
   const sessionNote = h('textarea', {
     placeholder: 'Forme du jour, ressenti…', maxlength: 1000, 'aria-label': 'Note de séance',
     oninput: () => { draft.note = sessionNote.value; changed(); }
@@ -259,6 +267,9 @@ export function viewWorkout({ sessionId, logId }, ctx) {
   // N'écrit que s'il y a eu une modification : une séance ouverte puis
   // enregistrée sans changement reste strictement identique.
   const save = () => {
+    // la séance est terminée : l'accueil proposera la suivante, pas « Reprendre »
+    draft.done = true;
+    pending = true;
     saveNow();
     sync.flush();
     if (!store.getLog(draft.id)) {
@@ -295,7 +306,12 @@ export function viewWorkout({ sessionId, logId }, ctx) {
     }),
     h('div', { class: 'stack' },
       list,
-      h('div', { class: 'card section' }, h('h2', {}, 'Note de séance'), sessionNote)
+      h('div', { class: 'card section' },
+        h('h2', {}, 'Note de séance'),
+        prevNote
+          ? h('p', { class: 'prev-note' }, `${formatDateShort(prevNote.date)} · ${prevNote.note}`)
+          : null,
+        sessionNote)
     ),
     h('div', { class: 'form-actions' },
       source ? h('button', { class: 'btn ghost danger', type: 'button', onclick: remove }, 'Supprimer') : null,

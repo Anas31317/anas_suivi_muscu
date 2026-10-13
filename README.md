@@ -11,7 +11,8 @@ En ligne : <https://anas31317.github.io/suivi_muscu_india/>
 Chaque onglet suit la même logique : **ce qu'on fait maintenant en haut, ce qu'on a déjà
 fait en dessous**, et toutes les courbes de musculation sont réunies dans Progrès.
 
-- **Accueil** : la prochaine séance (ou celle du jour à reprendre), les chiffres de la
+- **Accueil** : la prochaine séance — celle du jour tant qu'elle n'est pas enregistrée,
+  la suivante dès qu'elle l'est — les chiffres de la
   semaine et du mois, le cardio des 7 derniers jours, l'activité sur 8 semaines et les
   derniers records.
 - **Muscu** : les séances du programme à lancer, puis l'historique complet par mois,
@@ -19,6 +20,8 @@ fait en dessous**, et toutes les courbes de musculation sont réunies dans Progr
   Une séance s'ouvre sur une page unique avec tous les exercices, séries et reps ; chaque
   série affiche à gauche ce qui a été fait la fois précédente (un tap la recopie). Tout
   s'enregistre au fur et à mesure ; rouvrir la séance le même jour reprend où on en était.
+  Les notes laissées la fois précédente, sur la séance comme sur chaque exercice, sont
+  rappelées en gris à l'endroit où on écrit les nouvelles.
   Le programme (exercices, séries, ordre) ne se change que dans « Modifier la séance », avec
   un bouton Enregistrer — **l'historique n'est jamais réécrit**.
 - **Cardio** : tapis, course, vélo, rameur… durée, vitesse **ou** distance (l'une calcule

@@ -610,6 +610,16 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 }
 .ex-title { flex: 1 1 auto; min-width: 0; }
 .ex-title h2 { font-size: 1rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+/* note laissée la fois précédente : un rappel, pas un champ de saisie */
+.prev-note {
+  margin-top: 4px;
+  padding-left: 8px;
+  border-left: 2px solid var(--axis);
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--ink-2);
+}
+.section > .prev-note { margin: 6px 0 10px; }
 .done-mark {
   display: none;
   align-items: center;
