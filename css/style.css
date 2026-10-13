@@ -766,7 +766,24 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 .cat-row .body { display: grid; gap: 2px; }
 .cat-row .meta { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
 .cat-row .meta svg { flex: none; color: var(--ink-muted); }
-.cat-row .muscles { color: var(--ink-muted); font-size: 0.75rem; }
+.cat-row .muscles { color: var(--ink-muted); font-size: 0.75rem; display: block; }
+.cat-row .muscles .m1 { color: var(--accent-ink); font-weight: 650; }
+.cat-img {
+  flex: none;
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid var(--grid);
+  border-radius: var(--radius-s);
+}
+.cat-credit {
+  margin-top: 12px;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+  line-height: 1.4;
+}
+.cat-credit a { color: var(--accent-ink); }
 .cat-actions { display: grid; gap: 4px; flex: none; justify-items: stretch; }
 .cat-actions .btn { white-space: nowrap; }
 .cat-added {
