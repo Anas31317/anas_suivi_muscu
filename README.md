@@ -53,9 +53,11 @@ poignées ne sont pas des colonnes — ils ne concernent qu'une partie des exerc
 sont dans le nom quand ils distinguent vraiment un mouvement : « Tirage vertical prise
 neutre », « Développé incliné ».
 
-Chaque exercice affiche **les muscles qu'il travaille** : les principaux en évidence, les
-secondaires en gris, beaucoup d'exercices étant polyarticulaires. Une barre de recherche
-filtre sur le nom et le matériel.
+Chaque exercice affiche **les muscles qu'il travaille** sur deux silhouettes, de face et de
+dos, reconnaissables au premier coup d'œil : muscles principaux en couleur pleine,
+secondaires en teinte claire, beaucoup d'exercices étant polyarticulaires. La barre de
+recherche comprend le français comme l'anglais : « bench press » trouve le développé
+couché.
 
 Pas de nombre de séries dans le catalogue : il se règle dans la séance, après l'ajout.
 
@@ -75,34 +77,17 @@ Le nom d'un exercice se corrige directement dans la liste : l'exercice garde son
 donc ses séances passées et sa courbe. Les séances déjà enregistrées gardent le nom qu'elles
 portaient ce jour-là.
 
-Une centaine d'exercices ont en plus une **illustration du mouvement**. Les autres gardent
-les silhouettes, qui restent aussi le repli si une image manque.
-
 Pour compléter le catalogue : [`js/exercise-library.js`](js/exercise-library.js), une ligne
-par exercice (id, nom, matériel, mode, position, prise, muscles principaux, muscles
-secondaires). Les zones des silhouettes sont dans [`js/body-map.js`](js/body-map.js).
+par exercice (id, nom, matériel, mode, muscles principaux, muscles secondaires). Les zones
+des silhouettes sont dans [`js/body-map.js`](js/body-map.js).
 
-### Illustrations
+### Pourquoi des schémas et pas des photos
 
-Les illustrations viennent de la base ouverte **[wger.de](https://wger.de)**, sous licence
-**Creative Commons BY-SA** ([3.0](https://creativecommons.org/licenses/by-sa/3.0/) et
-[4.0](https://creativecommons.org/licenses/by-sa/4.0/)). Cette licence impose de citer les
-auteurs et de garder les images sous la même licence : le crédit est affiché en bas du
-catalogue, chaque image indique son auteur au survol, et la liste complète est dans
-l'en-tête de [`js/exercise-images.js`](js/exercise-images.js).
-
-Pour en ajouter : la correspondance entre nos exercices et ceux de wger est écrite à la main
-dans [`tools/images-wger.py`](tools/images-wger.py) — une illustration approximative serait
-pire que pas d'illustration. Ajoute une ligne à `MAP` (identifiant wger visible dans l'URL
-de l'exercice sur le site), puis lance :
-
-```sh
-pip install Pillow
-python tools/images-wger.py
-```
-
-Le script télécharge, réduit à 320 px, convertit en WebP (environ 8 Ko par image) et
-régénère `js/exercise-images.js`.
+Les bases d'exercices libres mélangent les styles : dessins au trait, images générées,
+photos, rendus 3D — et aucune ne couvre tous les exercices. Une liste moitié photos moitié
+dessins se lit mal. Les silhouettes, elles, sont dessinées par le site : même style partout,
+rien à télécharger, aucun droit à demander, et elles disent ce qu'une photo ne dit pas, à
+savoir quels muscles travaillent et dans quelle mesure.
 
 ## Mode maintenance
 
@@ -177,9 +162,7 @@ Site statique : HTML, CSS et JavaScript à modules, sans build ni dépendance à
 | `js/seed.js` | programme type des nouveaux comptes |
 | `js/logo.js`, `js/theme.js`, `js/version.js` | logo, thème, nom / version / auteur |
 | `js/config.js` | URL et clé publique Supabase |
-| `js/exercise-library.js`, `js/body-map.js`, `js/exercise-images.js` | catalogue d'exercices, silhouettes, illustrations |
-| `tools/` | scripts hors site : téléchargement des illustrations |
-| `images/exercices/` | illustrations des exercices (wger, CC BY-SA) |
+| `js/exercise-library.js`, `js/body-map.js` | catalogue d'exercices et silhouettes |
 | `js/views/` | une page par fichier : `dashboard`, `muscu` (programme + historique), `workout` (séance en cours), `session-editor`, `catalogue`, `cardio`, `progression`, `one-rm`, `friends`, `programme`, `profile` |
 | `js/vendor/` | supabase-js (copie locale vérifiée) |
 | `supabase/` | scripts SQL : tables, règles de sécurité, partage |

@@ -761,6 +761,10 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 .bm-body { fill: var(--grid); }
 .bm-on { fill: var(--accent); }
 .bm-second { fill: color-mix(in srgb, var(--accent) 34%, transparent); }
+/* repères de vue : visage de face, colonne et omoplates de dos */
+.bm-trait { fill: var(--ink-muted); }
+.bm-trait-line { fill: none; stroke: var(--ink-muted); stroke-width: 1.4; stroke-linecap: round; }
+.bm-label { fill: var(--ink-muted); font-size: 11px; font-weight: 600; letter-spacing: 0.04em; }
 
 .cat-row { align-items: center; gap: 10px; }
 .cat-row .body { display: grid; gap: 2px; }
@@ -768,22 +772,6 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 .cat-row .meta svg { flex: none; color: var(--ink-muted); }
 .cat-row .muscles { color: var(--ink-muted); font-size: 0.75rem; display: block; }
 .cat-row .muscles .m1 { color: var(--accent-ink); font-weight: 650; }
-.cat-img {
-  flex: none;
-  width: 72px;
-  height: 72px;
-  object-fit: contain;
-  background: #fff;
-  border: 1px solid var(--grid);
-  border-radius: var(--radius-s);
-}
-.cat-credit {
-  margin-top: 12px;
-  font-size: 0.72rem;
-  color: var(--ink-muted);
-  line-height: 1.4;
-}
-.cat-credit a { color: var(--accent-ink); }
 .cat-add { flex: none; align-self: center; white-space: nowrap; }
 .cat-added {
   display: inline-flex;
