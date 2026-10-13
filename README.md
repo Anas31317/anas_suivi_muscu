@@ -81,6 +81,14 @@ Un exercice vraiment polyarticulaire apparaît dans **chacune** de ses catégori
 sont dans Pectoraux et dans Triceps, le soulevé de terre dans Lombaires, Fessiers et
 Ischios. On le trouve là où on le cherche.
 
+Les comptes ouverts avant le catalogue avaient des exercices écrits à la main (« Bench »,
+« Extension poulie corde ») qui ne pointaient sur aucune fiche. Ils sont rattachés
+automatiquement à l'exercice du catalogue correspondant, par leur identifiant pour le
+programme type, par leur nom quand il désigne un exercice sans ambiguïté. L'identifiant ne
+change pas — courbes, 1RM et séances passées suivent — et l'historique garde les noms figés
+au moment de la saisie. Un nom trop large pour désigner une fiche précise (« Rowing ») reste
+tel quel : c'est à chacun de choisir sa variante dans le catalogue.
+
 Le nom d'un exercice se corrige directement dans la liste : l'exercice garde son identifiant,
 donc ses séances passées et sa courbe. Les séances déjà enregistrées gardent le nom qu'elles
 portaient ce jour-là.
