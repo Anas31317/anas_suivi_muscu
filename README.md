@@ -104,7 +104,7 @@ dans [`js/config.js`](js/config.js), `MAINTENANCE = true`. Seule l'adresse
 `MAINTAINER_EMAIL` entre alors dans l'appli ; les autres comptes voient un écran
 « Maintenance en cours » et peuvent seulement se déconnecter. Un bandeau orange rappelle au
 mainteneur que le mode est actif — **il faut repasser `MAINTENANCE` à `false` et pousser**
-pour rouvrir l'appli.
+pour rouvrir l'appli. Aujourd'hui l'appli est ouverte : `MAINTENANCE = false`.
 
 C'est un garde-fou d'affichage, pas une sécurité : il tient les autres à l'écart le temps
 d'un essai, il n'arrêterait pas quelqu'un de décidé. Ce qui protège vraiment les données
