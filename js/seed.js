@@ -6,8 +6,8 @@
  * mode "bw" -> poids du corps ; la colonne poids sert au lest (0 = à vide)
  *
  * Dernière colonne : l'exercice du catalogue correspondant (voir
- * exercise-library.js). Vide quand le mouvement est écrit de façon trop large
- * pour désigner une fiche précise. Les comptes créés avant le catalogue sont
+ * exercise-library.js), pour que chaque ligne du programme ait sa fiche :
+ * muscles, matériel, silhouette. Les comptes créés avant le catalogue sont
  * rattachés par store.js, qui garde leur id d'exercice et donc leur historique.
  */
 
@@ -16,9 +16,9 @@ const TEMPLATE = [
     id: 's1',
     name: 'Pecs + Biceps',
     exercises: [
-      ['e-bench', 'Bench', 'kg', 3, ''],
-      ['e-bench-incl', 'Bench incliné', 'kg', 3, ''],
-      ['e-pec-fly', 'Pec fly', 'kg', 3, ''],
+      ['e-bench', 'Développé couché', 'kg', 3, 'dc-barre'],
+      ['e-bench-incl', 'Développé incliné machine', 'kg', 3, 'chest-press-incline'],
+      ['e-pec-fly', 'Pec deck (butterfly)', 'kg', 3, 'pec-deck'],
       ['e-curl-pupitre', 'Curl pupitre barre EZ', 'kg', 3, 'curl-pupitre-ez'],
       ['e-bayesian', 'Bayesian curl (poulie, bras en arrière)', 'kg', 3, 'bayesian-curl']
     ]
@@ -27,12 +27,12 @@ const TEMPLATE = [
     id: 's2',
     name: 'Dos + Triceps',
     exercises: [
-      ['e-traction', 'Tractions', 'bw', 3, ''],
-      ['e-rowing', 'Rowing', 'kg', 3, ''],
-      ['e-pull-over', 'Pull over', 'kg', 3, ''],
+      ['e-traction', 'Tractions pronation', 'bw', 3, 'tractions-pro'],
+      ['e-rowing', 'Rowing machine', 'kg', 3, 'rowing-machine'],
+      ['e-pull-over', 'Pull over machine', 'kg', 3, 'pull-over-machine'],
       ['e-dips', 'Dips', 'bw', 3, 'dips'],
       ['e-ext-corde', 'Extension poulie haute corde', 'kg', 3, 'ext-corde'],
-      ['e-overhead-uni', 'Overhead unilatéral', 'kg', 3, '']
+      ['e-overhead-uni', 'Extension poulie unilatérale', 'kg', 3, 'ext-unilaterale']
     ]
   },
   {
@@ -40,10 +40,10 @@ const TEMPLATE = [
     name: 'Épaules + Avant-bras',
     exercises: [
       ['e-militaire', 'Développé épaules Smith', 'kg', 3, 'militaire-smith'],
-      ['e-elev-lat', 'Élévations latérales', 'kg', 3, ''],
+      ['e-elev-lat', 'Élévations latérales haltères', 'kg', 3, 'elev-lat-halteres'],
       ['e-oiseau', 'Oiseau poulie', 'kg', 3, 'oiseau-poulie'],
       ['e-curl-halt', 'Curl haltères', 'kg', 3, 'curl-halteres'],
-      ['e-reverse-curl', 'Reverse curl barre EZ', 'kg', 3, 'reverse-curl']
+      ['e-reverse-curl', 'Reverse curl poulie basse', 'kg', 3, 'reverse-curl-poulie']
     ]
   },
   {
@@ -51,9 +51,9 @@ const TEMPLATE = [
     name: 'Legs',
     exercises: [
       ['e-pendulum', 'Pendulum squat', 'kg', 2, 'pendulum-squat'],
-      ['e-leg-curl', 'Leg curl', 'kg', 3, ''],
+      ['e-leg-curl', 'Leg curl assis', 'kg', 3, 'leg-curl-assis'],
       ['e-leg-ext', 'Leg extension', 'kg', 3, 'leg-extension'],
-      ['e-calves', 'Mollets (calf raise)', 'kg', 3, '']
+      ['e-calves', 'Mollets assis machine', 'kg', 3, 'mollets-assis']
     ]
   }
 ];
