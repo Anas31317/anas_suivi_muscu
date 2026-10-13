@@ -12,6 +12,7 @@ import * as store from '../store.js';
 import { h, toast, icon, ICONS } from '../ui.js';
 import { sessionNumber, miniBtn, pageHead, emptyState } from './common.js';
 import { cataloguePanel } from './catalogue.js';
+import { findByName, GEAR } from '../exercise-library.js';
 
 const SET_CHOICES = [1, 2, 3, 4, 5, 6, 7, 8, 10];
 
@@ -65,28 +66,18 @@ export function viewSessionEditor(sessionId, ctx) {
   /* --- liste des exercices ------------------------------------------- */
   const list = h('div', { class: 'edit-list' });
 
-  /*
-   * Renommer change seulement l'étiquette : l'exercice garde son identifiant,
-   * donc ses séances passées et sa courbe. Les séances déjà enregistrées
-   * gardent le nom qu'elles portaient ce jour-là.
-   */
-  const rename = (i) => {
-    const ex = draft.exercises[i];
-    const value = prompt(`Nouveau nom pour « ${ex.name} » :`, ex.name);
-    if (value === null) return;
-    const clean = value.trim();
-    if (!clean || clean === ex.name) return;
-    ex.name = clean;
-    draw();
-  };
-
   const draw = () => {
     list.textContent = '';
     if (!draft.exercises.length) {
       list.append(h('p', { class: 'muted edit-empty' }, 'Aucun exercice. Ajoute le premier ci-dessous.'));
     }
     draft.exercises.forEach((ex, i) => {
-      const name = h('div', { class: 'edit-name' }, ex.name);
+      // le nom se corrige sur place : l'exercice garde son identifiant, donc
+      // ses séances passées et sa courbe
+      const name = h('input', {
+        type: 'text', value: ex.name, maxlength: 80, 'aria-label': `Nom de l’exercice ${i + 1}`,
+        oninput: () => { ex.name = name.value; }
+      });
       const mode = h('select', { 'aria-label': 'Type', onchange: () => { ex.mode = mode.value; } },
         h('option', { value: 'kg', selected: ex.mode === 'kg' }, 'Charge'),
         h('option', { value: 'bw', selected: ex.mode === 'bw' }, 'Poids du corps'));
@@ -101,7 +92,6 @@ export function viewSessionEditor(sessionId, ctx) {
           h('div', { class: 'edit-opts' }, mode, sets)
         ),
         h('div', { class: 'mini' },
-          miniBtn(ICONS.edit, 'Renommer', () => rename(i)),
           miniBtn(ICONS.up, 'Monter', () => {
             if (i === 0) return;
             [draft.exercises[i - 1], draft.exercises[i]] = [draft.exercises[i], draft.exercises[i - 1]];
@@ -132,7 +122,8 @@ export function viewSessionEditor(sessionId, ctx) {
   const reuseWrap = h('div', { class: 'reuse' });
   const drawReuse = () => {
     reuseWrap.textContent = '';
-    const known = store.exerciseCatalog().filter((e) => !draft.exercises.some((x) => x.id === e.id));
+    const known = store.exerciseCatalog()
+      .filter((e) => !e.hidden && !draft.exercises.some((x) => x.id === e.id));
     if (!known.length) return;
 
     const select = h('select', { 'aria-label': 'Exercice déjà fait à remettre' },
@@ -151,7 +142,10 @@ export function viewSessionEditor(sessionId, ctx) {
     select.addEventListener('change', () => {
       const found = known.find((e) => e.id === select.value);
       if (!found) return;
-      draft.exercises.push({ id: found.id, name: found.name, mode: found.mode, defaultSets: found.defaultSets });
+      draft.exercises.push({
+        id: found.id, name: found.name, mode: found.mode,
+        defaultSets: found.defaultSets, libId: found.libId || ''
+      });
       draw();
       drawReuse();
     });
@@ -165,21 +159,114 @@ export function viewSessionEditor(sessionId, ctx) {
   drawReuse();
 
   /*
+   * Retirer un exercice créé à la main. Les exercices du catalogue ne sont
+   * jamais proposés ici : ils doivent rester disponibles pour tout le monde.
+   * S'il a déjà des séances, il est seulement masqué des choix — l'historique
+   * et la courbe ne bougent pas.
+   */
+  const cleanupWrap = h('div', { class: 'reuse' });
+  const drawCleanup = () => {
+    cleanupWrap.textContent = '';
+    const custom = store.exerciseCatalog().filter((e) => !e.hidden && !e.libId);
+    if (!custom.length) return;
+
+    const select = h('select', { 'aria-label': 'Exercice créé à la main à retirer' },
+      h('option', { value: '' }, 'Choisir un exercice créé à la main…'),
+      custom.map((e) => h('option', { value: e.id }, e.name)));
+
+    select.addEventListener('change', () => {
+      const found = custom.find((e) => e.id === select.value);
+      if (!found) { return; }
+      if (!confirm(`Retirer « ${found.name} » de tes exercices ?\n\n` +
+        'Il disparaîtra des choix et de tes séances. Ses séances déjà enregistrées sont conservées.')) {
+        select.value = '';
+        return;
+      }
+      const what = store.removeCustomExercise(found.id);
+      draft.exercises = draft.exercises.filter((x) => x.id !== found.id);
+      toast(what === 'masque' ? `${found.name} retiré des choix` : `${found.name} supprimé`);
+      draw();
+      drawReuse();
+      drawCleanup();
+    });
+
+    cleanupWrap.append(
+      h('p', { class: 'field-label' }, 'Retirer un exercice créé à la main'),
+      select,
+      h('span', { class: 'hint' }, 'Les exercices du catalogue, eux, restent toujours disponibles.')
+    );
+  };
+  drawCleanup();
+
+  /*
    * Catalogue : une base d'exercices par muscle, pour ne pas avoir à tout
    * saisir à la main. Un exercice ajouté d'ici est un exercice normal de la
    * séance, avec son propre identifiant, donc son propre historique.
    */
   const catalogue = cataloguePanel({
     has: (e) => draft.exercises.some((x) => x.libId === e.id || x.name.toLowerCase() === e.name.toLowerCase()),
-    onAdd: (e, name) => {
+    onAdd: (e) => {
       draft.exercises.push({
-        id: store.uid('e'), name, mode: e.mode, defaultSets: 3, libId: e.id
+        id: store.uid('e'), name: e.name, mode: e.mode, defaultSets: 3, libId: e.id
       });
       draw();
       drawReuse();
-      toast(`${name} ajouté`);
+      toast(`${e.name} ajouté`);
     }
   });
+
+  /* --- créer un exercice à la main ----------------------------------- */
+  const newName = h('input', { type: 'text', placeholder: 'Nom du nouvel exercice', maxlength: 80, 'aria-label': 'Nom du nouvel exercice' });
+  const newMode = h('select', { 'aria-label': 'Type' },
+    h('option', { value: 'kg' }, 'Charge'), h('option', { value: 'bw' }, 'Poids du corps'));
+  const newSets = h('select', { 'aria-label': 'Nombre de séries' },
+    ...SET_CHOICES.map((n) => h('option', { value: n, selected: n === 3 }, `${n} série${n > 1 ? 's' : ''}`)));
+
+  const pushExercise = (ex) => {
+    draft.exercises.push(ex);
+    newName.value = '';
+    draw();
+    drawReuse();
+    drawCleanup();
+    newName.focus();
+  };
+
+  /*
+   * Avant de créer : si l'exercice existe déjà, chez soi ou au catalogue, on le
+   * propose plutôt que d'en faire un deuxième. Deux exercices du même nom, ce
+   * sont deux courbes à moitié remplies.
+   */
+  const add = () => {
+    const value = newName.value.trim();
+    if (!value) { newName.focus(); return; }
+
+    const known = store.exerciseCatalog().find(
+      (e) => !e.hidden && !draft.exercises.some((x) => x.id === e.id) &&
+        e.name.toLowerCase() === value.toLowerCase());
+    if (known && confirm(`« ${known.name} » existe déjà dans tes exercices.\n\n` +
+      'Le reprendre ? Son historique et sa courbe continuent.')) {
+      pushExercise({
+        id: known.id, name: known.name, mode: known.mode,
+        defaultSets: known.defaultSets, libId: known.libId || ''
+      });
+      return;
+    }
+
+    const lib = findByName(value);
+    const already = lib && draft.exercises.some((x) => x.libId === lib.id);
+    if (lib && !already && confirm(`« ${lib.name} » est au catalogue (${GEAR[lib.gear]}).\n\n` +
+      'L’ajouter depuis le catalogue ? Il arrive avec son illustration et ses muscles.')) {
+      pushExercise({
+        id: store.uid('e'), name: lib.name, mode: lib.mode, defaultSets: Number(newSets.value), libId: lib.id
+      });
+      return;
+    }
+
+    pushExercise({
+      id: store.uid('e'), name: value, mode: newMode.value, defaultSets: Number(newSets.value), libId: ''
+    });
+  };
+  newName.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); add(); } });
 
   const nameInput = h('input', {
     type: 'text', value: draft.name, maxlength: 60, 'aria-label': 'Nom de la séance',
@@ -200,15 +287,25 @@ export function viewSessionEditor(sessionId, ctx) {
         h('h2', {}, 'Exercices'),
         h('p', { class: 'desc' }, 'Ordre, type et nombre de séries tels qu’ils apparaîtront pendant la séance.'),
         list,
-        reuseWrap
+        reuseWrap,
+        cleanupWrap
       ),
       h('details', { class: 'card section cat-box' },
         h('summary', {},
           h('h2', {}, 'Catalogue d’exercices'),
           h('span', { class: 'chev' }, icon(ICONS.chevron, 16))
         ),
-        h('p', { class: 'desc' }, 'Cherche un exercice, ou parcours muscle par muscle. « Renommer » l’ajoute sous ton propre nom.'),
+        h('p', { class: 'desc' }, 'Cherche un exercice, ou parcours muscle par muscle.'),
         catalogue
+      ),
+      h('section', { class: 'card section' },
+        h('h2', {}, 'Créer un exercice'),
+        h('p', { class: 'desc' }, 'Pour une machine ou une variante qui n’est pas au catalogue.'),
+        h('div', { class: 'edit-add' },
+          newName,
+          h('div', { class: 'edit-opts' }, newMode, newSets,
+            h('button', { class: 'btn primary small', type: 'button', onclick: add }, icon(ICONS.plus, 14), 'Ajouter'))
+        )
       )
     ),
     h('div', { class: 'form-actions' },

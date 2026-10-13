@@ -58,11 +58,22 @@ secondaires en gris, beaucoup d'exercices étant polyarticulaires. Une barre de 
 filtre sur le nom et le matériel.
 
 Pas de nombre de séries dans le catalogue : il se règle dans la séance, après l'ajout.
-Tout le monde part de la même base, il n'y a pas de création libre ; **Renommer** ajoute un
-exercice du catalogue sous le nom qu'on veut, pour coller au matériel de sa salle. Dans la
-liste des exercices d'une séance, « Renommer » change seulement l'étiquette : l'exercice
-garde son identifiant, donc ses séances passées et sa courbe, et les séances déjà
-enregistrées gardent le nom qu'elles portaient ce jour-là.
+
+L'éditeur de séance propose trois façons d'ajouter un exercice, et une de faire le ménage :
+
+- le **catalogue**, la base commune ;
+- **remettre un exercice déjà fait**, qui reprend son identifiant, donc sa courbe continue ;
+- **créer un exercice**, pour une machine qui n'est pas au catalogue. Si le nom tapé
+  correspond à un exercice déjà connu ou à un exercice du catalogue, celui-ci est proposé
+  avant d'en créer un deuxième : deux exercices du même nom, ce sont deux courbes à moitié
+  remplies ;
+- **retirer un exercice créé à la main**, qui le sort des choix et des séances. S'il a déjà
+  des séances enregistrées il est seulement masqué : l'historique et la courbe ne bougent
+  pas. Les exercices du catalogue, eux, ne disparaissent jamais des choix.
+
+Le nom d'un exercice se corrige directement dans la liste : l'exercice garde son identifiant,
+donc ses séances passées et sa courbe. Les séances déjà enregistrées gardent le nom qu'elles
+portaient ce jour-là.
 
 Une centaine d'exercices ont en plus une **illustration du mouvement**. Les autres gardent
 les silhouettes, qui restent aussi le repli si une image manque.

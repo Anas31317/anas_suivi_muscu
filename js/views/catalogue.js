@@ -26,7 +26,7 @@ const GEAR_ICON = {
 };
 
 /**
- * @param {(entry, name) => void} onAdd  exercice choisi, et le nom à lui donner
+ * @param {(entry) => void} onAdd  exercice du catalogue choisi
  * @param {(entry) => boolean} has  vrai si l'exercice est déjà dans la séance
  */
 export function cataloguePanel({ onAdd, has }) {
@@ -81,25 +81,13 @@ export function cataloguePanel({ onAdd, has }) {
         h('div', { class: 'meta' }, icon(GEAR_ICON[e.gear] || ICONS.dumbbell, 13), tags),
         muscleLine
       ),
-      h('div', { class: 'cat-actions' },
-        already
-          ? h('span', { class: 'cat-added' }, icon(ICONS.check, 14), 'Ajouté')
-          : h('button', {
-              class: 'btn small', type: 'button',
-              'aria-label': `Ajouter ${e.name} à la séance`,
-              onclick: () => { onAdd(e, e.name); draw(); }
-            }, icon(ICONS.plus, 14), 'Ajouter'),
-        h('button', {
-          class: 'btn ghost small', type: 'button',
-          'aria-label': `Ajouter ${e.name} sous un autre nom`,
-          onclick: () => {
-            const name = prompt('Sous quel nom ajouter cet exercice ?', e.name);
-            if (name === null) return;
-            const clean = name.trim();
-            if (clean) { onAdd(e, clean); draw(); }
-          }
-        }, icon(ICONS.edit, 13), 'Renommer')
-      )
+      already
+        ? h('span', { class: 'cat-added' }, icon(ICONS.check, 14), 'Ajouté')
+        : h('button', {
+            class: 'btn small cat-add', type: 'button',
+            'aria-label': `Ajouter ${e.name} à la séance`,
+            onclick: () => { onAdd(e); draw(); }
+          }, icon(ICONS.plus, 14), 'Ajouter')
     );
   };
 

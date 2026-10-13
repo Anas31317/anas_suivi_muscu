@@ -149,7 +149,10 @@ function normalize(raw) {
     // exercices suivis dans la page 1RM. null = pas encore choisi, on affiche
     // alors ceux qui ont une donnée. Retirer un exercice d'ici ne supprime
     // jamais ses séances ni ses maxis enregistrés.
-    rmList: Array.isArray(s.rmList) ? s.rmList.filter((id) => typeof id === 'string' && id) : null
+    rmList: Array.isArray(s.rmList) ? s.rmList.filter((id) => typeof id === 'string' && id) : null,
+    // exercices créés à la main puis retirés des choix. Leur historique reste :
+    // ils ne disparaissent que de la liste « remettre un exercice déjà fait ».
+    hidden: Array.isArray(s.hidden) ? s.hidden.filter((id) => typeof id === 'string' && id) : []
   };
 }
 
@@ -329,7 +332,27 @@ export function exerciseCatalog() {
     for (const en of log.entries) addExtra(en.exerciseId, en.name, en.mode, en.sets.length);
   }
   for (const r of st.oneRM || []) addExtra(r.exerciseId, r.name, 'kg', 3);
-  return out;
+  const hidden = new Set(st.hidden || []);
+  return out.map((e) => ({ ...e, hidden: hidden.has(e.id) }));
+}
+
+/**
+ * Retire un exercice créé à la main des choix : il sort du programme, et s'il
+ * a déjà des séances enregistrées il est seulement masqué — l'historique et la
+ * courbe restent intacts, comme toujours.
+ */
+export function removeCustomExercise(exerciseId) {
+  const used = getState().logs.some((l) => l.entries.some((en) => en.exerciseId === exerciseId));
+  mutate((s) => {
+    for (const sess of s.sessions) {
+      sess.exercises = sess.exercises.filter((e) => e.id !== exerciseId);
+    }
+    if (used) {
+      if (!Array.isArray(s.hidden)) s.hidden = [];
+      if (!s.hidden.includes(exerciseId)) s.hidden.push(exerciseId);
+    }
+  });
+  return used ? 'masque' : 'supprime';
 }
 
 /** Tous les exercices, aplatis, avec leur séance — pour la page Progression. */
