@@ -46,15 +46,25 @@ Inscription réservée aux emails autorisés, connexion et mot de passe oublié 
 
 ## Catalogue d'exercices
 
-« Modifier la séance » contient un **catalogue** d'environ 75 exercices rangés par muscle,
-avec le matériel (barre, haltères, machine, poulie, poids du corps), un nombre de séries de
-départ, un conseil d'exécution et une silhouette qui montre la zone travaillée. Ajouter un
-exercice depuis le catalogue crée un exercice normal de la séance : il a son propre
-historique et sa propre courbe. Un exercice absent du catalogue se crée toujours à la main
-juste en dessous.
+« Modifier la séance » contient un **catalogue** de plus de 140 exercices : une ligne par
+variante, parce que le même mouvement à la barre, aux haltères, à la machine ou à la poulie
+ne se charge pas pareil et ne se suit pas sur la même courbe. L'inclinaison et l'angle des
+poignées (pronation, supination, neutre) sont précisés quand ils changent le mouvement.
 
-Pour en ajouter au catalogue : [`js/exercise-library.js`](js/exercise-library.js), une ligne
-par exercice. Les zones de la silhouette sont dans [`js/body-map.js`](js/body-map.js).
+Chaque exercice affiche **les muscles qu'il travaille** sur deux silhouettes, de face et de
+dos : muscles principaux en couleur pleine, secondaires en teinte claire — beaucoup
+d'exercices sont polyarticulaires. Une barre de recherche filtre sur le nom, le matériel, la
+position et la prise.
+
+Pas de nombre de séries dans le catalogue : il se règle dans la séance, après l'ajout.
+Tout le monde part de la même base, il n'y a pas de création libre ; pour une version à soi,
+**Renommer** ajoute l'exercice sous un autre nom, et c'est alors un exercice à part avec sa
+propre courbe. Dans la liste des exercices d'une séance, « Renommer » fait la même chose :
+il crée un nouvel exercice, l'ancien gardant son historique.
+
+Pour compléter le catalogue : [`js/exercise-library.js`](js/exercise-library.js), une ligne
+par exercice (id, nom, matériel, mode, position, prise, muscles principaux, muscles
+secondaires). Les zones des silhouettes sont dans [`js/body-map.js`](js/body-map.js).
 
 ## Mode maintenance
 

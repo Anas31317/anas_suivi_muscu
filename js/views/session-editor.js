@@ -65,16 +65,39 @@ export function viewSessionEditor(sessionId, ctx) {
   /* --- liste des exercices ------------------------------------------- */
   const list = h('div', { class: 'edit-list' });
 
+  /*
+   * Renommer ne renomme pas : ça remplace l'exercice par un nouveau, qui
+   * repart d'une courbe vierge. L'ancien garde ses séances et reste proposé
+   * dans « remettre un exercice déjà fait ». C'est dit dans la question posée,
+   * parce que la différence compte.
+   */
+  const rename = (i) => {
+    const ex = draft.exercises[i];
+    const value = prompt(
+      [
+        `Nouveau nom pour « ${ex.name} » :`,
+        '',
+        'Cela crée un exercice à part, avec sa propre courbe.',
+        `L'historique de « ${ex.name} » n'est pas perdu : il reste accessible dans Progrès.`
+      ].join('\n'),
+      ex.name);
+    if (value === null) return;
+    const clean = value.trim();
+    if (!clean || clean === ex.name) return;
+    draft.exercises[i] = {
+      id: store.uid('e'), name: clean, mode: ex.mode, defaultSets: ex.defaultSets, libId: ex.libId || ''
+    };
+    draw();
+    drawReuse();
+  };
+
   const draw = () => {
     list.textContent = '';
     if (!draft.exercises.length) {
       list.append(h('p', { class: 'muted edit-empty' }, 'Aucun exercice. Ajoute le premier ci-dessous.'));
     }
     draft.exercises.forEach((ex, i) => {
-      const name = h('input', {
-        type: 'text', value: ex.name, maxlength: 80, 'aria-label': `Nom de l’exercice ${i + 1}`,
-        oninput: () => { ex.name = name.value; }
-      });
+      const name = h('div', { class: 'edit-name' }, ex.name);
       const mode = h('select', { 'aria-label': 'Type', onchange: () => { ex.mode = mode.value; } },
         h('option', { value: 'kg', selected: ex.mode === 'kg' }, 'Charge'),
         h('option', { value: 'bw', selected: ex.mode === 'bw' }, 'Poids du corps'));
@@ -89,6 +112,7 @@ export function viewSessionEditor(sessionId, ctx) {
           h('div', { class: 'edit-opts' }, mode, sets)
         ),
         h('div', { class: 'mini' },
+          miniBtn(ICONS.edit, 'Renommer', () => rename(i)),
           miniBtn(ICONS.up, 'Monter', () => {
             if (i === 0) return;
             [draft.exercises[i - 1], draft.exercises[i]] = [draft.exercises[i], draft.exercises[i - 1]];
@@ -158,30 +182,15 @@ export function viewSessionEditor(sessionId, ctx) {
    */
   const catalogue = cataloguePanel({
     has: (e) => draft.exercises.some((x) => x.libId === e.id || x.name.toLowerCase() === e.name.toLowerCase()),
-    onAdd: (e) => {
+    onAdd: (e, name) => {
       draft.exercises.push({
-        id: store.uid('e'), name: e.name, mode: e.mode, defaultSets: e.sets, libId: e.id
+        id: store.uid('e'), name, mode: e.mode, defaultSets: 3, libId: e.id
       });
       draw();
       drawReuse();
-      toast(`${e.name} ajouté`);
+      toast(`${name} ajouté`);
     }
   });
-
-  const newName = h('input', { type: 'text', placeholder: 'Nom du nouvel exercice', maxlength: 80, 'aria-label': 'Nom du nouvel exercice' });
-  const newMode = h('select', { 'aria-label': 'Type' }, h('option', { value: 'kg' }, 'Charge'), h('option', { value: 'bw' }, 'Poids du corps'));
-  const newSets = h('select', { 'aria-label': 'Nombre de séries' },
-    ...SET_CHOICES.map((n) => h('option', { value: n, selected: n === 3 }, `${n} série${n > 1 ? 's' : ''}`)));
-  const add = () => {
-    const value = newName.value.trim();
-    if (!value) { newName.focus(); return; }
-    draft.exercises.push({ id: store.uid('e'), name: value, mode: newMode.value, defaultSets: Number(newSets.value) });
-    newName.value = '';
-    draw();
-    drawReuse();
-    newName.focus();
-  };
-  newName.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); add(); } });
 
   const nameInput = h('input', {
     type: 'text', value: draft.name, maxlength: 60, 'aria-label': 'Nom de la séance',
@@ -209,17 +218,8 @@ export function viewSessionEditor(sessionId, ctx) {
           h('h2', {}, 'Catalogue d’exercices'),
           h('span', { class: 'chev' }, icon(ICONS.chevron, 16))
         ),
-        h('p', { class: 'desc' }, 'Choisis un muscle, puis ajoute les exercices qui t’intéressent.'),
+        h('p', { class: 'desc' }, 'Cherche un exercice, ou parcours muscle par muscle. « Renommer » l’ajoute sous ton propre nom.'),
         catalogue
-      ),
-      h('section', { class: 'card section' },
-        h('h2', {}, 'Exercice sur mesure'),
-        h('p', { class: 'desc' }, 'Si ton exercice n’est pas au catalogue, crée-le ici.'),
-        h('div', { class: 'edit-add' },
-          newName,
-          h('div', { class: 'edit-opts' }, newMode, newSets,
-            h('button', { class: 'btn primary small', type: 'button', onclick: add }, icon(ICONS.plus, 14), 'Ajouter'))
-        )
       )
     ),
     h('div', { class: 'form-actions' },
