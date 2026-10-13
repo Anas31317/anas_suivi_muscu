@@ -44,6 +44,31 @@ fait en dessous**, et toutes les courbes de musculation sont réunies dans Progr
 
 Inscription réservée aux emails autorisés, connexion et mot de passe oublié par email.
 
+## Catalogue d'exercices
+
+« Modifier la séance » contient un **catalogue** d'environ 75 exercices rangés par muscle,
+avec le matériel (barre, haltères, machine, poulie, poids du corps), un nombre de séries de
+départ, un conseil d'exécution et une silhouette qui montre la zone travaillée. Ajouter un
+exercice depuis le catalogue crée un exercice normal de la séance : il a son propre
+historique et sa propre courbe. Un exercice absent du catalogue se crée toujours à la main
+juste en dessous.
+
+Pour en ajouter au catalogue : [`js/exercise-library.js`](js/exercise-library.js), une ligne
+par exercice. Les zones de la silhouette sont dans [`js/body-map.js`](js/body-map.js).
+
+## Mode maintenance
+
+Pour essayer une nouveauté sans que les autres tombent sur une appli à moitié faite :
+dans [`js/config.js`](js/config.js), `MAINTENANCE = true`. Seule l'adresse
+`MAINTAINER_EMAIL` entre alors dans l'appli ; les autres comptes voient un écran
+« Maintenance en cours » et peuvent seulement se déconnecter. Un bandeau orange rappelle au
+mainteneur que le mode est actif — **il faut repasser `MAINTENANCE` à `false` et pousser**
+pour rouvrir l'appli.
+
+C'est un garde-fou d'affichage, pas une sécurité : il tient les autres à l'écart le temps
+d'un essai, il n'arrêterait pas quelqu'un de décidé. Ce qui protège vraiment les données
+reste les règles RLS de la base.
+
 ## Mise en service
 
 1. **Supabase** : suivre [docs/SUPABASE.md](docs/SUPABASE.md) — tables et règles de
@@ -104,7 +129,8 @@ Site statique : HTML, CSS et JavaScript à modules, sans build ni dépendance à
 | `js/seed.js` | programme type des nouveaux comptes |
 | `js/logo.js`, `js/theme.js`, `js/version.js` | logo, thème, nom / version / auteur |
 | `js/config.js` | URL et clé publique Supabase |
-| `js/views/` | une page par fichier : `dashboard`, `muscu` (programme + historique), `workout` (séance en cours), `session-editor`, `cardio`, `progression`, `one-rm`, `friends`, `programme`, `profile` |
+| `js/exercise-library.js`, `js/body-map.js` | catalogue d'exercices par muscle et silhouette |
+| `js/views/` | une page par fichier : `dashboard`, `muscu` (programme + historique), `workout` (séance en cours), `session-editor`, `catalogue`, `cardio`, `progression`, `one-rm`, `friends`, `programme`, `profile` |
 | `js/vendor/` | supabase-js (copie locale vérifiée) |
 | `supabase/` | scripts SQL : tables, règles de sécurité, partage |
 | `sw.js`, `manifest.webmanifest` | installation sur mobile et mode hors ligne |

@@ -11,6 +11,7 @@
 import * as store from '../store.js';
 import { h, toast, icon, ICONS } from '../ui.js';
 import { sessionNumber, miniBtn, pageHead, emptyState } from './common.js';
+import { cataloguePanel } from './catalogue.js';
 
 const SET_CHOICES = [1, 2, 3, 4, 5, 6, 7, 8, 10];
 
@@ -150,6 +151,23 @@ export function viewSessionEditor(sessionId, ctx) {
   };
   drawReuse();
 
+  /*
+   * Catalogue : une base d'exercices par muscle, pour ne pas avoir à tout
+   * saisir à la main. Un exercice ajouté d'ici est un exercice normal de la
+   * séance, avec son propre identifiant, donc son propre historique.
+   */
+  const catalogue = cataloguePanel({
+    has: (e) => draft.exercises.some((x) => x.libId === e.id || x.name.toLowerCase() === e.name.toLowerCase()),
+    onAdd: (e) => {
+      draft.exercises.push({
+        id: store.uid('e'), name: e.name, mode: e.mode, defaultSets: e.sets, libId: e.id
+      });
+      draw();
+      drawReuse();
+      toast(`${e.name} ajouté`);
+    }
+  });
+
   const newName = h('input', { type: 'text', placeholder: 'Nom du nouvel exercice', maxlength: 80, 'aria-label': 'Nom du nouvel exercice' });
   const newMode = h('select', { 'aria-label': 'Type' }, h('option', { value: 'kg' }, 'Charge'), h('option', { value: 'bw' }, 'Poids du corps'));
   const newSets = h('select', { 'aria-label': 'Nombre de séries' },
@@ -184,8 +202,19 @@ export function viewSessionEditor(sessionId, ctx) {
         h('h2', {}, 'Exercices'),
         h('p', { class: 'desc' }, 'Ordre, type et nombre de séries tels qu’ils apparaîtront pendant la séance.'),
         list,
-        reuseWrap,
-        h('p', { class: 'field-label' }, 'Nouvel exercice'),
+        reuseWrap
+      ),
+      h('details', { class: 'card section cat-box' },
+        h('summary', {},
+          h('h2', {}, 'Catalogue d’exercices'),
+          h('span', { class: 'chev' }, icon(ICONS.chevron, 16))
+        ),
+        h('p', { class: 'desc' }, 'Choisis un muscle, puis ajoute les exercices qui t’intéressent.'),
+        catalogue
+      ),
+      h('section', { class: 'card section' },
+        h('h2', {}, 'Exercice sur mesure'),
+        h('p', { class: 'desc' }, 'Si ton exercice n’est pas au catalogue, crée-le ici.'),
         h('div', { class: 'edit-add' },
           newName,
           h('div', { class: 'edit-opts' }, newMode, newSets,

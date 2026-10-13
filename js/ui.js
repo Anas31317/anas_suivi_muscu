@@ -90,5 +90,10 @@ export const ICONS = {
   check: 'M5 12.5l4.5 4.5L19 7.5',
   logout:'M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 16l-4-4 4-4M6 12h10',
   download: 'M12 4v11M7.5 10.5 12 15l4.5-4.5M5 20h14',
-  upload: 'M12 15V4M7.5 8.5 12 4l4.5 4.5M5 20h14'
+  upload: 'M12 15V4M7.5 8.5 12 4l4.5 4.5M5 20h14',
+  // matériel du catalogue d'exercices
+  barre: 'M3 9.5v5M6 7v10M18 7v10M21 9.5v5M6 12h12',
+  machine: 'M4 4h16v5H4zM12 9v6M7 15h10v5H7z',
+  poulie: 'M12 3a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM12 8v6M9 14h6l-1 6h-4Z',
+  corps: 'M12 3.5a2 2 0 1 1 0 4 2 2 0 0 1 0-4ZM5 11h14M12 7.5V15M8.5 21l3.5-6 3.5 6'
 };

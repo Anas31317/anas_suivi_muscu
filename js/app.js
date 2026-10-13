@@ -35,6 +35,7 @@ import * as authViews from './auth-views.js';
 import { initTheme } from './theme.js';
 import { logo, APP_NAME } from './logo.js';
 import { APP_VERSION, APP_AUTHOR } from './version.js';
+import { MAINTENANCE, MAINTAINER_EMAIL } from './config.js';
 import { h, toast, icon, ICONS } from './ui.js';
 import { plural } from './views/common.js';
 import { viewDashboard } from './views/dashboard.js';
@@ -163,6 +164,37 @@ function handleAuthEvent(event, session) {
   }, 0);
 }
 
+/* --------------------------------------------------------- maintenance */
+
+/** Vrai si ce compte a le droit d'entrer pendant une maintenance. */
+function isMaintainer() {
+  return Boolean(currentUser) &&
+    auth.normalizeEmail(currentUser.email) === auth.normalizeEmail(MAINTAINER_EMAIL);
+}
+
+/** Vrai si l'appli doit être remplacée par l'écran de maintenance. */
+function blockedByMaintenance() {
+  return MAINTENANCE && Boolean(currentUser) && !isMaintainer();
+}
+
+function viewMaintenance() {
+  return h('div', { class: 'page' },
+    h('div', { class: 'card empty-state' },
+      h('p', { class: 'empty-title' }, 'Maintenance en cours'),
+      h('p', { class: 'empty-text' },
+        'L’appli est momentanément fermée, le temps d’une mise à jour. ' +
+        'Tes données ne bougent pas : tu les retrouveras intactes au retour.'),
+      h('button', { class: 'btn', type: 'button', onclick: signOut }, 'Se déconnecter')
+    )
+  );
+}
+
+/** Rappel pour le mainteneur : sans lui, on oublie de rouvrir l'appli. */
+function maintenanceBanner() {
+  return h('div', { class: 'maint-banner', role: 'status' },
+    'Mode maintenance : les autres comptes ne peuvent pas entrer.');
+}
+
 /* ------------------------------------------------------------- en-tête */
 
 function buildChrome() {
@@ -178,7 +210,7 @@ function buildChrome() {
 
 /** Navigation visible seulement quand on est connecté. */
 function updateChrome() {
-  const signedIn = Boolean(currentUser);
+  const signedIn = Boolean(currentUser) && !blockedByMaintenance();
   document.getElementById('nav').hidden = !signedIn;
   document.body.classList.toggle('signed-in', signedIn);
   document.getElementById('brand').setAttribute('href', signedIn ? '#/' : '#/connexion');
@@ -296,6 +328,8 @@ function render() {
       // Garde d'accès : sans session, seules les pages publiques s'affichent.
       if (!PUBLIC_ROUTES.has(route)) history.replaceState(null, '', '#/connexion');
       view = publicView(PUBLIC_ROUTES.has(route) ? route : 'connexion');
+    } else if (blockedByMaintenance()) {
+      view = viewMaintenance();
     } else if (PUBLIC_ROUTES.has(route)) {
       history.replaceState(null, '', '#/');
       [view, active] = privateView([], {}, ctx);
@@ -309,6 +343,7 @@ function render() {
   }
 
   app.textContent = '';
+  if (MAINTENANCE && isMaintainer()) app.append(maintenanceBanner());
   app.append(view);
   setActiveTab(active);
 
