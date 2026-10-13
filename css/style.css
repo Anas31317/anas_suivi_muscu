@@ -724,19 +724,30 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 
 /* ------------------------------------------- catalogue d'exercices */
 
-.cat-box > summary {
+/* bloc dépliable : un titre, une flèche, le contenu caché tant qu'on ne clique pas */
+.fold > summary {
   display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
   list-style: none;
 }
-.cat-box > summary::-webkit-details-marker { display: none; }
-.cat-box > summary .chev { margin-left: auto; transition: transform 0.15s ease; }
-.cat-box[open] > summary .chev { transform: rotate(90deg); }
+.fold > summary::-webkit-details-marker { display: none; }
+.fold > summary .chev { margin-left: auto; transition: transform 0.15s ease; }
+.fold[open] > summary .chev { transform: rotate(90deg); }
+.fold > .desc { margin-top: 10px; }
 
 .cat-search { margin-bottom: 12px; }
-.cat-search input { width: 100%; }
+/* champ de recherche : plus épais que les autres, c'est la porte d'entrée */
+.cat-search input {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 14px;
+  font-size: 1rem;
+  border: 1px solid var(--axis);
+  background: var(--surface);
+}
+.cat-search input:focus { border-color: var(--accent); }
 .muscle-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
 .chip {
   padding: 6px 11px;

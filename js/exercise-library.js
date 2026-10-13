@@ -83,7 +83,6 @@ const RAW = [
   ['pompes', 'Pompes', 'corps', 'bw', ['pecs'], ['triceps', 'epaules', 'abdos']],
   ['pompes-pieds-hauts', 'Pompes pieds surélevés', 'corps', 'bw', ['pecs'], ['epaules', 'triceps']],
   ['pompes-larges', 'Pompes prise large', 'corps', 'bw', ['pecs'], ['epaules']],
-  ['dips-pecs', 'Dips buste penché', 'corps', 'bw', ['pecs'], ['triceps', 'epaules']],
 
   /* ---------------------------------------------------------------- dos */
   ['tractions-pro', 'Tractions pronation', 'corps', 'bw', ['grand-dorsal'], ['grand-rond', 'biceps', 'avant-bras']],
@@ -106,7 +105,7 @@ const RAW = [
   ['rowing-inverse', 'Rowing inversé (barre basse)', 'corps', 'bw', ['grand-dorsal', 'rhomboides'], ['biceps', 'abdos']],
   ['pull-over-poulie', 'Pull over poulie haute', 'poulie', 'kg', ['grand-dorsal'], ['grand-rond', 'triceps']],
   ['pull-over-haltere', 'Pull over haltère', 'halteres', 'kg', ['grand-dorsal'], ['grand-rond', 'pecs', 'triceps']],
-  ['sdt', 'Soulevé de terre', 'barre', 'kg', ['lombaires', 'grand-dorsal'], ['fessiers', 'ischios', 'trapezes']],
+  ['sdt', 'Soulevé de terre', 'barre', 'kg', ['lombaires', 'fessiers', 'ischios'], ['grand-dorsal', 'trapezes', 'quadriceps']],
 
   /* --------------------------------------------- dos : trapèzes et cou */
   ['shrugs-barre', 'Shrugs barre', 'barre', 'kg', ['trapezes'], ['avant-bras']],
@@ -153,7 +152,7 @@ const RAW = [
   ['drag-curl', 'Drag curl', 'barre', 'kg', ['biceps'], []],
 
   /* ------------------------------------------------------------ triceps */
-  ['dips', 'Dips barres parallèles', 'corps', 'bw', ['triceps'], ['pecs', 'epaules']],
+  ['dips', 'Dips', 'corps', 'bw', ['pecs', 'triceps'], ['epaules']],
   ['dips-machine', 'Dips machine', 'machine', 'kg', ['triceps'], ['pecs']],
   ['dips-banc', 'Dips sur banc', 'corps', 'bw', ['triceps'], ['epaules']],
   ['dev-serre', 'Développé couché prise serrée', 'barre', 'kg', ['triceps'], ['pecs', 'epaules']],
@@ -204,31 +203,31 @@ const RAW = [
   ['abduction-poulie', 'Abduction poulie', 'poulie', 'kg', ['fessiers'], []],
   ['kickback-fessier', 'Kickback fessier poulie', 'poulie', 'kg', ['fessiers'], ['ischios']],
   ['step-up', 'Montée sur banc (step-up)', 'halteres', 'kg', ['fessiers', 'quadriceps'], ['ischios']],
-  ['sdt-sumo', 'Soulevé de terre sumo', 'barre', 'kg', ['fessiers'], ['quadriceps', 'lombaires', 'trapezes']],
+  ['sdt-sumo', 'Soulevé de terre sumo', 'barre', 'kg', ['fessiers', 'quadriceps'], ['lombaires', 'trapezes']],
 
   /* --------------------------------------------------------- quadriceps */
-  ['squat', 'Squat barre (nuque)', 'barre', 'kg', ['quadriceps'], ['fessiers', 'lombaires', 'abdos']],
+  ['squat', 'Squat barre (nuque)', 'barre', 'kg', ['quadriceps', 'fessiers'], ['lombaires', 'abdos']],
   ['squat-avant', 'Squat avant (front squat)', 'barre', 'kg', ['quadriceps'], ['fessiers', 'abdos']],
   ['squat-gobelet', 'Squat gobelet', 'halteres', 'kg', ['quadriceps'], ['fessiers']],
-  ['squat-smith', 'Squat Smith', 'machine', 'kg', ['quadriceps'], ['fessiers']],
-  ['hack-squat', 'Hack squat machine', 'machine', 'kg', ['quadriceps'], ['fessiers']],
+  ['squat-smith', 'Squat Smith', 'machine', 'kg', ['quadriceps', 'fessiers'], []],
+  ['hack-squat', 'Hack squat machine', 'machine', 'kg', ['quadriceps', 'fessiers'], []],
   ['pendulum-squat', 'Pendulum squat', 'machine', 'kg', ['quadriceps'], ['fessiers']],
-  ['presse', 'Presse à cuisses', 'machine', 'kg', ['quadriceps'], ['fessiers', 'ischios']],
+  ['presse', 'Presse à cuisses', 'machine', 'kg', ['quadriceps', 'fessiers'], ['ischios']],
   ['presse-une-jambe', 'Presse à cuisses une jambe', 'machine', 'kg', ['quadriceps'], ['fessiers']],
   ['leg-extension', 'Leg extension', 'machine', 'kg', ['quadriceps'], []],
   ['leg-extension-uni', 'Leg extension unilatéral', 'machine', 'kg', ['quadriceps'], []],
-  ['fente-avant', 'Fente avant', 'halteres', 'kg', ['quadriceps'], ['fessiers']],
-  ['fente-marchee', 'Fente marchée', 'halteres', 'kg', ['quadriceps'], ['fessiers']],
-  ['fente-bulgare', 'Fente bulgare', 'halteres', 'kg', ['quadriceps'], ['fessiers']],
+  ['fente-avant', 'Fente avant', 'halteres', 'kg', ['quadriceps', 'fessiers'], []],
+  ['fente-marchee', 'Fente marchée', 'halteres', 'kg', ['quadriceps', 'fessiers'], []],
+  ['fente-bulgare', 'Fente bulgare', 'halteres', 'kg', ['quadriceps', 'fessiers'], []],
   ['sissy-squat', 'Sissy squat', 'corps', 'bw', ['quadriceps'], []],
 
   /* ------------------------------------------------------------ ischios */
   ['leg-curl-allonge', 'Leg curl allongé', 'machine', 'kg', ['ischios'], ['mollets']],
   ['leg-curl-assis', 'Leg curl assis', 'machine', 'kg', ['ischios'], []],
   ['leg-curl-debout', 'Leg curl debout unilatéral', 'machine', 'kg', ['ischios'], []],
-  ['sdt-roumain', 'Soulevé de terre roumain', 'barre', 'kg', ['ischios'], ['fessiers', 'lombaires']],
-  ['sdt-roumain-halteres', 'Soulevé de terre roumain haltères', 'halteres', 'kg', ['ischios'], ['fessiers', 'lombaires']],
-  ['sdt-jambes-tendues', 'Soulevé de terre jambes tendues', 'barre', 'kg', ['ischios'], ['lombaires']],
+  ['sdt-roumain', 'Soulevé de terre roumain', 'barre', 'kg', ['ischios', 'fessiers'], ['lombaires']],
+  ['sdt-roumain-halteres', 'Soulevé de terre roumain haltères', 'halteres', 'kg', ['ischios', 'fessiers'], ['lombaires']],
+  ['sdt-jambes-tendues', 'Soulevé de terre jambes tendues', 'barre', 'kg', ['ischios', 'fessiers'], ['lombaires']],
   ['nordic-curl', 'Nordic curl', 'corps', 'bw', ['ischios'], ['fessiers']],
 
   /* ------------------------------------------------------------ mollets */
@@ -243,9 +242,14 @@ const RAW = [
 export const LIBRARY = RAW.map(([id, name, gear, mode, primary, secondary]) =>
   ({ id, name, gear, mode, primary, secondary }));
 
-/** Les exercices dont le muscle principal appartient à cette catégorie. */
+/**
+ * Les exercices de cette catégorie. Un exercice vraiment polyarticulaire a
+ * plusieurs muscles principaux : les dips sont dans Pectoraux et dans Triceps,
+ * le soulevé de terre dans Lombaires, Fessiers et Ischios. On le trouve là où
+ * on le cherche, au lieu de deviner dans quelle case il a été rangé.
+ */
 export function libraryFor(muscleId) {
-  return LIBRARY.filter((e) => muscleGroup(e.primary[0]) === muscleId);
+  return LIBRARY.filter((e) => e.primary.some((m) => muscleGroup(m) === muscleId));
 }
 
 export function libraryEntry(libId) {
