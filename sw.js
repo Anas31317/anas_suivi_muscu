@@ -8,7 +8,7 @@
  *   données personnelles ne passent jamais par ce cache.
  */
 
-const CACHE = 'suivi-muscu-v11';
+const CACHE = 'suivi-muscu-v12';
 const SHELL = [
   './',
   './index.html',
@@ -28,6 +28,7 @@ const SHELL = [
   './js/sync.js',
   './js/ui.js',
   './js/exercise-library.js',
+  './js/exercise-images.js',
   './js/body-map.js',
   './js/views/catalogue.js',
   './js/views/common.js',

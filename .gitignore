@@ -33,3 +33,6 @@ desktop.ini
 
 # Outils (au cas où un build serait ajouté un jour)
 node_modules/
+
+# cache de tools/images-wger.py (images brutes avant conversion)
+.cache-images/
