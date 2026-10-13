@@ -65,10 +65,22 @@ const ZONES = {
   'avant-bras': (c) => [ell(FRONT + 9, 59, 4, 10, c), ell(FRONT + 51, 59, 4, 10, c)],
   abdos: (c) => [box(FRONT + 25, 42, 10, 20, 4, c)],
   quadriceps: (c) => [ell(FRONT + 23.5, 84, 6.5, 14, c), ell(FRONT + 36.5, 84, 6.5, 14, c)],
-  // dos et trapèzes : une seule zone, du cou au bas des côtes
+  /*
+   * Le dos en quatre zones : un tirage vertical n'allume pas les mêmes que des
+   * shrugs. Elles ne se chevauchent pas, pour qu'on puisse en éclairer
+   * plusieurs à la fois sans bouillie.
+   */
+  trapezes: (c) => [node('path', { class: c, d: `M${BACK + 19} 25 h22 l-3 11 h-16 Z` })],
+  'grand-rond': (c) => [ell(BACK + 21, 39, 3, 3.2, c), ell(BACK + 39, 39, 3, 3.2, c)],
+  rhomboides: (c) => [box(BACK + 26.5, 37, 7, 9, 2, c)],
+  'grand-dorsal': (c) => [
+    node('path', { class: c, d: `M${BACK + 18.5} 43 h5.5 l1.5 13 h-5.5 Z` }),
+    node('path', { class: c, d: `M${BACK + 41.5} 43 h-5.5 l-1.5 13 h5.5 Z` })
+  ],
+  // le dos en bloc : seulement si un exercice reste rangé en « dos » sans détail
   dos: (c) => [node('path', { class: c, d: `M${BACK + 19} 25 h22 l1 10 l-2 16 h-20 l-2 -16 Z` })],
   triceps: (c) => [ell(BACK + 12.5, 38, 4.5, 9, c), ell(BACK + 47.5, 38, 4.5, 9, c)],
-  lombaires: (c) => [box(BACK + 23, 51, 14, 10, 4, c)],
+  lombaires: (c) => [box(BACK + 26, 52, 8, 9, 3, c)],
   fessiers: (c) => [box(BACK + 19, 62, 22, 10, 4, c)],
   ischios: (c) => [ell(BACK + 23.5, 88, 6.5, 13, c), ell(BACK + 36.5, 88, 6.5, 13, c)],
   mollets: (c) => [ell(BACK + 23.5, 108, 4.5, 10, c), ell(BACK + 36.5, 108, 4.5, 10, c)]

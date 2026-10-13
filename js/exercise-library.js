@@ -23,7 +23,7 @@
 
 export const MUSCLES = [
   { id: 'pecs', label: 'Pectoraux', view: 'front' },
-  { id: 'dos', label: 'Dos et trapèzes', short: 'Dos', view: 'back' },
+  { id: 'dos', label: 'Dos', view: 'back' },
   { id: 'epaules', label: 'Épaules', view: 'front' },
   { id: 'biceps', label: 'Biceps', view: 'front' },
   { id: 'triceps', label: 'Triceps', view: 'back' },
@@ -35,6 +35,24 @@ export const MUSCLES = [
   { id: 'ischios', label: 'Ischios-jambiers', view: 'back' },
   { id: 'mollets', label: 'Mollets', view: 'back' }
 ];
+
+/*
+ * Muscles précis, plus fins que les catégories ci-dessus. Le dos en compte
+ * quatre : un tirage vertical et un rowing ne travaillent pas la même chose,
+ * et ça se voit sur la silhouette. Chacun dit à quelle catégorie il appartient,
+ * c'est elle qui sert à ranger les exercices.
+ */
+export const DETAIL = {
+  trapezes: { label: 'Trapèzes', group: 'dos' },
+  'grand-dorsal': { label: 'Grand dorsal', group: 'dos' },
+  'grand-rond': { label: 'Grand rond', group: 'dos' },
+  rhomboides: { label: 'Rhomboïdes', group: 'dos' }
+};
+
+/** Catégorie d'un muscle : un muscle précis renvoie la sienne, les autres eux-mêmes. */
+export function muscleGroup(id) {
+  return DETAIL[id] ? DETAIL[id].group : id;
+}
 
 export const GEAR = {
   barre: 'Barre',
@@ -52,7 +70,6 @@ const RAW = [
   ['dc-smith', 'Développé couché Smith', 'machine', 'kg', ['pecs'], ['triceps', 'epaules']],
   ['dc-incline-smith', 'Développé incliné Smith', 'machine', 'kg', ['pecs'], ['epaules', 'triceps']],
   ['dc-halteres', 'Développé couché haltères', 'halteres', 'kg', ['pecs'], ['triceps', 'epaules']],
-  ['dc-halteres-neutre', 'Développé couché haltères prise neutre', 'halteres', 'kg', ['pecs'], ['triceps']],
   ['dc-incline-halteres', 'Développé incliné haltères', 'halteres', 'kg', ['pecs'], ['epaules', 'triceps']],
   ['dc-decline-halteres', 'Développé décliné haltères', 'halteres', 'kg', ['pecs'], ['triceps']],
   ['chest-press', 'Développé machine (chest press)', 'machine', 'kg', ['pecs'], ['triceps', 'epaules']],
@@ -69,34 +86,34 @@ const RAW = [
   ['dips-pecs', 'Dips buste penché', 'corps', 'bw', ['pecs'], ['triceps', 'epaules']],
 
   /* ---------------------------------------------------------------- dos */
-  ['tractions-pro', 'Tractions pronation', 'corps', 'bw', ['dos'], ['biceps', 'avant-bras']],
-  ['tractions-supi', 'Tractions supination', 'corps', 'bw', ['dos'], ['biceps']],
-  ['tractions-neutre', 'Tractions prise neutre', 'corps', 'bw', ['dos'], ['biceps', 'avant-bras']],
-  ['tractions-larges', 'Tractions prise large', 'corps', 'bw', ['dos'], ['epaules']],
-  ['tirage-vertical-pro', 'Tirage vertical pronation', 'poulie', 'kg', ['dos'], ['biceps']],
-  ['tirage-vertical-supi', 'Tirage vertical supination', 'poulie', 'kg', ['dos'], ['biceps']],
-  ['tirage-vertical-neutre', 'Tirage vertical prise neutre', 'poulie', 'kg', ['dos'], ['biceps']],
-  ['tirage-vertical-large', 'Tirage vertical prise large', 'poulie', 'kg', ['dos'], ['epaules', 'biceps']],
-  ['rowing-barre-pro', 'Rowing barre pronation', 'barre', 'kg', ['dos'], ['biceps', 'lombaires']],
-  ['rowing-barre-supi', 'Rowing barre supination (Yates)', 'barre', 'kg', ['dos'], ['biceps', 'lombaires']],
-  ['rowing-t-bar', 'Rowing T-bar', 'barre', 'kg', ['dos'], ['biceps']],
-  ['rowing-haltere', 'Rowing haltère un bras', 'halteres', 'kg', ['dos'], ['biceps']],
-  ['rowing-halteres-2', 'Rowing haltères deux bras', 'halteres', 'kg', ['dos'], ['biceps', 'lombaires']],
-  ['seal-row', 'Seal row (banc)', 'halteres', 'kg', ['dos'], ['biceps']],
-  ['rowing-machine', 'Rowing machine', 'machine', 'kg', ['dos'], ['biceps']],
-  ['tirage-horizontal', 'Tirage horizontal poulie', 'poulie', 'kg', ['dos'], ['biceps']],
-  ['tirage-horizontal-large', 'Tirage horizontal prise large', 'poulie', 'kg', ['dos'], ['epaules']],
-  ['rowing-inverse', 'Rowing inversé (barre basse)', 'corps', 'bw', ['dos'], ['biceps', 'abdos']],
-  ['pull-over-poulie', 'Pull over poulie haute', 'poulie', 'kg', ['dos'], ['triceps']],
-  ['pull-over-haltere', 'Pull over haltère', 'halteres', 'kg', ['dos'], ['pecs', 'triceps']],
-  ['sdt', 'Soulevé de terre', 'barre', 'kg', ['dos', 'lombaires'], ['fessiers', 'ischios']],
+  ['tractions-pro', 'Tractions pronation', 'corps', 'bw', ['grand-dorsal'], ['grand-rond', 'biceps', 'avant-bras']],
+  ['tractions-supi', 'Tractions supination', 'corps', 'bw', ['grand-dorsal'], ['biceps', 'grand-rond']],
+  ['tractions-neutre', 'Tractions prise neutre', 'corps', 'bw', ['grand-dorsal'], ['grand-rond', 'biceps', 'avant-bras']],
+  ['tractions-larges', 'Tractions prise large', 'corps', 'bw', ['grand-dorsal'], ['grand-rond', 'rhomboides', 'epaules']],
+  ['tirage-vertical-pro', 'Tirage vertical pronation', 'poulie', 'kg', ['grand-dorsal'], ['grand-rond', 'biceps']],
+  ['tirage-vertical-supi', 'Tirage vertical supination', 'poulie', 'kg', ['grand-dorsal'], ['biceps', 'grand-rond']],
+  ['tirage-vertical-neutre', 'Tirage vertical prise neutre', 'poulie', 'kg', ['grand-dorsal'], ['grand-rond', 'biceps']],
+  ['tirage-vertical-large', 'Tirage vertical prise large', 'poulie', 'kg', ['grand-dorsal'], ['grand-rond', 'rhomboides', 'epaules']],
+  ['rowing-barre-pro', 'Rowing barre pronation', 'barre', 'kg', ['grand-dorsal', 'rhomboides'], ['trapezes', 'biceps', 'lombaires']],
+  ['rowing-barre-supi', 'Rowing barre supination (Yates)', 'barre', 'kg', ['grand-dorsal'], ['biceps', 'rhomboides', 'lombaires']],
+  ['rowing-t-bar', 'Rowing T-bar', 'barre', 'kg', ['grand-dorsal', 'rhomboides'], ['trapezes', 'biceps']],
+  ['rowing-haltere', 'Rowing haltère un bras', 'halteres', 'kg', ['grand-dorsal'], ['rhomboides', 'grand-rond', 'biceps']],
+  ['rowing-halteres-2', 'Rowing haltères deux bras', 'halteres', 'kg', ['grand-dorsal', 'rhomboides'], ['biceps', 'lombaires']],
+  ['seal-row', 'Seal row (banc)', 'halteres', 'kg', ['grand-dorsal', 'rhomboides'], ['trapezes', 'biceps']],
+  ['rowing-machine', 'Rowing machine', 'machine', 'kg', ['grand-dorsal', 'rhomboides'], ['trapezes', 'biceps']],
+  ['tirage-horizontal', 'Tirage horizontal poulie', 'poulie', 'kg', ['grand-dorsal', 'rhomboides'], ['trapezes', 'biceps']],
+  ['tirage-horizontal-large', 'Tirage horizontal prise large', 'poulie', 'kg', ['rhomboides', 'trapezes'], ['grand-dorsal', 'epaules']],
+  ['rowing-inverse', 'Rowing inversé (barre basse)', 'corps', 'bw', ['grand-dorsal', 'rhomboides'], ['biceps', 'abdos']],
+  ['pull-over-poulie', 'Pull over poulie haute', 'poulie', 'kg', ['grand-dorsal'], ['grand-rond', 'triceps']],
+  ['pull-over-haltere', 'Pull over haltère', 'halteres', 'kg', ['grand-dorsal'], ['grand-rond', 'pecs', 'triceps']],
+  ['sdt', 'Soulevé de terre', 'barre', 'kg', ['lombaires', 'grand-dorsal'], ['fessiers', 'ischios', 'trapezes']],
 
   /* --------------------------------------------- dos : trapèzes et cou */
-  ['shrugs-barre', 'Shrugs barre', 'barre', 'kg', ['dos'], ['avant-bras']],
-  ['shrugs-halteres', 'Shrugs haltères', 'halteres', 'kg', ['dos'], ['avant-bras']],
-  ['shrugs-machine', 'Shrugs machine', 'machine', 'kg', ['dos'], []],
-  ['face-pull', 'Face pull', 'poulie', 'kg', ['dos', 'epaules'], []],
-  ['rowing-menton', 'Rowing menton', 'barre', 'kg', ['dos', 'epaules'], ['biceps']],
+  ['shrugs-barre', 'Shrugs barre', 'barre', 'kg', ['trapezes'], ['avant-bras']],
+  ['shrugs-halteres', 'Shrugs haltères', 'halteres', 'kg', ['trapezes'], ['avant-bras']],
+  ['shrugs-machine', 'Shrugs machine', 'machine', 'kg', ['trapezes'], []],
+  ['face-pull', 'Face pull', 'poulie', 'kg', ['trapezes', 'epaules'], ['rhomboides']],
+  ['rowing-menton', 'Rowing menton', 'barre', 'kg', ['trapezes', 'epaules'], ['biceps']],
 
   /* ------------------------------------------------------------ épaules */
   ['militaire-debout', 'Développé militaire debout', 'barre', 'kg', ['epaules'], ['triceps', 'abdos']],
@@ -109,13 +126,13 @@ const RAW = [
   ['elev-lat-halteres', 'Élévations latérales haltères', 'halteres', 'kg', ['epaules'], []],
   ['elev-lat-poulie', 'Élévation latérale poulie', 'poulie', 'kg', ['epaules'], []],
   ['elev-lat-machine', 'Élévations latérales machine', 'machine', 'kg', ['epaules'], []],
-  ['elev-lat-penche', 'Élévations latérales buste penché', 'halteres', 'kg', ['epaules'], ['dos']],
+  ['elev-lat-penche', 'Élévations latérales buste penché', 'halteres', 'kg', ['epaules'], ['trapezes', 'rhomboides']],
   ['elev-front-halteres', 'Élévations frontales haltères', 'halteres', 'kg', ['epaules'], ['pecs']],
   ['elev-front-barre', 'Élévations frontales barre', 'barre', 'kg', ['epaules'], []],
   ['elev-front-poulie', 'Élévations frontales poulie', 'poulie', 'kg', ['epaules'], []],
-  ['oiseau-halteres', 'Oiseau haltères', 'halteres', 'kg', ['epaules'], ['dos']],
-  ['oiseau-machine', 'Oiseau machine (reverse pec deck)', 'machine', 'kg', ['epaules'], ['dos']],
-  ['oiseau-poulie', 'Oiseau poulie', 'poulie', 'kg', ['epaules'], ['dos']],
+  ['oiseau-halteres', 'Oiseau haltères', 'halteres', 'kg', ['epaules'], ['rhomboides', 'trapezes']],
+  ['oiseau-machine', 'Oiseau machine (reverse pec deck)', 'machine', 'kg', ['epaules'], ['rhomboides', 'trapezes']],
+  ['oiseau-poulie', 'Oiseau poulie', 'poulie', 'kg', ['epaules'], ['rhomboides', 'trapezes']],
 
   /* ------------------------------------------------------------- biceps */
   ['curl-barre', 'Curl barre droite', 'barre', 'kg', ['biceps'], ['avant-bras']],
@@ -157,8 +174,8 @@ const RAW = [
   ['reverse-curl', 'Reverse curl barre EZ', 'barre', 'kg', ['avant-bras'], ['biceps']],
   ['curl-poignets', 'Curl poignets', 'barre', 'kg', ['avant-bras'], []],
   ['curl-poignets-inverse', 'Curl poignets inversé', 'barre', 'kg', ['avant-bras'], []],
-  ['farmer-walk', 'Marche du fermier', 'halteres', 'kg', ['avant-bras'], ['dos', 'abdos']],
-  ['suspension', 'Suspension à la barre', 'corps', 'bw', ['avant-bras'], ['dos']],
+  ['farmer-walk', 'Marche du fermier', 'halteres', 'kg', ['avant-bras'], ['trapezes', 'abdos']],
+  ['suspension', 'Suspension à la barre', 'corps', 'bw', ['avant-bras'], ['grand-dorsal']],
 
   /* --------------------------------------------------------- abdominaux */
   ['crunch', 'Crunch au sol', 'corps', 'bw', ['abdos'], []],
@@ -169,7 +186,7 @@ const RAW = [
   ['releve-bassin', 'Relevé de bassin au sol', 'corps', 'bw', ['abdos'], []],
   ['gainage', 'Gainage (planche)', 'corps', 'bw', ['abdos'], ['lombaires']],
   ['gainage-lateral', 'Gainage latéral', 'corps', 'bw', ['abdos'], []],
-  ['roue-abdos', 'Roue abdominale', 'corps', 'bw', ['abdos'], ['dos']],
+  ['roue-abdos', 'Roue abdominale', 'corps', 'bw', ['abdos'], ['grand-dorsal']],
   ['russian-twist', 'Russian twist', 'halteres', 'kg', ['abdos'], []],
   ['sit-up-leste', 'Sit-up lesté', 'halteres', 'kg', ['abdos'], []],
 
@@ -187,7 +204,7 @@ const RAW = [
   ['abduction-poulie', 'Abduction poulie', 'poulie', 'kg', ['fessiers'], []],
   ['kickback-fessier', 'Kickback fessier poulie', 'poulie', 'kg', ['fessiers'], ['ischios']],
   ['step-up', 'Montée sur banc (step-up)', 'halteres', 'kg', ['fessiers', 'quadriceps'], ['ischios']],
-  ['sdt-sumo', 'Soulevé de terre sumo', 'barre', 'kg', ['fessiers'], ['quadriceps', 'dos', 'lombaires']],
+  ['sdt-sumo', 'Soulevé de terre sumo', 'barre', 'kg', ['fessiers'], ['quadriceps', 'lombaires', 'trapezes']],
 
   /* --------------------------------------------------------- quadriceps */
   ['squat', 'Squat barre (nuque)', 'barre', 'kg', ['quadriceps'], ['fessiers', 'lombaires', 'abdos']],
@@ -226,9 +243,9 @@ const RAW = [
 export const LIBRARY = RAW.map(([id, name, gear, mode, primary, secondary]) =>
   ({ id, name, gear, mode, primary, secondary }));
 
-/** Les exercices dont le muscle principal est `muscleId`. */
+/** Les exercices dont le muscle principal appartient à cette catégorie. */
 export function libraryFor(muscleId) {
-  return LIBRARY.filter((e) => e.primary[0] === muscleId);
+  return LIBRARY.filter((e) => muscleGroup(e.primary[0]) === muscleId);
 }
 
 export function libraryEntry(libId) {
@@ -338,8 +355,8 @@ export function findByName(name) {
   return score >= 0.8 ? best : null;
 }
 
-export function muscleLabel(id, { short = false } = {}) {
+export function muscleLabel(id) {
+  if (DETAIL[id]) return DETAIL[id].label;
   const m = MUSCLES.find((x) => x.id === id);
-  if (!m) return id;
-  return short && m.short ? m.short : m.label;
+  return m ? m.label : id;
 }
