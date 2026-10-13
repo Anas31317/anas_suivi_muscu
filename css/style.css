@@ -784,8 +784,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
   line-height: 1.4;
 }
 .cat-credit a { color: var(--accent-ink); }
-.cat-actions { display: grid; gap: 4px; flex: none; justify-items: stretch; }
-.cat-actions .btn { white-space: nowrap; }
+.cat-add { flex: none; align-self: center; white-space: nowrap; }
 .cat-added {
   display: inline-flex;
   align-items: center;
@@ -801,12 +800,6 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 
 .edit-list { display: grid; }
 .edit-empty { padding: 6px 0 12px; }
-.edit-name {
-  padding: 9px 2px;
-  font-weight: 600;
-  line-height: 1.3;
-  overflow-wrap: anywhere;
-}
 .edit-row {
   display: flex;
   align-items: flex-start;
@@ -842,6 +835,8 @@ input.derived { color: var(--ink-2); }
 .reuse { margin-top: 16px; }
 .reuse select { width: 100%; }
 .reuse .hint { display: block; margin-top: 4px; font-size: 0.78rem; color: var(--ink-muted); }
+.edit-add { display: grid; gap: 6px; margin-top: 14px; }
+.edit-add .edit-opts .btn { flex: none; }
 
 .computed { font-size: 0.85rem; color: var(--accent-ink); font-weight: 500; margin: -4px 0 14px; min-height: 1em; }
 .chart-note { font-size: 0.8rem; color: var(--ink-muted); margin-top: 8px; text-align: center; }

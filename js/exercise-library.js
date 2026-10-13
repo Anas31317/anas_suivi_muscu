@@ -248,6 +248,22 @@ export function searchLibrary(query) {
   });
 }
 
+/**
+ * Exercice du catalogue portant le même nom (à l'accent et à la casse près),
+ * ou dont le nom contient celui cherché. Sert à proposer l'exercice du
+ * catalogue plutôt que d'en créer un doublon à la main.
+ */
+export function findByName(name) {
+  const q = plain(name).trim().replace(/\s+/g, ' ');
+  if (q.length < 3) return null;
+  const exact = LIBRARY.find((e) => plain(e.name).replace(/\s+/g, ' ') === q);
+  if (exact) return exact;
+  return LIBRARY.find((e) => {
+    const n = plain(e.name).replace(/\s+/g, ' ');
+    return n === q || n.includes(q) || q.includes(n);
+  }) || null;
+}
+
 export function muscleLabel(id) {
   const m = MUSCLES.find((x) => x.id === id);
   return m ? m.label : id;
