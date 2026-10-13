@@ -268,6 +268,17 @@ export function viewSessionEditor(sessionId, ctx) {
   };
   newName.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); add(); } });
 
+  /** Bloc dépliable : le titre seul tant qu'on ne clique pas dessus. */
+  const fold = (title, desc, body, { extraClass = '' } = {}) =>
+    h('details', { class: 'card section fold' + extraClass },
+      h('summary', {},
+        h('h2', {}, title),
+        h('span', { class: 'chev' }, icon(ICONS.chevron, 16))
+      ),
+      desc ? h('p', { class: 'desc' }, desc) : null,
+      body
+    );
+
   const nameInput = h('input', {
     type: 'text', value: draft.name, maxlength: 60, 'aria-label': 'Nom de la séance',
     oninput: () => { draft.name = nameInput.value; }
@@ -286,27 +297,20 @@ export function viewSessionEditor(sessionId, ctx) {
       h('section', { class: 'card section' },
         h('h2', {}, 'Exercices'),
         h('p', { class: 'desc' }, 'Ordre, type et nombre de séries tels qu’ils apparaîtront pendant la séance.'),
-        list,
-        reuseWrap,
-        cleanupWrap
+        list
       ),
-      h('details', { class: 'card section cat-box' },
-        h('summary', {},
-          h('h2', {}, 'Catalogue d’exercices'),
-          h('span', { class: 'chev' }, icon(ICONS.chevron, 16))
-        ),
-        h('p', { class: 'desc' }, 'Cherche un exercice, ou parcours muscle par muscle.'),
-        catalogue
-      ),
-      h('section', { class: 'card section' },
-        h('h2', {}, 'Créer un exercice'),
-        h('p', { class: 'desc' }, 'Pour une machine ou une variante qui n’est pas au catalogue.'),
+      fold('Catalogue d’exercices', 'Cherche un exercice, ou parcours muscle par muscle.',
+        [catalogue], { extraClass: ' cat-box' }),
+      fold('Créer un exercice', 'Pour une machine ou une variante qui n’est pas au catalogue.', [
         h('div', { class: 'edit-add' },
           newName,
           h('div', { class: 'edit-opts' }, newMode, newSets,
             h('button', { class: 'btn primary small', type: 'button', onclick: add }, icon(ICONS.plus, 14), 'Ajouter'))
         )
-      )
+      ]),
+      fold('Remettre ou retirer un exercice',
+        'Les exercices que tu as déjà faits, et ceux que tu as créés à la main.',
+        [reuseWrap, cleanupWrap])
     ),
     h('div', { class: 'form-actions' },
       h('button', { class: 'btn ghost', type: 'button', onclick: cancel }, 'Annuler'),

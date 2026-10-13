@@ -64,17 +64,22 @@ couché.
 
 Pas de nombre de séries dans le catalogue : il se règle dans la séance, après l'ajout.
 
-L'éditeur de séance propose trois façons d'ajouter un exercice, et une de faire le ménage :
+L'éditeur de séance garde ses outils repliés, sous trois titres qu'on déplie au besoin :
 
-- le **catalogue**, la base commune ;
-- **remettre un exercice déjà fait**, qui reprend son identifiant, donc sa courbe continue ;
-- **créer un exercice**, pour une machine qui n'est pas au catalogue. Si le nom tapé
+- **Catalogue d'exercices**, la base commune ;
+- **Créer un exercice**, pour une machine qui n'est pas au catalogue. Si le nom tapé
   correspond à un exercice déjà connu ou à un exercice du catalogue, celui-ci est proposé
   avant d'en créer un deuxième : deux exercices du même nom, ce sont deux courbes à moitié
   remplies ;
-- **retirer un exercice créé à la main**, qui le sort des choix et des séances. S'il a déjà
-  des séances enregistrées il est seulement masqué : l'historique et la courbe ne bougent
-  pas. Les exercices du catalogue, eux, ne disparaissent jamais des choix.
+- **Remettre ou retirer un exercice** : remettre reprend son identifiant, donc sa courbe
+  continue ; retirer ne concerne que les exercices créés à la main et les sort des choix et
+  des séances. S'ils ont déjà des séances enregistrées ils sont seulement masqués :
+  l'historique et la courbe ne bougent pas. Les exercices du catalogue, eux, ne
+  disparaissent jamais des choix.
+
+Un exercice vraiment polyarticulaire apparaît dans **chacune** de ses catégories : les dips
+sont dans Pectoraux et dans Triceps, le soulevé de terre dans Lombaires, Fessiers et
+Ischios. On le trouve là où on le cherche.
 
 Le nom d'un exercice se corrige directement dans la liste : l'exercice garde son identifiant,
 donc ses séances passées et sa courbe. Les séances déjà enregistrées gardent le nom qu'elles
