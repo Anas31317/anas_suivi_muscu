@@ -19,3 +19,14 @@ export const SUPPORT_EMAIL = 'anas.suivimuscu@gmail.com';
 
 /** Longueur minimale des mots de passe (à régler aussi côté Supabase). */
 export const PASSWORD_MIN_LENGTH = 10;
+
+/**
+ * Mode maintenance : quand il est à true, seule l'adresse ci-dessous entre
+ * dans l'appli. Les autres comptes voient un écran « maintenance en cours ».
+ *
+ * C'est un garde-fou d'affichage, pas une sécurité : il tient les autres à
+ * l'écart le temps d'un essai, il n'empêcherait pas quelqu'un de décidé. Ce
+ * qui protège vraiment les données reste les règles RLS de la base.
+ */
+export const MAINTENANCE = true;
+export const MAINTAINER_EMAIL = 'anas.hadouche@2029.icam.fr';

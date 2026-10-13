@@ -88,7 +88,9 @@ function normalize(raw) {
         id: e.id || uid('e'),
         name: e.name || 'Exercice',
         mode: e.mode === 'bw' ? 'bw' : 'kg',
-        defaultSets: Number(e.defaultSets) > 0 ? Number(e.defaultSets) : 3
+        defaultSets: Number(e.defaultSets) > 0 ? Number(e.defaultSets) : 3,
+        // exercice venu du catalogue : sert à retrouver son muscle et son matériel
+        libId: e.libId ? String(e.libId).slice(0, 40) : ''
       }))
     })),
     logs: logs.map((l) => ({
@@ -449,7 +451,8 @@ export function saveSessionProgram(sessionId, { name, exercises }) {
       id: e.id || uid('e'),
       name: e.name || 'Exercice',
       mode: e.mode === 'bw' ? 'bw' : 'kg',
-      defaultSets: Math.min(10, Math.max(1, Number(e.defaultSets) || 3))
+      defaultSets: Math.min(10, Math.max(1, Number(e.defaultSets) || 3)),
+      libId: e.libId ? String(e.libId).slice(0, 40) : ''
     }));
   });
 }
