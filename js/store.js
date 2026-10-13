@@ -96,6 +96,9 @@ function normalize(raw) {
       sessionId: l.sessionId || '',
       date: l.date || todayISO(),
       note: l.note || '',
+      // posé par le bouton « Enregistrer la séance » : tant qu'il est faux, la
+      // séance est en cours et l'accueil propose de la reprendre
+      done: Boolean(l.done),
       entries: (Array.isArray(l.entries) ? l.entries : []).map((en) => ({
         exerciseId: en.exerciseId || '',
         name: en.name || 'Exercice',
@@ -266,6 +269,17 @@ export function lastLogForSession(sessionId) {
 /** Séance enregistrée pour une séance du programme à une date donnée (la plus récente). */
 export function logForSessionOn(sessionId, date) {
   return logsForSession(sessionId).find((l) => l.date === date) || null;
+}
+
+/** Séance du jour commencée mais pas encore terminée, s'il y en a une. */
+export function unfinishedToday(sessionId) {
+  const log = logForSessionOn(sessionId, todayISO());
+  return log && !log.done ? log : null;
+}
+
+/** Séance précédente d'une séance du programme, hors celle en cours. */
+export function previousLogForSession(sessionId, excludeLogId = null) {
+  return logsForSession(sessionId).find((l) => l.id !== excludeLogId) || null;
 }
 
 /**

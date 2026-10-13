@@ -14,9 +14,9 @@ import * as insights from '../insights.js';
 import { h, icon, ICONS } from '../ui.js';
 import { sessionTitle, sessionNumber, monthLabel, plural, pageHead, emptyState, logCard } from './common.js';
 
-/** « Reprendre » si la séance a déjà été commencée aujourd'hui. */
+/** « Reprendre » tant que la séance du jour n'a pas été enregistrée. */
 export function startLabel(sessionId) {
-  return store.logForSessionOn(sessionId, store.todayISO()) ? 'Reprendre' : 'Commencer';
+  return store.unfinishedToday(sessionId) ? 'Reprendre' : 'Commencer';
 }
 
 /* ------------------------------------------------------------ programme */

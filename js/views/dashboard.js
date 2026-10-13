@@ -16,8 +16,9 @@ export function viewDashboard(ctx) {
   const c = insights.counts();
 
   /* --- prochaine séance ---------------------------------------------- */
-  // Séance commencée aujourd'hui : on propose de la reprendre.
-  const todayLog = last && last.date === store.todayISO() ? last : null;
+  // Séance commencée aujourd'hui mais pas encore enregistrée : on propose de la
+  // reprendre. Une fois enregistrée, c'est la séance suivante qui est proposée.
+  const todayLog = last && last.date === store.todayISO() && !last.done ? last : null;
   const current = todayLog ? store.getSession(todayLog.sessionId) : null;
 
   let hero;
