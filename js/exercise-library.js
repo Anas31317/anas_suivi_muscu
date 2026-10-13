@@ -1,27 +1,36 @@
 /**
- * Catalogue d'exercices, par muscle.
+ * Catalogue d'exercices.
  *
- * Sert à remplir un programme sans tout saisir à la main. Ajouter un exercice
- * depuis ce catalogue crée un exercice normal dans la séance : il garde son
- * propre identifiant, donc son historique et sa courbe lui appartiennent.
- * `libId` est conservé pour retrouver le muscle et le matériel à l'affichage.
+ * Une ligne par variante : le même mouvement à la barre, aux haltères, à la
+ * machine ou à la poulie sont des exercices différents, parce qu'on ne les
+ * charge pas pareil et qu'on ne les suit pas sur la même courbe. L'inclinaison
+ * et l'angle des poignées sont dans le nom quand ils changent le mouvement.
  *
- * `mode` : 'kg' (charge saisie) ou 'bw' (poids du corps, lest éventuel).
- * `gear` : barre | halteres | machine | poulie | corps.
+ * Chaque exercice dit quels muscles il travaille : `primary` (en accent sur la
+ * silhouette) et `secondary` (en teinte claire). Beaucoup sont polyarticulaires,
+ * d'où les deux listes.
+ *
+ * Pas de nombre de séries ici : c'est à chacun de le régler dans sa séance.
+ *
+ * Colonnes : id, nom, matériel, mode, position, prise, primaires, secondaires.
+ *   matériel : barre | halteres | machine | poulie | corps
+ *   mode     : kg (charge saisie) | bw (poids du corps, lest éventuel)
  */
 
 export const MUSCLES = [
   { id: 'pecs', label: 'Pectoraux', view: 'front' },
   { id: 'dos', label: 'Dos', view: 'back' },
+  { id: 'trapezes', label: 'Trapèzes', view: 'back' },
   { id: 'epaules', label: 'Épaules', view: 'front' },
   { id: 'biceps', label: 'Biceps', view: 'front' },
   { id: 'triceps', label: 'Triceps', view: 'back' },
   { id: 'avant-bras', label: 'Avant-bras', view: 'front' },
+  { id: 'abdos', label: 'Abdominaux', view: 'front' },
+  { id: 'lombaires', label: 'Lombaires', view: 'back' },
+  { id: 'fessiers', label: 'Fessiers', view: 'back' },
   { id: 'quadriceps', label: 'Quadriceps', view: 'front' },
   { id: 'ischios', label: 'Ischios-jambiers', view: 'back' },
-  { id: 'fessiers', label: 'Fessiers', view: 'back' },
-  { id: 'mollets', label: 'Mollets', view: 'back' },
-  { id: 'abdos', label: 'Abdominaux', view: 'front' }
+  { id: 'mollets', label: 'Mollets', view: 'back' }
 ];
 
 export const GEAR = {
@@ -32,156 +41,210 @@ export const GEAR = {
   corps: 'Poids du corps'
 };
 
-export const LIBRARY = [
+const RAW = [
   /* ---------------------------------------------------------- pectoraux */
-  { id: 'dev-couche', name: 'Développé couché', muscle: 'pecs', gear: 'barre', mode: 'kg', sets: 4,
-    tip: 'Omoplates serrées, barre au niveau des tétons, pieds ancrés au sol.' },
-  { id: 'dev-incline', name: 'Développé incliné', muscle: 'pecs', gear: 'barre', mode: 'kg', sets: 4,
-    tip: 'Banc à 30° : plus haut, les épaules travaillent à la place des pecs.' },
-  { id: 'dev-couche-halteres', name: 'Développé couché haltères', muscle: 'pecs', gear: 'halteres', mode: 'kg', sets: 4,
-    tip: 'Amplitude plus grande qu’à la barre, descends jusqu’à sentir l’étirement.' },
-  { id: 'dev-incline-halteres', name: 'Développé incliné haltères', muscle: 'pecs', gear: 'halteres', mode: 'kg', sets: 3 },
-  { id: 'dev-decline', name: 'Développé décliné', muscle: 'pecs', gear: 'barre', mode: 'kg', sets: 3,
-    tip: 'Cible le bas des pectoraux.' },
-  { id: 'pec-fly', name: 'Pec fly (machine)', muscle: 'pecs', gear: 'machine', mode: 'kg', sets: 3,
-    tip: 'Coudes légèrement fléchis, serre une seconde en fin de mouvement.' },
-  { id: 'ecarte-halteres', name: 'Écarté haltères', muscle: 'pecs', gear: 'halteres', mode: 'kg', sets: 3,
-    tip: 'Charge légère : c’est l’étirement qui compte, pas le poids.' },
-  { id: 'ecarte-poulie', name: 'Écarté à la poulie', muscle: 'pecs', gear: 'poulie', mode: 'kg', sets: 3 },
-  { id: 'dev-machine', name: 'Développé machine (chest press)', muscle: 'pecs', gear: 'machine', mode: 'kg', sets: 3 },
-  { id: 'pompes', name: 'Pompes', muscle: 'pecs', gear: 'corps', mode: 'bw', sets: 3,
-    tip: 'Corps gainé, coudes à 45° du buste.' },
-  { id: 'dips-pecs', name: 'Dips buste penché', muscle: 'pecs', gear: 'corps', mode: 'bw', sets: 3,
-    tip: 'Penche le buste en avant pour envoyer le travail sur les pectoraux.' },
+  ['dc-barre', 'Développé couché', 'barre', 'kg', 'Couché', 'Pronation', ['pecs'], ['triceps', 'epaules']],
+  ['dc-incline-barre', 'Développé incliné', 'barre', 'kg', 'Incliné 30°', 'Pronation', ['pecs'], ['epaules', 'triceps']],
+  ['dc-decline-barre', 'Développé décliné', 'barre', 'kg', 'Décliné', 'Pronation', ['pecs'], ['triceps']],
+  ['dc-smith', 'Développé couché Smith', 'machine', 'kg', 'Couché', 'Pronation', ['pecs'], ['triceps', 'epaules']],
+  ['dc-incline-smith', 'Développé incliné Smith', 'machine', 'kg', 'Incliné 30°', 'Pronation', ['pecs'], ['epaules', 'triceps']],
+  ['dc-halteres', 'Développé couché haltères', 'halteres', 'kg', 'Couché', 'Pronation', ['pecs'], ['triceps', 'epaules']],
+  ['dc-halteres-neutre', 'Développé couché haltères prise neutre', 'halteres', 'kg', 'Couché', 'Neutre', ['pecs'], ['triceps']],
+  ['dc-incline-halteres', 'Développé incliné haltères', 'halteres', 'kg', 'Incliné 30°', 'Pronation', ['pecs'], ['epaules', 'triceps']],
+  ['dc-decline-halteres', 'Développé décliné haltères', 'halteres', 'kg', 'Décliné', 'Pronation', ['pecs'], ['triceps']],
+  ['chest-press', 'Développé machine (chest press)', 'machine', 'kg', 'Assis', 'Pronation', ['pecs'], ['triceps', 'epaules']],
+  ['chest-press-incline', 'Développé incliné machine', 'machine', 'kg', 'Incliné', 'Pronation', ['pecs'], ['epaules', 'triceps']],
+  ['ecarte-couche', 'Écarté haltères couché', 'halteres', 'kg', 'Couché', 'Neutre', ['pecs'], []],
+  ['ecarte-incline', 'Écarté haltères incliné', 'halteres', 'kg', 'Incliné 30°', 'Neutre', ['pecs'], ['epaules']],
+  ['pec-deck', 'Pec deck (butterfly)', 'machine', 'kg', 'Assis', 'Neutre', ['pecs'], []],
+  ['ecarte-poulie-haute', 'Écarté poulie haute', 'poulie', 'kg', 'Debout', 'Neutre', ['pecs'], []],
+  ['ecarte-poulie-basse', 'Écarté poulie basse', 'poulie', 'kg', 'Debout', 'Neutre', ['pecs'], ['epaules']],
+  ['ecarte-poulie-milieu', 'Écarté poulie hauteur poitrine', 'poulie', 'kg', 'Debout', 'Neutre', ['pecs'], []],
+  ['pompes', 'Pompes', 'corps', 'bw', 'Au sol', 'Pronation', ['pecs'], ['triceps', 'epaules', 'abdos']],
+  ['pompes-pieds-hauts', 'Pompes pieds surélevés', 'corps', 'bw', 'Incliné', 'Pronation', ['pecs'], ['epaules', 'triceps']],
+  ['pompes-larges', 'Pompes prise large', 'corps', 'bw', 'Au sol', 'Pronation', ['pecs'], ['epaules']],
+  ['dips-pecs', 'Dips buste penché', 'corps', 'bw', 'Suspendu', 'Neutre', ['pecs'], ['triceps', 'epaules']],
 
   /* ---------------------------------------------------------------- dos */
-  { id: 'tractions', name: 'Tractions (pronation)', muscle: 'dos', gear: 'corps', mode: 'bw', sets: 4,
-    tip: 'Mains un peu plus larges que les épaules, monte le menton au-dessus de la barre.' },
-  { id: 'tractions-supination', name: 'Tractions supination', muscle: 'dos', gear: 'corps', mode: 'bw', sets: 3,
-    tip: 'Paumes vers toi : les biceps aident, tu montes plus de reps.' },
-  { id: 'tirage-vertical', name: 'Tirage vertical (lat pulldown)', muscle: 'dos', gear: 'poulie', mode: 'kg', sets: 4,
-    tip: 'Tire avec les coudes, pas avec les mains ; poitrine sortie.' },
-  { id: 'rowing-barre', name: 'Rowing barre', muscle: 'dos', gear: 'barre', mode: 'kg', sets: 4,
-    tip: 'Dos plat, buste à 45°, barre vers le nombril.' },
-  { id: 'rowing-halteres', name: 'Rowing haltère un bras', muscle: 'dos', gear: 'halteres', mode: 'kg', sets: 3 },
-  { id: 'rowing-machine', name: 'Rowing machine (tirage horizontal)', muscle: 'dos', gear: 'machine', mode: 'kg', sets: 3 },
-  { id: 'tirage-horizontal', name: 'Tirage horizontal poulie basse', muscle: 'dos', gear: 'poulie', mode: 'kg', sets: 3 },
-  { id: 'pull-over', name: 'Pull over', muscle: 'dos', gear: 'poulie', mode: 'kg', sets: 3,
-    tip: 'Bras tendus, le mouvement part des épaules : grand dorsal isolé.' },
-  { id: 'souleve-de-terre', name: 'Soulevé de terre', muscle: 'dos', gear: 'barre', mode: 'kg', sets: 4,
-    tip: 'Dos neutre du début à la fin. Charge lourde, technique d’abord.' },
-  { id: 'shrugs', name: 'Shrugs (trapèzes)', muscle: 'dos', gear: 'halteres', mode: 'kg', sets: 3,
-    tip: 'Monte les épaules vers les oreilles, sans rouler.' },
-  { id: 'face-pull', name: 'Face pull', muscle: 'dos', gear: 'poulie', mode: 'kg', sets: 3,
-    tip: 'Excellent pour les épaules en bonne santé et la posture.' },
+  ['tractions-pro', 'Tractions pronation', 'corps', 'bw', 'Suspendu', 'Pronation', ['dos'], ['biceps', 'avant-bras']],
+  ['tractions-supi', 'Tractions supination', 'corps', 'bw', 'Suspendu', 'Supination', ['dos'], ['biceps']],
+  ['tractions-neutre', 'Tractions prise neutre', 'corps', 'bw', 'Suspendu', 'Neutre', ['dos'], ['biceps', 'avant-bras']],
+  ['tractions-larges', 'Tractions prise large', 'corps', 'bw', 'Suspendu', 'Pronation', ['dos'], ['epaules']],
+  ['tirage-vertical-pro', 'Tirage vertical pronation', 'poulie', 'kg', 'Assis', 'Pronation', ['dos'], ['biceps']],
+  ['tirage-vertical-supi', 'Tirage vertical supination', 'poulie', 'kg', 'Assis', 'Supination', ['dos'], ['biceps']],
+  ['tirage-vertical-neutre', 'Tirage vertical prise neutre', 'poulie', 'kg', 'Assis', 'Neutre', ['dos'], ['biceps']],
+  ['tirage-vertical-large', 'Tirage vertical prise large', 'poulie', 'kg', 'Assis', 'Pronation', ['dos'], ['epaules', 'biceps']],
+  ['rowing-barre-pro', 'Rowing barre pronation', 'barre', 'kg', 'Penché', 'Pronation', ['dos'], ['trapezes', 'biceps', 'lombaires']],
+  ['rowing-barre-supi', 'Rowing barre supination (Yates)', 'barre', 'kg', 'Penché', 'Supination', ['dos'], ['biceps', 'lombaires']],
+  ['rowing-t-bar', 'Rowing T-bar', 'barre', 'kg', 'Penché', 'Neutre', ['dos'], ['trapezes', 'biceps']],
+  ['rowing-haltere', 'Rowing haltère un bras', 'halteres', 'kg', 'Penché', 'Neutre', ['dos'], ['biceps', 'trapezes']],
+  ['rowing-halteres-2', 'Rowing haltères deux bras', 'halteres', 'kg', 'Penché', 'Neutre', ['dos'], ['biceps', 'lombaires']],
+  ['seal-row', 'Seal row (banc)', 'halteres', 'kg', 'Couché', 'Neutre', ['dos'], ['biceps', 'trapezes']],
+  ['rowing-machine', 'Rowing machine', 'machine', 'kg', 'Assis', 'Neutre', ['dos'], ['biceps', 'trapezes']],
+  ['tirage-horizontal', 'Tirage horizontal poulie', 'poulie', 'kg', 'Assis', 'Neutre', ['dos'], ['biceps', 'trapezes']],
+  ['tirage-horizontal-large', 'Tirage horizontal prise large', 'poulie', 'kg', 'Assis', 'Pronation', ['dos'], ['trapezes', 'epaules']],
+  ['rowing-inverse', 'Rowing inversé (barre basse)', 'corps', 'bw', 'Suspendu', 'Pronation', ['dos'], ['biceps', 'abdos']],
+  ['pull-over-poulie', 'Pull over poulie haute', 'poulie', 'kg', 'Debout', 'Pronation', ['dos'], ['triceps']],
+  ['pull-over-haltere', 'Pull over haltère', 'halteres', 'kg', 'Couché', 'Neutre', ['dos'], ['pecs', 'triceps']],
+  ['sdt', 'Soulevé de terre', 'barre', 'kg', 'Debout', 'Pronation', ['dos', 'lombaires'], ['fessiers', 'ischios', 'trapezes']],
+
+  /* ----------------------------------------------------------- trapèzes */
+  ['shrugs-barre', 'Shrugs barre', 'barre', 'kg', 'Debout', 'Pronation', ['trapezes'], ['avant-bras']],
+  ['shrugs-halteres', 'Shrugs haltères', 'halteres', 'kg', 'Debout', 'Neutre', ['trapezes'], ['avant-bras']],
+  ['shrugs-machine', 'Shrugs machine', 'machine', 'kg', 'Debout', 'Neutre', ['trapezes'], []],
+  ['face-pull', 'Face pull', 'poulie', 'kg', 'Debout', 'Neutre', ['trapezes', 'epaules'], ['dos']],
+  ['rowing-menton', 'Rowing menton', 'barre', 'kg', 'Debout', 'Pronation', ['trapezes', 'epaules'], ['biceps']],
 
   /* ------------------------------------------------------------ épaules */
-  { id: 'dev-militaire', name: 'Développé militaire', muscle: 'epaules', gear: 'barre', mode: 'kg', sets: 4,
-    tip: 'Debout ou assis, gaine le ventre pour ne pas cambrer.' },
-  { id: 'dev-epaules-halteres', name: 'Développé épaules haltères', muscle: 'epaules', gear: 'halteres', mode: 'kg', sets: 4 },
-  { id: 'dev-smith', name: 'Développé épaules Smith', muscle: 'epaules', gear: 'machine', mode: 'kg', sets: 3 },
-  { id: 'elevations-laterales', name: 'Élévations latérales', muscle: 'epaules', gear: 'halteres', mode: 'kg', sets: 4,
-    tip: 'Léger, contrôlé, jusqu’à l’horizontale. Inutile de balancer.' },
-  { id: 'elevations-poulie', name: 'Élévation latérale poulie', muscle: 'epaules', gear: 'poulie', mode: 'kg', sets: 3 },
-  { id: 'oiseau', name: 'Oiseau (deltoïde postérieur)', muscle: 'epaules', gear: 'halteres', mode: 'kg', sets: 3,
-    tip: 'Buste penché, serre les omoplates en fin de mouvement.' },
-  { id: 'oiseau-poulie', name: 'Tirage oiseau poulie', muscle: 'epaules', gear: 'poulie', mode: 'kg', sets: 3 },
-  { id: 'elevations-frontales', name: 'Élévations frontales', muscle: 'epaules', gear: 'halteres', mode: 'kg', sets: 3 },
-  { id: 'rowing-menton', name: 'Rowing menton', muscle: 'epaules', gear: 'barre', mode: 'kg', sets: 3 },
+  ['militaire-debout', 'Développé militaire debout', 'barre', 'kg', 'Debout', 'Pronation', ['epaules'], ['triceps', 'abdos']],
+  ['militaire-assis', 'Développé militaire assis', 'barre', 'kg', 'Assis', 'Pronation', ['epaules'], ['triceps']],
+  ['militaire-smith', 'Développé épaules Smith', 'machine', 'kg', 'Assis', 'Pronation', ['epaules'], ['triceps']],
+  ['dev-epaules-halteres', 'Développé épaules haltères', 'halteres', 'kg', 'Assis', 'Pronation', ['epaules'], ['triceps']],
+  ['dev-epaules-neutre', 'Développé épaules prise neutre', 'halteres', 'kg', 'Assis', 'Neutre', ['epaules'], ['triceps']],
+  ['arnold-press', 'Arnold press', 'halteres', 'kg', 'Assis', 'Rotation', ['epaules'], ['triceps']],
+  ['dev-epaules-machine', 'Développé épaules machine', 'machine', 'kg', 'Assis', 'Pronation', ['epaules'], ['triceps']],
+  ['elev-lat-halteres', 'Élévations latérales haltères', 'halteres', 'kg', 'Debout', 'Neutre', ['epaules'], []],
+  ['elev-lat-poulie', 'Élévation latérale poulie', 'poulie', 'kg', 'Debout', 'Neutre', ['epaules'], []],
+  ['elev-lat-machine', 'Élévations latérales machine', 'machine', 'kg', 'Assis', 'Neutre', ['epaules'], []],
+  ['elev-lat-penche', 'Élévations latérales buste penché', 'halteres', 'kg', 'Penché', 'Neutre', ['epaules'], ['trapezes']],
+  ['elev-front-halteres', 'Élévations frontales haltères', 'halteres', 'kg', 'Debout', 'Pronation', ['epaules'], ['pecs']],
+  ['elev-front-barre', 'Élévations frontales barre', 'barre', 'kg', 'Debout', 'Pronation', ['epaules'], []],
+  ['elev-front-poulie', 'Élévations frontales poulie', 'poulie', 'kg', 'Debout', 'Pronation', ['epaules'], []],
+  ['oiseau-halteres', 'Oiseau haltères', 'halteres', 'kg', 'Penché', 'Neutre', ['epaules'], ['trapezes', 'dos']],
+  ['oiseau-machine', 'Oiseau machine (reverse pec deck)', 'machine', 'kg', 'Assis', 'Neutre', ['epaules'], ['trapezes']],
+  ['oiseau-poulie', 'Oiseau poulie', 'poulie', 'kg', 'Debout', 'Neutre', ['epaules'], ['trapezes']],
 
   /* ------------------------------------------------------------- biceps */
-  { id: 'curl-barre', name: 'Curl barre', muscle: 'biceps', gear: 'barre', mode: 'kg', sets: 4,
-    tip: 'Coudes collés au corps, pas d’élan avec le dos.' },
-  { id: 'curl-halteres', name: 'Curl haltères', muscle: 'biceps', gear: 'halteres', mode: 'kg', sets: 3 },
-  { id: 'curl-pupitre', name: 'Curl pupitre (EZ)', muscle: 'biceps', gear: 'barre', mode: 'kg', sets: 3,
-    tip: 'Le pupitre empêche de tricher : amplitude complète, descente contrôlée.' },
-  { id: 'curl-incline', name: 'Curl incliné', muscle: 'biceps', gear: 'halteres', mode: 'kg', sets: 3,
-    tip: 'Bras en arrière du corps : la longue portion travaille à fond.' },
-  { id: 'curl-marteau', name: 'Curl marteau', muscle: 'biceps', gear: 'halteres', mode: 'kg', sets: 3,
-    tip: 'Prise neutre : biceps et brachial, utile pour épaissir le bras.' },
-  { id: 'curl-poulie', name: 'Curl à la poulie basse', muscle: 'biceps', gear: 'poulie', mode: 'kg', sets: 3 },
-  { id: 'bayesian-curl', name: 'Bayesian curl', muscle: 'biceps', gear: 'poulie', mode: 'kg', sets: 3,
-    tip: 'Dos à la poulie, bras en arrière : étirement maximal.' },
-  { id: 'curl-concentre', name: 'Curl concentré', muscle: 'biceps', gear: 'halteres', mode: 'kg', sets: 3 },
+  ['curl-barre', 'Curl barre droite', 'barre', 'kg', 'Debout', 'Supination', ['biceps'], ['avant-bras']],
+  ['curl-ez', 'Curl barre EZ', 'barre', 'kg', 'Debout', 'Supination', ['biceps'], ['avant-bras']],
+  ['curl-halteres', 'Curl haltères', 'halteres', 'kg', 'Debout', 'Supination', ['biceps'], ['avant-bras']],
+  ['curl-alterne', 'Curl haltères alterné', 'halteres', 'kg', 'Debout', 'Supination', ['biceps'], ['avant-bras']],
+  ['curl-marteau', 'Curl marteau', 'halteres', 'kg', 'Debout', 'Neutre', ['biceps', 'avant-bras'], []],
+  ['curl-marteau-corde', 'Curl marteau à la corde', 'poulie', 'kg', 'Debout', 'Neutre', ['biceps', 'avant-bras'], []],
+  ['curl-pupitre-ez', 'Curl pupitre barre EZ', 'barre', 'kg', 'Assis', 'Supination', ['biceps'], []],
+  ['curl-pupitre-haltere', 'Curl pupitre haltère', 'halteres', 'kg', 'Assis', 'Supination', ['biceps'], []],
+  ['curl-pupitre-machine', 'Curl pupitre machine', 'machine', 'kg', 'Assis', 'Supination', ['biceps'], []],
+  ['curl-incline', 'Curl incliné haltères', 'halteres', 'kg', 'Incliné 45°', 'Supination', ['biceps'], []],
+  ['curl-araignee', 'Curl araignée (spider)', 'halteres', 'kg', 'Penché', 'Supination', ['biceps'], []],
+  ['curl-concentre', 'Curl concentré', 'halteres', 'kg', 'Assis', 'Supination', ['biceps'], []],
+  ['curl-poulie-barre', 'Curl poulie basse barre', 'poulie', 'kg', 'Debout', 'Supination', ['biceps'], []],
+  ['curl-poulie-corde', 'Curl poulie basse corde', 'poulie', 'kg', 'Debout', 'Neutre', ['biceps'], ['avant-bras']],
+  ['bayesian-curl', 'Bayesian curl (poulie, bras en arrière)', 'poulie', 'kg', 'Debout', 'Supination', ['biceps'], []],
+  ['drag-curl', 'Drag curl', 'barre', 'kg', 'Debout', 'Supination', ['biceps'], []],
 
   /* ------------------------------------------------------------ triceps */
-  { id: 'dips', name: 'Dips', muscle: 'triceps', gear: 'corps', mode: 'bw', sets: 4,
-    tip: 'Buste droit pour cibler les triceps. Ajoute une ceinture lestée quand c’est facile.' },
-  { id: 'barre-au-front', name: 'Barre au front', muscle: 'triceps', gear: 'barre', mode: 'kg', sets: 3,
-    tip: 'Coudes fixes, seul l’avant-bras bouge.' },
-  { id: 'ext-poulie-corde', name: 'Extension poulie corde', muscle: 'triceps', gear: 'poulie', mode: 'kg', sets: 3,
-    tip: 'Écarte la corde en fin de mouvement.' },
-  { id: 'ext-poulie-barre', name: 'Extension poulie barre', muscle: 'triceps', gear: 'poulie', mode: 'kg', sets: 3 },
-  { id: 'overhead-triceps', name: 'Extension au-dessus de la tête', muscle: 'triceps', gear: 'halteres', mode: 'kg', sets: 3,
-    tip: 'Bras au-dessus de la tête : la longue portion est étirée, c’est là qu’elle grossit.' },
-  { id: 'kickback', name: 'Kickback', muscle: 'triceps', gear: 'halteres', mode: 'kg', sets: 3 },
-  { id: 'dev-serre', name: 'Développé couché prise serrée', muscle: 'triceps', gear: 'barre', mode: 'kg', sets: 3 },
-  { id: 'dips-machine', name: 'Dips machine', muscle: 'triceps', gear: 'machine', mode: 'kg', sets: 3 },
+  ['dips', 'Dips barres parallèles', 'corps', 'bw', 'Suspendu', 'Neutre', ['triceps'], ['pecs', 'epaules']],
+  ['dips-machine', 'Dips machine', 'machine', 'kg', 'Assis', 'Neutre', ['triceps'], ['pecs']],
+  ['dips-banc', 'Dips sur banc', 'corps', 'bw', 'Au sol', 'Pronation', ['triceps'], ['epaules']],
+  ['dev-serre', 'Développé couché prise serrée', 'barre', 'kg', 'Couché', 'Pronation', ['triceps'], ['pecs', 'epaules']],
+  ['barre-au-front', 'Barre au front (EZ)', 'barre', 'kg', 'Couché', 'Pronation', ['triceps'], []],
+  ['barre-au-front-halteres', 'Extension haltères couché', 'halteres', 'kg', 'Couché', 'Neutre', ['triceps'], []],
+  ['ext-corde', 'Extension poulie haute corde', 'poulie', 'kg', 'Debout', 'Neutre', ['triceps'], []],
+  ['ext-barre', 'Extension poulie haute barre', 'poulie', 'kg', 'Debout', 'Pronation', ['triceps'], []],
+  ['ext-inverse', 'Extension poulie prise inversée', 'poulie', 'kg', 'Debout', 'Supination', ['triceps'], []],
+  ['overhead-haltere', 'Extension au-dessus de la tête haltère', 'halteres', 'kg', 'Assis', 'Neutre', ['triceps'], []],
+  ['overhead-corde', 'Extension au-dessus de la tête corde', 'poulie', 'kg', 'Debout', 'Neutre', ['triceps'], []],
+  ['ext-unilaterale', 'Extension poulie unilatérale', 'poulie', 'kg', 'Debout', 'Neutre', ['triceps'], []],
+  ['kickback-haltere', 'Kickback haltère', 'halteres', 'kg', 'Penché', 'Neutre', ['triceps'], []],
+  ['kickback-poulie', 'Kickback poulie', 'poulie', 'kg', 'Penché', 'Neutre', ['triceps'], []],
+  ['pompes-diamant', 'Pompes diamant', 'corps', 'bw', 'Au sol', 'Pronation', ['triceps'], ['pecs']],
+  ['ext-machine', 'Extension triceps machine', 'machine', 'kg', 'Assis', 'Neutre', ['triceps'], []],
 
-  /* -------------------------------------------------------- avant-bras */
-  { id: 'reverse-curl', name: 'Reverse curl', muscle: 'avant-bras', gear: 'barre', mode: 'kg', sets: 3,
-    tip: 'Prise pronation : avant-bras et brachio-radial.' },
-  { id: 'curl-poignets', name: 'Curl poignets', muscle: 'avant-bras', gear: 'barre', mode: 'kg', sets: 3 },
-  { id: 'farmer-walk', name: 'Marche du fermier', muscle: 'avant-bras', gear: 'halteres', mode: 'kg', sets: 3,
-    tip: 'Lourd, sur une distance ou un temps. Note la durée en note de série.' },
-  { id: 'suspension-barre', name: 'Suspension à la barre', muscle: 'avant-bras', gear: 'corps', mode: 'bw', sets: 3 },
+  /* --------------------------------------------------------- avant-bras */
+  ['reverse-curl', 'Reverse curl barre EZ', 'barre', 'kg', 'Debout', 'Pronation', ['avant-bras'], ['biceps']],
+  ['curl-poignets', 'Curl poignets', 'barre', 'kg', 'Assis', 'Supination', ['avant-bras'], []],
+  ['curl-poignets-inverse', 'Curl poignets inversé', 'barre', 'kg', 'Assis', 'Pronation', ['avant-bras'], []],
+  ['farmer-walk', 'Marche du fermier', 'halteres', 'kg', 'Debout', 'Neutre', ['avant-bras'], ['trapezes', 'abdos']],
+  ['suspension', 'Suspension à la barre', 'corps', 'bw', 'Suspendu', 'Pronation', ['avant-bras'], ['dos']],
 
-  /* -------------------------------------------------------- quadriceps */
-  { id: 'squat', name: 'Squat', muscle: 'quadriceps', gear: 'barre', mode: 'kg', sets: 4,
-    tip: 'Descends au moins jusqu’à la cuisse parallèle, genoux dans l’axe des pieds.' },
-  { id: 'squat-avant', name: 'Squat avant (front squat)', muscle: 'quadriceps', gear: 'barre', mode: 'kg', sets: 3,
-    tip: 'Barre devant : buste plus droit, quadriceps davantage sollicités.' },
-  { id: 'presse', name: 'Presse à cuisses', muscle: 'quadriceps', gear: 'machine', mode: 'kg', sets: 4 },
-  { id: 'hack-squat', name: 'Hack squat', muscle: 'quadriceps', gear: 'machine', mode: 'kg', sets: 3 },
-  { id: 'pendulum-squat', name: 'Pendulum squat', muscle: 'quadriceps', gear: 'machine', mode: 'kg', sets: 3 },
-  { id: 'leg-extension', name: 'Leg extension', muscle: 'quadriceps', gear: 'machine', mode: 'kg', sets: 3,
-    tip: 'Marque un temps d’arrêt en haut.' },
-  { id: 'fentes', name: 'Fentes', muscle: 'quadriceps', gear: 'halteres', mode: 'kg', sets: 3 },
-  { id: 'bulgarian-split', name: 'Fente bulgare', muscle: 'quadriceps', gear: 'halteres', mode: 'kg', sets: 3,
-    tip: 'Pied arrière surélevé : dur, mais redoutable.' },
+  /* --------------------------------------------------------- abdominaux */
+  ['crunch', 'Crunch au sol', 'corps', 'bw', 'Au sol', '', ['abdos'], []],
+  ['crunch-poulie', 'Crunch à la poulie', 'poulie', 'kg', 'À genoux', 'Neutre', ['abdos'], []],
+  ['crunch-machine', 'Crunch machine', 'machine', 'kg', 'Assis', 'Neutre', ['abdos'], []],
+  ['releve-jambes-suspendu', 'Relevé de jambes suspendu', 'corps', 'bw', 'Suspendu', 'Pronation', ['abdos'], ['avant-bras']],
+  ['releve-jambes-chaise', 'Relevé de jambes chaise romaine', 'corps', 'bw', 'Suspendu', 'Neutre', ['abdos'], []],
+  ['releve-bassin', 'Relevé de bassin au sol', 'corps', 'bw', 'Au sol', '', ['abdos'], []],
+  ['gainage', 'Gainage (planche)', 'corps', 'bw', 'Au sol', '', ['abdos'], ['lombaires']],
+  ['gainage-lateral', 'Gainage latéral', 'corps', 'bw', 'Au sol', '', ['abdos'], []],
+  ['roue-abdos', 'Roue abdominale', 'corps', 'bw', 'À genoux', 'Neutre', ['abdos'], ['dos']],
+  ['russian-twist', 'Russian twist', 'halteres', 'kg', 'Assis', 'Neutre', ['abdos'], []],
+  ['sit-up-leste', 'Sit-up lesté', 'halteres', 'kg', 'Au sol', 'Neutre', ['abdos'], []],
+
+  /* ---------------------------------------------------------- lombaires */
+  ['ext-lombaire', 'Extension lombaire (banc 45°)', 'corps', 'bw', 'Penché', '', ['lombaires'], ['fessiers', 'ischios']],
+  ['ext-lombaire-machine', 'Extension lombaire machine', 'machine', 'kg', 'Assis', 'Neutre', ['lombaires'], ['fessiers']],
+  ['good-morning', 'Good morning', 'barre', 'kg', 'Debout', 'Pronation', ['lombaires', 'ischios'], ['fessiers']],
+  ['superman', 'Superman au sol', 'corps', 'bw', 'Au sol', '', ['lombaires'], ['fessiers']],
+
+  /* ----------------------------------------------------------- fessiers */
+  ['hip-thrust', 'Hip thrust barre', 'barre', 'kg', 'Allongé', '', ['fessiers'], ['ischios', 'quadriceps']],
+  ['hip-thrust-machine', 'Hip thrust machine', 'machine', 'kg', 'Assis', '', ['fessiers'], ['ischios']],
+  ['pont-fessier', 'Pont fessier au sol', 'corps', 'bw', 'Au sol', '', ['fessiers'], ['ischios']],
+  ['abduction-machine', 'Abduction machine', 'machine', 'kg', 'Assis', '', ['fessiers'], []],
+  ['abduction-poulie', 'Abduction poulie', 'poulie', 'kg', 'Debout', '', ['fessiers'], []],
+  ['kickback-fessier', 'Kickback fessier poulie', 'poulie', 'kg', 'Debout', '', ['fessiers'], ['ischios']],
+  ['step-up', 'Montée sur banc (step-up)', 'halteres', 'kg', 'Debout', 'Neutre', ['fessiers', 'quadriceps'], ['ischios']],
+  ['sdt-sumo', 'Soulevé de terre sumo', 'barre', 'kg', 'Debout', 'Pronation', ['fessiers'], ['quadriceps', 'dos', 'lombaires']],
+
+  /* --------------------------------------------------------- quadriceps */
+  ['squat', 'Squat barre (nuque)', 'barre', 'kg', 'Debout', 'Pronation', ['quadriceps'], ['fessiers', 'lombaires', 'abdos']],
+  ['squat-avant', 'Squat avant (front squat)', 'barre', 'kg', 'Debout', 'Neutre', ['quadriceps'], ['fessiers', 'abdos']],
+  ['squat-gobelet', 'Squat gobelet', 'halteres', 'kg', 'Debout', 'Neutre', ['quadriceps'], ['fessiers']],
+  ['squat-smith', 'Squat Smith', 'machine', 'kg', 'Debout', 'Pronation', ['quadriceps'], ['fessiers']],
+  ['hack-squat', 'Hack squat machine', 'machine', 'kg', 'Debout', 'Neutre', ['quadriceps'], ['fessiers']],
+  ['pendulum-squat', 'Pendulum squat', 'machine', 'kg', 'Debout', 'Neutre', ['quadriceps'], ['fessiers']],
+  ['presse', 'Presse à cuisses', 'machine', 'kg', 'Assis', '', ['quadriceps'], ['fessiers', 'ischios']],
+  ['presse-une-jambe', 'Presse à cuisses une jambe', 'machine', 'kg', 'Assis', '', ['quadriceps'], ['fessiers']],
+  ['leg-extension', 'Leg extension', 'machine', 'kg', 'Assis', '', ['quadriceps'], []],
+  ['leg-extension-uni', 'Leg extension unilatéral', 'machine', 'kg', 'Assis', '', ['quadriceps'], []],
+  ['fente-avant', 'Fente avant', 'halteres', 'kg', 'Debout', 'Neutre', ['quadriceps'], ['fessiers']],
+  ['fente-marchee', 'Fente marchée', 'halteres', 'kg', 'Debout', 'Neutre', ['quadriceps'], ['fessiers']],
+  ['fente-bulgare', 'Fente bulgare', 'halteres', 'kg', 'Debout', 'Neutre', ['quadriceps'], ['fessiers']],
+  ['sissy-squat', 'Sissy squat', 'corps', 'bw', 'Debout', '', ['quadriceps'], []],
 
   /* ------------------------------------------------------------ ischios */
-  { id: 'leg-curl-allonge', name: 'Leg curl allongé', muscle: 'ischios', gear: 'machine', mode: 'kg', sets: 3 },
-  { id: 'leg-curl-assis', name: 'Leg curl assis', muscle: 'ischios', gear: 'machine', mode: 'kg', sets: 3 },
-  { id: 'souleve-roumain', name: 'Soulevé de terre roumain', muscle: 'ischios', gear: 'barre', mode: 'kg', sets: 4,
-    tip: 'Jambes presque tendues, pousse les fesses en arrière, dos plat.' },
-  { id: 'good-morning', name: 'Good morning', muscle: 'ischios', gear: 'barre', mode: 'kg', sets: 3 },
-  { id: 'nordic-curl', name: 'Nordic curl', muscle: 'ischios', gear: 'corps', mode: 'bw', sets: 3,
-    tip: 'Très dur : freine la descente le plus longtemps possible.' },
+  ['leg-curl-allonge', 'Leg curl allongé', 'machine', 'kg', 'Couché', '', ['ischios'], ['mollets']],
+  ['leg-curl-assis', 'Leg curl assis', 'machine', 'kg', 'Assis', '', ['ischios'], []],
+  ['leg-curl-debout', 'Leg curl debout unilatéral', 'machine', 'kg', 'Debout', '', ['ischios'], []],
+  ['sdt-roumain', 'Soulevé de terre roumain', 'barre', 'kg', 'Debout', 'Pronation', ['ischios'], ['fessiers', 'lombaires']],
+  ['sdt-roumain-halteres', 'Soulevé de terre roumain haltères', 'halteres', 'kg', 'Debout', 'Neutre', ['ischios'], ['fessiers', 'lombaires']],
+  ['sdt-jambes-tendues', 'Soulevé de terre jambes tendues', 'barre', 'kg', 'Debout', 'Pronation', ['ischios'], ['lombaires']],
+  ['nordic-curl', 'Nordic curl', 'corps', 'bw', 'À genoux', '', ['ischios'], ['fessiers']],
 
-  /* ---------------------------------------------------------- fessiers */
-  { id: 'hip-thrust', name: 'Hip thrust', muscle: 'fessiers', gear: 'barre', mode: 'kg', sets: 4,
-    tip: 'Serre les fessiers en haut, menton rentré.' },
-  { id: 'abduction', name: 'Abduction machine', muscle: 'fessiers', gear: 'machine', mode: 'kg', sets: 3 },
-  { id: 'kickback-poulie', name: 'Kickback fessier poulie', muscle: 'fessiers', gear: 'poulie', mode: 'kg', sets: 3 },
-  { id: 'souleve-sumo', name: 'Soulevé de terre sumo', muscle: 'fessiers', gear: 'barre', mode: 'kg', sets: 3 },
-  { id: 'step-up', name: 'Montée sur banc (step up)', muscle: 'fessiers', gear: 'halteres', mode: 'kg', sets: 3 },
-
-  /* ----------------------------------------------------------- mollets */
-  { id: 'mollets-debout', name: 'Mollets debout', muscle: 'mollets', gear: 'machine', mode: 'kg', sets: 4,
-    tip: 'Amplitude complète : talon bas, puis pointe au maximum.' },
-  { id: 'mollets-assis', name: 'Mollets assis', muscle: 'mollets', gear: 'machine', mode: 'kg', sets: 3,
-    tip: 'Genou plié : cible le soléaire, sous le mollet.' },
-  { id: 'mollets-presse', name: 'Mollets à la presse', muscle: 'mollets', gear: 'machine', mode: 'kg', sets: 3 },
-  { id: 'mollets-une-jambe', name: 'Mollets une jambe', muscle: 'mollets', gear: 'corps', mode: 'bw', sets: 3 },
-
-  /* -------------------------------------------------------- abdominaux */
-  { id: 'gainage', name: 'Gainage (planche)', muscle: 'abdos', gear: 'corps', mode: 'bw', sets: 3,
-    tip: 'Note la durée en secondes à la place des reps.' },
-  { id: 'crunch', name: 'Crunch', muscle: 'abdos', gear: 'corps', mode: 'bw', sets: 3 },
-  { id: 'crunch-poulie', name: 'Crunch à la poulie', muscle: 'abdos', gear: 'poulie', mode: 'kg', sets: 3 },
-  { id: 'releve-jambes', name: 'Relevé de jambes suspendu', muscle: 'abdos', gear: 'corps', mode: 'bw', sets: 3,
-    tip: 'Sans balancer : contrôle la descente.' },
-  { id: 'roue-abdos', name: 'Roue abdominale', muscle: 'abdos', gear: 'corps', mode: 'bw', sets: 3 },
-  { id: 'russian-twist', name: 'Russian twist', muscle: 'abdos', gear: 'halteres', mode: 'kg', sets: 3 },
-  { id: 'relevé-bassin', name: 'Relevé de bassin', muscle: 'abdos', gear: 'corps', mode: 'bw', sets: 3 }
+  /* ------------------------------------------------------------ mollets */
+  ['mollets-debout', 'Mollets debout machine', 'machine', 'kg', 'Debout', '', ['mollets'], []],
+  ['mollets-barre', 'Mollets debout barre', 'barre', 'kg', 'Debout', 'Pronation', ['mollets'], []],
+  ['mollets-smith', 'Mollets Smith', 'machine', 'kg', 'Debout', 'Pronation', ['mollets'], []],
+  ['mollets-assis', 'Mollets assis machine', 'machine', 'kg', 'Assis', '', ['mollets'], []],
+  ['mollets-presse', 'Mollets à la presse', 'machine', 'kg', 'Assis', '', ['mollets'], []],
+  ['mollets-une-jambe', 'Mollets une jambe', 'corps', 'bw', 'Debout', '', ['mollets'], []]
 ];
 
-/** Les exercices d'un muscle, dans l'ordre du catalogue. */
+export const LIBRARY = RAW.map(([id, name, gear, mode, position, grip, primary, secondary]) =>
+  ({ id, name, gear, mode, position, grip, primary, secondary }));
+
+/** Les exercices dont le muscle principal est `muscleId`. */
 export function libraryFor(muscleId) {
-  return LIBRARY.filter((e) => e.muscle === muscleId);
+  return LIBRARY.filter((e) => e.primary[0] === muscleId);
 }
 
 export function libraryEntry(libId) {
   return LIBRARY.find((e) => e.id === libId) || null;
+}
+
+/** Recherche sur le nom, le matériel et la prise, accents et casse ignorés. */
+const plain = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+export function searchLibrary(query) {
+  const words = plain(query).split(/\s+/).filter(Boolean);
+  if (!words.length) return [];
+  return LIBRARY.filter((e) => {
+    const hay = plain(`${e.name} ${GEAR[e.gear]} ${e.position} ${e.grip}`);
+    return words.every((w) => hay.includes(w));
+  });
+}
+
+export function muscleLabel(id) {
+  const m = MUSCLES.find((x) => x.id === id);
+  return m ? m.label : id;
 }

@@ -735,6 +735,8 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 .cat-box > summary .chev { margin-left: auto; transition: transform 0.15s ease; }
 .cat-box[open] > summary .chev { transform: rotate(90deg); }
 
+.cat-search { margin-bottom: 12px; }
+.cat-search input { width: 100%; }
 .muscle-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
 .chip {
   padding: 6px 11px;
@@ -754,14 +756,19 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 .cat-head h3 { font-size: 1.05rem; }
 .cat-head .meta { font-size: 0.8rem; color: var(--ink-muted); margin-top: 2px; }
 
-/* silhouette : corps en gris, muscle travaillé en accent */
+/* silhouettes : corps en gris, muscles travaillés en couleur */
 .body-map { flex: none; display: block; }
 .bm-body { fill: var(--grid); }
 .bm-on { fill: var(--accent); }
+.bm-second { fill: color-mix(in srgb, var(--accent) 34%, transparent); }
 
-.cat-row { align-items: flex-start; }
-.cat-row .row-icon { margin-top: 2px; }
-.cat-row .btn { flex: none; align-self: center; }
+.cat-row { align-items: center; gap: 10px; }
+.cat-row .body { display: grid; gap: 2px; }
+.cat-row .meta { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.cat-row .meta svg { flex: none; color: var(--ink-muted); }
+.cat-row .muscles { color: var(--ink-muted); font-size: 0.75rem; }
+.cat-actions { display: grid; gap: 4px; flex: none; justify-items: stretch; }
+.cat-actions .btn { white-space: nowrap; }
 .cat-added {
   display: inline-flex;
   align-items: center;
@@ -777,6 +784,12 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 
 .edit-list { display: grid; }
 .edit-empty { padding: 6px 0 12px; }
+.edit-name {
+  padding: 9px 2px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
 .edit-row {
   display: flex;
   align-items: flex-start;
@@ -789,8 +802,6 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 .edit-opts { display: flex; gap: 6px; flex-wrap: wrap; }
 .edit-opts select { width: auto; flex: 1 1 auto; }
 .edit-row .mini { display: flex; gap: 2px; flex: none; margin-top: 4px; }
-.edit-add { display: grid; gap: 6px; margin-top: 14px; }
-.edit-add .edit-opts .btn { flex: none; }
 
 .prog-row-card {
   display: flex;
