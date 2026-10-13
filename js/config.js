@@ -28,5 +28,5 @@ export const PASSWORD_MIN_LENGTH = 10;
  * l'écart le temps d'un essai, il n'empêcherait pas quelqu'un de décidé. Ce
  * qui protège vraiment les données reste les règles RLS de la base.
  */
-export const MAINTENANCE = true;
+export const MAINTENANCE = false;
 export const MAINTAINER_EMAIL = 'anas.hadouche@2029.icam.fr';

@@ -8,7 +8,7 @@
  *   données personnelles ne passent jamais par ce cache.
  */
 
-const CACHE = 'suivi-muscu-v13';
+const CACHE = 'suivi-muscu-v14';
 const SHELL = [
   './',
   './index.html',
