@@ -66,29 +66,18 @@ export function viewSessionEditor(sessionId, ctx) {
   const list = h('div', { class: 'edit-list' });
 
   /*
-   * Renommer ne renomme pas : ça remplace l'exercice par un nouveau, qui
-   * repart d'une courbe vierge. L'ancien garde ses séances et reste proposé
-   * dans « remettre un exercice déjà fait ». C'est dit dans la question posée,
-   * parce que la différence compte.
+   * Renommer change seulement l'étiquette : l'exercice garde son identifiant,
+   * donc ses séances passées et sa courbe. Les séances déjà enregistrées
+   * gardent le nom qu'elles portaient ce jour-là.
    */
   const rename = (i) => {
     const ex = draft.exercises[i];
-    const value = prompt(
-      [
-        `Nouveau nom pour « ${ex.name} » :`,
-        '',
-        'Cela crée un exercice à part, avec sa propre courbe.',
-        `L'historique de « ${ex.name} » n'est pas perdu : il reste accessible dans Progrès.`
-      ].join('\n'),
-      ex.name);
+    const value = prompt(`Nouveau nom pour « ${ex.name} » :`, ex.name);
     if (value === null) return;
     const clean = value.trim();
     if (!clean || clean === ex.name) return;
-    draft.exercises[i] = {
-      id: store.uid('e'), name: clean, mode: ex.mode, defaultSets: ex.defaultSets, libId: ex.libId || ''
-    };
+    ex.name = clean;
     draw();
-    drawReuse();
   };
 
   const draw = () => {
