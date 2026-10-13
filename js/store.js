@@ -27,7 +27,8 @@
  * exercice ne réécrit donc jamais l'historique déjà enregistré.
  */
 
-import { buildTemplateState } from './seed.js';
+import { buildTemplateState, templateLinks } from './seed.js';
+import { libraryEntry, findByName } from './exercise-library.js';
 
 const STORAGE_PREFIX = 'suivi-muscu:state:v2:';
 // Données de la version sans compte, importables à la 1re connexion.
@@ -69,6 +70,32 @@ export function fmtNum(n, digits = 1) {
 
 /* ------------------------------------------------------- chargement / io */
 
+/*
+ * Rattachement d'un exercice du programme à sa fiche du catalogue.
+ *
+ * Les comptes ouverts avant le catalogue ont des exercices écrits à la main
+ * (« Bench », « Curl pupitre EZ ») qui ne pointent sur aucune fiche : pas de
+ * muscles, pas de matériel, pas de silhouette. On les rattache ici, une fois,
+ * par leur id quand c'est un exercice du programme type, sinon par leur nom
+ * quand il désigne sans ambiguïté un exercice du catalogue.
+ *
+ * Deux règles tiennent tout :
+ *   - l'id de l'exercice ne change jamais, donc les séances enregistrées, les
+ *     courbes et les 1RM restent attachés au même exercice ;
+ *   - l'historique n'est pas touché, il garde les noms figés au moment de la
+ *     saisie (c'est ce qui permet de relire une vieille séance telle quelle).
+ *
+ * Le mode (kg / poids du corps) reste celui de l'utilisateur : lui seul sait
+ * comment il saisit ses charges, et le changer fausserait la lecture.
+ */
+const SEED_LINKS = templateLinks();
+
+function linkToCatalog(ex) {
+  if (ex.libId) return ex;
+  const lib = (SEED_LINKS[ex.id] && libraryEntry(SEED_LINKS[ex.id])) || findByName(ex.name);
+  return lib ? { ...ex, name: lib.name, libId: lib.id } : ex;
+}
+
 const numOrNull = (v) => (v === null || v === undefined || v === '' || Number.isNaN(Number(v)) ? null : Number(v));
 
 function normalize(raw) {
@@ -84,7 +111,7 @@ function normalize(raw) {
     sessions: sessions.map((sess) => ({
       id: sess.id || uid('s'),
       name: sess.name || 'Séance',
-      exercises: (Array.isArray(sess.exercises) ? sess.exercises : []).map((e) => ({
+      exercises: (Array.isArray(sess.exercises) ? sess.exercises : []).map((e) => linkToCatalog({
         id: e.id || uid('e'),
         name: e.name || 'Exercice',
         mode: e.mode === 'bw' ? 'bw' : 'kg',
