@@ -12,7 +12,7 @@ import * as store from '../store.js';
 import { h, toast, icon, ICONS } from '../ui.js';
 import { sessionNumber, miniBtn, pageHead, emptyState } from './common.js';
 import { cataloguePanel } from './catalogue.js';
-import { findByName, GEAR } from '../exercise-library.js';
+import { SUPPORT_EMAIL } from '../config.js';
 
 const SET_CHOICES = [1, 2, 3, 4, 5, 6, 7, 8, 10];
 
@@ -122,8 +122,10 @@ export function viewSessionEditor(sessionId, ctx) {
   const reuseWrap = h('div', { class: 'reuse' });
   const drawReuse = () => {
     reuseWrap.textContent = '';
+    // on ne filtre plus les exercices masqués : sans option de retrait, les
+    // laisser de côté reviendrait à rendre leur historique inatteignable
     const known = store.exerciseCatalog()
-      .filter((e) => !e.hidden && !draft.exercises.some((x) => x.id === e.id));
+      .filter((e) => !draft.exercises.some((x) => x.id === e.id));
     if (!known.length) return;
 
     const select = h('select', { 'aria-label': 'Exercice déjà fait à remettre' },
@@ -151,52 +153,11 @@ export function viewSessionEditor(sessionId, ctx) {
     });
 
     reuseWrap.append(
-      h('p', { class: 'field-label' }, 'Remettre un exercice déjà fait'),
       select,
       h('span', { class: 'hint' }, 'Son historique et sa courbe continuent.')
     );
   };
   drawReuse();
-
-  /*
-   * Retirer un exercice créé à la main. Les exercices du catalogue ne sont
-   * jamais proposés ici : ils doivent rester disponibles pour tout le monde.
-   * S'il a déjà des séances, il est seulement masqué des choix — l'historique
-   * et la courbe ne bougent pas.
-   */
-  const cleanupWrap = h('div', { class: 'reuse' });
-  const drawCleanup = () => {
-    cleanupWrap.textContent = '';
-    const custom = store.exerciseCatalog().filter((e) => !e.hidden && !e.libId);
-    if (!custom.length) return;
-
-    const select = h('select', { 'aria-label': 'Exercice créé à la main à retirer' },
-      h('option', { value: '' }, 'Choisir un exercice créé à la main…'),
-      custom.map((e) => h('option', { value: e.id }, e.name)));
-
-    select.addEventListener('change', () => {
-      const found = custom.find((e) => e.id === select.value);
-      if (!found) { return; }
-      if (!confirm(`Retirer « ${found.name} » de tes exercices ?\n\n` +
-        'Il disparaîtra des choix et de tes séances. Ses séances déjà enregistrées sont conservées.')) {
-        select.value = '';
-        return;
-      }
-      const what = store.removeCustomExercise(found.id);
-      draft.exercises = draft.exercises.filter((x) => x.id !== found.id);
-      toast(what === 'masque' ? `${found.name} retiré des choix` : `${found.name} supprimé`);
-      draw();
-      drawReuse();
-      drawCleanup();
-    });
-
-    cleanupWrap.append(
-      h('p', { class: 'field-label' }, 'Retirer un exercice créé à la main'),
-      select,
-      h('span', { class: 'hint' }, 'Les exercices du catalogue, eux, restent toujours disponibles.')
-    );
-  };
-  drawCleanup();
 
   /*
    * Catalogue : une base d'exercices par muscle, pour ne pas avoir à tout
@@ -214,59 +175,6 @@ export function viewSessionEditor(sessionId, ctx) {
       toast(`${e.name} ajouté`);
     }
   });
-
-  /* --- créer un exercice à la main ----------------------------------- */
-  const newName = h('input', { type: 'text', placeholder: 'Nom du nouvel exercice', maxlength: 80, 'aria-label': 'Nom du nouvel exercice' });
-  const newMode = h('select', { 'aria-label': 'Type' },
-    h('option', { value: 'kg' }, 'Charge'), h('option', { value: 'bw' }, 'Poids du corps'));
-  const newSets = h('select', { 'aria-label': 'Nombre de séries' },
-    ...SET_CHOICES.map((n) => h('option', { value: n, selected: n === 3 }, `${n} série${n > 1 ? 's' : ''}`)));
-
-  const pushExercise = (ex) => {
-    draft.exercises.push(ex);
-    newName.value = '';
-    draw();
-    drawReuse();
-    drawCleanup();
-    newName.focus();
-  };
-
-  /*
-   * Avant de créer : si l'exercice existe déjà, chez soi ou au catalogue, on le
-   * propose plutôt que d'en faire un deuxième. Deux exercices du même nom, ce
-   * sont deux courbes à moitié remplies.
-   */
-  const add = () => {
-    const value = newName.value.trim();
-    if (!value) { newName.focus(); return; }
-
-    const known = store.exerciseCatalog().find(
-      (e) => !e.hidden && !draft.exercises.some((x) => x.id === e.id) &&
-        e.name.toLowerCase() === value.toLowerCase());
-    if (known && confirm(`« ${known.name} » existe déjà dans tes exercices.\n\n` +
-      'Le reprendre ? Son historique et sa courbe continuent.')) {
-      pushExercise({
-        id: known.id, name: known.name, mode: known.mode,
-        defaultSets: known.defaultSets, libId: known.libId || ''
-      });
-      return;
-    }
-
-    const lib = findByName(value);
-    const already = lib && draft.exercises.some((x) => x.libId === lib.id);
-    if (lib && !already && confirm(`« ${lib.name} » est au catalogue (${GEAR[lib.gear]}).\n\n` +
-      'L’ajouter depuis le catalogue ? Il arrive avec les muscles qu’il travaille.')) {
-      pushExercise({
-        id: store.uid('e'), name: lib.name, mode: lib.mode, defaultSets: Number(newSets.value), libId: lib.id
-      });
-      return;
-    }
-
-    pushExercise({
-      id: store.uid('e'), name: value, mode: newMode.value, defaultSets: Number(newSets.value), libId: ''
-    });
-  };
-  newName.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); add(); } });
 
   /** Bloc dépliable : le titre seul tant qu'on ne clique pas dessus. */
   const fold = (title, desc, body, { extraClass = '' } = {}) =>
@@ -301,16 +209,15 @@ export function viewSessionEditor(sessionId, ctx) {
       ),
       fold('Catalogue d’exercices', 'Cherche un exercice, ou parcours muscle par muscle.',
         [catalogue], { extraClass: ' cat-box' }),
-      fold('Créer un exercice', 'Pour une machine ou une variante qui n’est pas au catalogue.', [
-        h('div', { class: 'edit-add' },
-          newName,
-          h('div', { class: 'edit-opts' }, newMode, newSets,
-            h('button', { class: 'btn primary small', type: 'button', onclick: add }, icon(ICONS.plus, 14), 'Ajouter'))
-        )
+      fold('Créer un exercice', 'La création est désactivée : tout le monde part de la même base.', [
+        h('div', { class: 'notice' },
+          h('p', {}, 'Un exercice manque au catalogue ? Merci de contacter l’administrateur, ' +
+            'il sera ajouté pour tout le monde.'),
+          h('a', { class: 'btn small', href: `mailto:${SUPPORT_EMAIL}` }, SUPPORT_EMAIL))
       ]),
-      fold('Remettre ou retirer un exercice',
-        'Les exercices que tu as déjà faits, et ceux que tu as créés à la main.',
-        [reuseWrap, cleanupWrap])
+      fold('Remettre un exercice déjà fait',
+        'Un exercice retiré d’une séance reprend sa courbe là où elle s’était arrêtée.',
+        [reuseWrap])
     ),
     h('div', { class: 'form-actions' },
       h('button', { class: 'btn ghost', type: 'button', onclick: cancel }, 'Annuler'),
