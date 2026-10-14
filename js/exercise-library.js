@@ -229,6 +229,7 @@ const RAW = [
   ['leg-curl-debout', 'Leg curl debout unilatéral', 'machine', 'kg', ['ischios'], []],
   ['sdt-roumain', 'Soulevé de terre roumain', 'barre', 'kg', ['ischios', 'fessiers'], ['lombaires']],
   ['sdt-roumain-halteres', 'Soulevé de terre roumain haltères', 'halteres', 'kg', ['ischios', 'fessiers'], ['lombaires']],
+  ['sdt-roumain-uni', 'Soulevé de terre roumain une jambe', 'halteres', 'kg', ['ischios', 'fessiers'], ['lombaires', 'abdos']],
   ['sdt-jambes-tendues', 'Soulevé de terre jambes tendues', 'barre', 'kg', ['ischios', 'fessiers'], ['lombaires']],
   ['nordic-curl', 'Nordic curl', 'corps', 'bw', ['ischios'], ['fessiers']],
 
@@ -325,11 +326,45 @@ const EN_RE = EN_FR.map(([en, fr]) => [new RegExp('\\b' + en.replace(/[-]/g, '\\
 function normalizeQuery(text) {
   let q = plain(text).replace(/[^a-z0-9 -]+/g, ' ').replace(/\s+/g, ' ').trim();
   for (const [re, fr] of EN_RE) q = q.replace(re, fr);
-  return q.replace(/\s+/g, ' ').trim();
+  // « pull-over » et « pull over » désignent le même mouvement : le trait
+  // d'union tombe des deux côtés de la comparaison, jamais avant la traduction
+  return q.replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
 /** Nom d'un exercice, normalisé de la même façon que la recherche. */
 const libKey = (e) => normalizeQuery(e.name);
+
+/*
+ * Noms relevés dans de vrais comptes que la recherche ne peut pas deviner :
+ * abréviations, fautes de frappe, formulations de salle. Chaque ligne dit à
+ * quelle fiche le nom correspond ; elle vaut pour tous les comptes qui l'ont
+ * écrit pareil, et l'exercice garde son identifiant, donc son historique.
+ *
+ * Pour savoir ce qu'il reste à traduire : supabase/exos-hors-catalogue.sql.
+ */
+const ALIASES = {
+  'wirst curl': 'curl-poignets',
+  'dips lestes': 'dips',
+  'bulgarian squat': 'fente-bulgare',
+  '1 leg press': 'presse-une-jambe',
+  '1 leg calf raise': 'mollets-une-jambe',
+  '1 leg rdl': 'sdt-roumain-uni',
+  'one leg rdl': 'sdt-roumain-uni',
+  'hip abduction': 'abduction-machine',
+  'elevations laterales a la machine': 'elev-lat-machine',
+  'seated calf raise': 'mollets-assis',
+  'seating calf raise': 'mollets-assis',
+  'mollets assis': 'mollets-assis',
+  'mollet standing calf': 'mollets-debout',
+  'mollets debout': 'mollets-debout',
+  'tirage horizontal': 'tirage-horizontal',
+  'decline bench': 'dc-decline-barre',
+  'hip thrust': 'hip-thrust'
+};
+
+const ALIAS_MAP = new Map(
+  Object.entries(ALIASES).map(([nom, id]) => [normalizeQuery(nom), id])
+);
 
 /** Recherche sur le nom et le matériel, en français comme en anglais. */
 export function searchLibrary(query) {
@@ -347,7 +382,13 @@ export function searchLibrary(query) {
  * un doublon à la main.
  */
 export function findByName(name) {
-  const q = new Set(normalizeQuery(name).split(' ').filter(Boolean));
+  const key = normalizeQuery(name);
+  const alias = ALIAS_MAP.get(key);
+  if (alias) {
+    const known = libraryEntry(alias);
+    if (known) return known;
+  }
+  const q = new Set(key.split(' ').filter(Boolean));
   if (!q.size) return null;
   // comparaison par mots, pas par morceaux de phrase : l'anglais met le
   // qualificatif devant (« incline bench press »), le français derrière
