@@ -5,8 +5,9 @@
  * muscle. Chaque ligne montre le matériel et les muscles travaillés, en couleur
  * sur une silhouette de face et une de dos.
  *
- * « Ajouter » met l'exercice tel quel dans la séance ; « Renommer » l'ajoute
- * sous un autre nom, ce qui en fait un exercice à part, avec sa propre courbe.
+ * « Ajouter » met l'exercice dans la séance. S'il a déjà été fait un jour, il
+ * revient avec son identifiant, donc sa courbe continue là où elle s'était
+ * arrêtée.
  *
  * Le panneau vit dans la page « Modifier la séance » : il n'y a pas de
  * navigation, donc le brouillon en cours n'est jamais perdu.

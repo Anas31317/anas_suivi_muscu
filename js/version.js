@@ -1,3 +1,3 @@
 /** Version affichée dans le pied de page. À incrémenter à chaque évolution. */
-export const APP_VERSION = '1.21.2';
+export const APP_VERSION = '1.22.0';
 export const APP_AUTHOR = 'Anas HADOUCHE';
