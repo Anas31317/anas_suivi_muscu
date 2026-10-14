@@ -362,6 +362,10 @@ const libKey = (e) => normalizeQuery(e.name);
  * écrit pareil, et l'exercice garde son identifiant, donc son historique.
  *
  * Pour savoir ce qu'il reste à traduire : supabase/exos-hors-catalogue.sql.
+ *
+ * Rien n'est deviné ici : un nom dont on n'est pas sûr reste tel quel chez la
+ * personne, ce qui ne coûte qu'une fiche manquante. Le rattacher au mauvais
+ * exercice, lui, renommerait le sien et lui collerait les mauvais muscles.
  */
 const ALIASES = {
   'wirst curl': 'curl-poignets',
@@ -382,12 +386,9 @@ const ALIASES = {
   'decline bench': 'dc-decline-barre',
   'hip thrust': 'hip-thrust',
   squat: 'squat',
-  trapeze: 'shrugs-halteres',
   abduction: 'abduction-machine',
   'hip adduction': 'adduction-machine',
   adduction: 'adduction-machine',
-  'elevantion frontale': 'elev-front-halteres',
-  'elevation frontale': 'elev-front-halteres',
   'tirage verticale': 'tirage-vertical-pro',
   'tirage vertical': 'tirage-vertical-pro',
   'pompe triceps': 'pompes-diamant',

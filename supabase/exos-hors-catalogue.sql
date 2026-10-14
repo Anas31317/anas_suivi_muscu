@@ -53,3 +53,19 @@ from exos
 where coalesce(nom, '') <> ''
 group by nom
 order by comptes desc, nom;
+
+
+-- ---------------------------------------------------------------------------
+-- Si, et seulement si, un nom reste incompréhensible : savoir à qui demander.
+--
+-- Cette requête-là met un email en face d'un nom d'exercice. Elle sort du
+-- principe « des noms, rien d'autre » : à n'utiliser que pour poser la
+-- question à la personne, et rien de plus. Remplacer la liste de noms.
+-- ---------------------------------------------------------------------------
+
+-- select u.email, ex->>'name' as exercice
+-- from public.user_state us
+--      join auth.users u on u.id = us.user_id,
+--      lateral jsonb_array_elements(coalesce(us.data->'sessions', '[]'::jsonb)) s,
+--      lateral jsonb_array_elements(coalesce(s->'exercises', '[]'::jsonb)) ex
+-- where ex->>'name' in ('Trapèze', 'Elevantion frontale');
