@@ -834,8 +834,9 @@ input.derived { color: var(--ink-2); }
 .reuse { margin-top: 16px; }
 .reuse select { width: 100%; }
 .reuse .hint { display: block; margin-top: 4px; font-size: 0.78rem; color: var(--ink-muted); }
-.edit-add { display: grid; gap: 6px; margin-top: 14px; }
-.edit-add .edit-opts .btn { flex: none; }
+.notice { display: grid; gap: 10px; justify-items: start; margin-top: 12px; }
+.notice p { margin: 0; font-size: 0.9rem; color: var(--ink-muted); }
+.notice .btn { text-transform: none; letter-spacing: 0; }
 
 .computed { font-size: 0.85rem; color: var(--accent-ink); font-weight: 500; margin: -4px 0 14px; min-height: 1em; }
 .chart-note { font-size: 0.8rem; color: var(--ink-muted); margin-top: 8px; text-align: center; }

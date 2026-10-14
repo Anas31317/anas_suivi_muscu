@@ -376,25 +376,6 @@ export function exerciseCatalog() {
   return out.map((e) => ({ ...e, hidden: hidden.has(e.id) }));
 }
 
-/**
- * Retire un exercice créé à la main des choix : il sort du programme, et s'il
- * a déjà des séances enregistrées il est seulement masqué — l'historique et la
- * courbe restent intacts, comme toujours.
- */
-export function removeCustomExercise(exerciseId) {
-  const used = getState().logs.some((l) => l.entries.some((en) => en.exerciseId === exerciseId));
-  mutate((s) => {
-    for (const sess of s.sessions) {
-      sess.exercises = sess.exercises.filter((e) => e.id !== exerciseId);
-    }
-    if (used) {
-      if (!Array.isArray(s.hidden)) s.hidden = [];
-      if (!s.hidden.includes(exerciseId)) s.hidden.push(exerciseId);
-    }
-  });
-  return used ? 'masque' : 'supprime';
-}
-
 /** Tous les exercices, aplatis, avec leur séance — pour la page Progression. */
 export function allExercises() {
   const out = [];

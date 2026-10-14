@@ -67,15 +67,12 @@ Pas de nombre de séries dans le catalogue : il se règle dans la séance, aprè
 L'éditeur de séance garde ses outils repliés, sous trois titres qu'on déplie au besoin :
 
 - **Catalogue d'exercices**, la base commune ;
-- **Créer un exercice**, pour une machine qui n'est pas au catalogue. Si le nom tapé
-  correspond à un exercice déjà connu ou à un exercice du catalogue, celui-ci est proposé
-  avant d'en créer un deuxième : deux exercices du même nom, ce sont deux courbes à moitié
-  remplies ;
-- **Remettre ou retirer un exercice** : remettre reprend son identifiant, donc sa courbe
-  continue ; retirer ne concerne que les exercices créés à la main et les sort des choix et
-  des séances. S'ils ont déjà des séances enregistrées ils sont seulement masqués :
-  l'historique et la courbe ne bougent pas. Les exercices du catalogue, eux, ne
-  disparaissent jamais des choix.
+- **Créer un exercice** : désactivé. Le bloc renvoie à l'adresse de `SUPPORT_EMAIL`
+  ([`js/config.js`](js/config.js)) pour demander l'ajout d'un exercice manquant. Tout le
+  monde part ainsi de la même base, et un exercice ajouté au catalogue profite à tous au
+  lieu de rester dans un seul compte ;
+- **Remettre un exercice déjà fait** : un exercice retiré d'une séance reprend son
+  identifiant, donc sa courbe continue là où elle s'était arrêtée.
 
 Un exercice vraiment polyarticulaire apparaît dans **chacune** de ses catégories : les dips
 sont dans Pectoraux et dans Triceps, le soulevé de terre dans Lombaires, Fessiers et
