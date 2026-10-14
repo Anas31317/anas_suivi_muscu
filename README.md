@@ -99,6 +99,11 @@ Les noms d'exercices ne se modifient pas : ils viennent du catalogue, et c'est c
 que le même mouvement porte le même nom sur tous les comptes. Dans une séance, chacun règle
 l'ordre, le type et le nombre de séries.
 
+Pour savoir ce qui manque aux autres comptes, les règles RLS interdisant de lire leurs
+données depuis l'appli : [`supabase/exos-hors-catalogue.sql`](supabase/exos-hors-catalogue.sql),
+à exécuter dans le SQL Editor du projet. Il ne sort que des noms d'exercices et un nombre de
+comptes — aucune charge, aucune date, aucun email.
+
 Pour compléter le catalogue : [`js/exercise-library.js`](js/exercise-library.js), une ligne
 par exercice (id, nom, matériel, mode, muscles principaux, muscles secondaires). Les zones
 des silhouettes sont dans [`js/body-map.js`](js/body-map.js).
