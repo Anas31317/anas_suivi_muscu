@@ -90,7 +90,8 @@ Les comptes ouverts avant le catalogue avaient des exercices écrits à la main 
 automatiquement à l'exercice du catalogue correspondant, par leur identifiant pour le
 programme type, par leur nom quand il désigne un exercice sans ambiguïté. L'identifiant ne
 change pas — courbes, 1RM et séances passées suivent — et l'historique garde les noms figés
-au moment de la saisie. Les vingt exercices du programme type ont tous leur fiche ; un
+au moment de la saisie. Le rattachement vaut aussi pour les exercices qui n'existent plus
+que par leur historique, après avoir été retirés du programme. Les vingt exercices du programme type ont tous leur fiche ; un
 exercice ajouté à la main dont le nom ne correspond à aucune fiche reste tel quel, et c'est
 très bien : c'est là que sert la création d'exercice.
 

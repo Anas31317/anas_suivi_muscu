@@ -274,6 +274,7 @@ const EN_FR = [
   ['incline press', 'developpe incline'], ['decline press', 'developpe decline'],
   ['incline dumbbell press', 'developpe incline halteres'],
   ['bench press', 'developpe couche'], ['chest press', 'developpe machine'],
+  ['bench', 'developpe couche'],
   ['shoulder press', 'developpe epaules'], ['military press', 'developpe militaire'],
   ['overhead press', 'developpe militaire'], ['lat pulldown', 'tirage vertical'],
   ['pulldown', 'tirage vertical'], ['seated row', 'tirage horizontal'],
