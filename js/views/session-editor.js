@@ -31,12 +31,7 @@ export function viewSessionEditor(sessionId, ctx) {
   const doSave = () => {
     const name = draft.name.trim();
     if (!name) { toast('Donne un nom à la séance.'); return false; }
-    const empty = draft.exercises.find((e) => !e.name.trim());
-    if (empty) { toast('Chaque exercice doit avoir un nom.'); return false; }
-    store.saveSessionProgram(sessionId, {
-      name,
-      exercises: draft.exercises.map((e) => ({ ...e, name: e.name.trim() }))
-    });
+    store.saveSessionProgram(sessionId, { name, exercises: draft.exercises });
     saved = true;
     return true;
   };
@@ -72,12 +67,9 @@ export function viewSessionEditor(sessionId, ctx) {
       list.append(h('p', { class: 'muted edit-empty' }, 'Aucun exercice. Ajoute le premier ci-dessous.'));
     }
     draft.exercises.forEach((ex, i) => {
-      // le nom se corrige sur place : l'exercice garde son identifiant, donc
-      // ses séances passées et sa courbe
-      const name = h('input', {
-        type: 'text', value: ex.name, maxlength: 80, 'aria-label': `Nom de l’exercice ${i + 1}`,
-        oninput: () => { ex.name = name.value; }
-      });
+      // le nom ne se modifie pas : il vient du catalogue, et c'est ce qui
+      // fait que le même exercice porte le même nom sur tous les comptes
+      const name = h('p', { class: 'ex-name' }, ex.name);
       const mode = h('select', { 'aria-label': 'Type', onchange: () => { ex.mode = mode.value; } },
         h('option', { value: 'kg', selected: ex.mode === 'kg' }, 'Charge'),
         h('option', { value: 'bw', selected: ex.mode === 'bw' }, 'Poids du corps'));
