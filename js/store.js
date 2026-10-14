@@ -360,11 +360,17 @@ export function exerciseCatalog() {
       out.push({ ...e, sessionId: sess.id, sessionName: sess.name, inProgramme: true });
     }
   }
+  /*
+   * Un exercice retiré du programme n'existe plus que par son historique, qui
+   * garde le nom porté ce jour-là. On le rattache au catalogue comme les
+   * autres : même identifiant, nom et fiche à jour. Sans ça, « Bench » resterait
+   * un inconnu alors que c'est le développé couché du catalogue.
+   */
   const addExtra = (id, name, mode, sets) => {
     if (!id || seen.has(id)) return;
     seen.add(id);
     out.push({
-      id, name, mode: mode === 'bw' ? 'bw' : 'kg', defaultSets: sets || 3,
+      ...linkToCatalog({ id, name, mode: mode === 'bw' ? 'bw' : 'kg', defaultSets: sets || 3, libId: '' }),
       sessionId: null, sessionName: null, inProgramme: false
     });
   };
