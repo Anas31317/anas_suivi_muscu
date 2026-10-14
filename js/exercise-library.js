@@ -33,7 +33,10 @@ export const MUSCLES = [
   { id: 'fessiers', label: 'Fessiers', view: 'back' },
   { id: 'quadriceps', label: 'Quadriceps', view: 'front' },
   { id: 'ischios', label: 'Ischios-jambiers', view: 'back' },
-  { id: 'mollets', label: 'Mollets', view: 'back' }
+  { id: 'mollets', label: 'Mollets', view: 'back' },
+  // ce qui ne vise pas un muscle en particulier : renforcement, prévention,
+  // travail pour un autre sport. Rangé à part plutôt que forcé dans une case.
+  { id: 'prepa', label: 'Préparation physique', view: 'front' }
 ];
 
 /*
@@ -46,7 +49,10 @@ export const DETAIL = {
   trapezes: { label: 'Trapèzes', group: 'dos' },
   'grand-dorsal': { label: 'Grand dorsal', group: 'dos' },
   'grand-rond': { label: 'Grand rond', group: 'dos' },
-  rhomboides: { label: 'Rhomboïdes', group: 'dos' }
+  rhomboides: { label: 'Rhomboïdes', group: 'dos' },
+  // l'intérieur de la cuisse : rangé avec les quadriceps, c'est là qu'on le
+  // cherche, mais coloré à sa place sur la silhouette
+  adducteurs: { label: 'Adducteurs', group: 'quadriceps' }
 };
 
 /** Catégorie d'un muscle : un muscle précis renvoie la sienne, les autres eux-mêmes. */
@@ -59,7 +65,8 @@ export const GEAR = {
   halteres: 'Haltères',
   machine: 'Machine',
   poulie: 'Poulie',
-  corps: 'Poids du corps'
+  corps: 'Poids du corps',
+  divers: 'Autre matériel'
 };
 
 const RAW = [
@@ -83,6 +90,12 @@ const RAW = [
   ['pompes', 'Pompes', 'corps', 'bw', ['pecs'], ['triceps', 'epaules', 'abdos']],
   ['pompes-pieds-hauts', 'Pompes pieds surélevés', 'corps', 'bw', ['pecs'], ['epaules', 'triceps']],
   ['pompes-larges', 'Pompes prise large', 'corps', 'bw', ['pecs'], ['epaules']],
+  ['pompes-serrees', 'Pompes prise serrée', 'corps', 'bw', ['pecs', 'triceps'], ['epaules']],
+  ['pompes-mains-hautes', 'Pompes mains surélevées', 'corps', 'bw', ['pecs'], ['triceps', 'epaules']],
+  ['pompes-genoux', 'Pompes sur les genoux', 'corps', 'bw', ['pecs'], ['triceps', 'epaules']],
+  ['pompes-archer', 'Pompes archer', 'corps', 'bw', ['pecs'], ['triceps', 'epaules', 'abdos']],
+  ['pompes-sautees', 'Pompes sautées (pliométrie)', 'corps', 'bw', ['pecs'], ['triceps', 'epaules']],
+  ['pompes-uni', 'Pompes unilatérales', 'corps', 'bw', ['pecs'], ['triceps', 'epaules', 'abdos']],
 
   /* ---------------------------------------------------------------- dos */
   ['tractions-pro', 'Tractions pronation', 'corps', 'bw', ['grand-dorsal'], ['grand-rond', 'biceps', 'avant-bras']],
@@ -96,7 +109,7 @@ const RAW = [
   ['rowing-barre-pro', 'Rowing barre pronation', 'barre', 'kg', ['grand-dorsal', 'rhomboides'], ['trapezes', 'biceps', 'lombaires']],
   ['rowing-barre-supi', 'Rowing barre supination (Yates)', 'barre', 'kg', ['grand-dorsal'], ['biceps', 'rhomboides', 'lombaires']],
   ['rowing-t-bar', 'Rowing T-bar', 'barre', 'kg', ['grand-dorsal', 'rhomboides'], ['trapezes', 'biceps']],
-  ['rowing-haltere', 'Rowing haltère un bras', 'halteres', 'kg', ['grand-dorsal'], ['rhomboides', 'grand-rond', 'biceps']],
+  ['rowing-haltere', 'Rowing haltère unilatéral', 'halteres', 'kg', ['grand-dorsal'], ['rhomboides', 'grand-rond', 'biceps']],
   ['rowing-halteres-2', 'Rowing haltères deux bras', 'halteres', 'kg', ['grand-dorsal', 'rhomboides'], ['biceps', 'lombaires']],
   ['seal-row', 'Seal row (banc)', 'halteres', 'kg', ['grand-dorsal', 'rhomboides'], ['trapezes', 'biceps']],
   ['rowing-machine', 'Rowing machine', 'machine', 'kg', ['grand-dorsal', 'rhomboides'], ['trapezes', 'biceps']],
@@ -168,6 +181,7 @@ const RAW = [
   ['kickback-haltere', 'Kickback haltère', 'halteres', 'kg', ['triceps'], []],
   ['kickback-poulie', 'Kickback poulie', 'poulie', 'kg', ['triceps'], []],
   ['pompes-diamant', 'Pompes diamant', 'corps', 'bw', ['triceps'], ['pecs']],
+  ['pompes-pike', 'Pompes piquées (pike)', 'corps', 'bw', ['epaules'], ['triceps']],
   ['ext-machine', 'Extension triceps machine', 'machine', 'kg', ['triceps'], []],
 
   /* --------------------------------------------------------- avant-bras */
@@ -207,7 +221,9 @@ const RAW = [
   ['step-up', 'Montée sur banc (step-up)', 'halteres', 'kg', ['fessiers', 'quadriceps'], ['ischios']],
   ['sdt-sumo', 'Soulevé de terre sumo', 'barre', 'kg', ['fessiers', 'quadriceps'], ['lombaires', 'trapezes']],
 
-  /* --------------------------------------------------------- quadriceps */
+  /* ------------------------------------------- quadriceps et adducteurs */
+  ['adduction-machine', 'Adduction machine', 'machine', 'kg', ['adducteurs'], []],
+  ['adduction-poulie', 'Adduction poulie', 'poulie', 'kg', ['adducteurs'], []],
   ['squat', 'Squat barre (nuque)', 'barre', 'kg', ['quadriceps', 'fessiers'], ['lombaires', 'abdos']],
   ['squat-avant', 'Squat avant (front squat)', 'barre', 'kg', ['quadriceps'], ['fessiers', 'abdos']],
   ['squat-gobelet', 'Squat gobelet', 'halteres', 'kg', ['quadriceps'], ['fessiers']],
@@ -215,7 +231,7 @@ const RAW = [
   ['hack-squat', 'Hack squat machine', 'machine', 'kg', ['quadriceps', 'fessiers'], []],
   ['pendulum-squat', 'Pendulum squat', 'machine', 'kg', ['quadriceps'], ['fessiers']],
   ['presse', 'Presse à cuisses', 'machine', 'kg', ['quadriceps', 'fessiers'], ['ischios']],
-  ['presse-une-jambe', 'Presse à cuisses une jambe', 'machine', 'kg', ['quadriceps'], ['fessiers']],
+  ['presse-une-jambe', 'Presse à cuisses unilatérale', 'machine', 'kg', ['quadriceps'], ['fessiers']],
   ['leg-extension', 'Leg extension', 'machine', 'kg', ['quadriceps'], []],
   ['leg-extension-uni', 'Leg extension unilatéral', 'machine', 'kg', ['quadriceps'], []],
   ['fente-avant', 'Fente avant', 'halteres', 'kg', ['quadriceps', 'fessiers'], []],
@@ -226,10 +242,10 @@ const RAW = [
   /* ------------------------------------------------------------ ischios */
   ['leg-curl-allonge', 'Leg curl allongé', 'machine', 'kg', ['ischios'], ['mollets']],
   ['leg-curl-assis', 'Leg curl assis', 'machine', 'kg', ['ischios'], []],
-  ['leg-curl-debout', 'Leg curl debout unilatéral', 'machine', 'kg', ['ischios'], []],
+  ['leg-curl-debout', 'Leg curl unilatéral', 'machine', 'kg', ['ischios'], []],
   ['sdt-roumain', 'Soulevé de terre roumain', 'barre', 'kg', ['ischios', 'fessiers'], ['lombaires']],
   ['sdt-roumain-halteres', 'Soulevé de terre roumain haltères', 'halteres', 'kg', ['ischios', 'fessiers'], ['lombaires']],
-  ['sdt-roumain-uni', 'Soulevé de terre roumain une jambe', 'halteres', 'kg', ['ischios', 'fessiers'], ['lombaires', 'abdos']],
+  ['sdt-roumain-uni', 'Soulevé de terre roumain unilatéral', 'halteres', 'kg', ['ischios', 'fessiers'], ['lombaires', 'abdos']],
   ['sdt-jambes-tendues', 'Soulevé de terre jambes tendues', 'barre', 'kg', ['ischios', 'fessiers'], ['lombaires']],
   ['nordic-curl', 'Nordic curl', 'corps', 'bw', ['ischios'], ['fessiers']],
 
@@ -239,7 +255,12 @@ const RAW = [
   ['mollets-smith', 'Mollets Smith', 'machine', 'kg', ['mollets'], []],
   ['mollets-assis', 'Mollets assis machine', 'machine', 'kg', ['mollets'], []],
   ['mollets-presse', 'Mollets à la presse', 'machine', 'kg', ['mollets'], []],
-  ['mollets-une-jambe', 'Mollets une jambe', 'corps', 'bw', ['mollets'], []]
+  ['mollets-une-jambe', 'Mollets unilatéral', 'corps', 'bw', ['mollets'], []],
+
+  /* ----------------------------------------------- préparation physique */
+  ['renfo-pieds', 'Renforcement des pieds', 'corps', 'bw', ['prepa'], ['mollets']],
+  ['medecine-ball', 'Parcours médecine ball', 'divers', 'bw', ['prepa'], ['abdos', 'quadriceps']],
+  ['corde-a-sauter', 'Corde à sauter', 'divers', 'bw', ['prepa'], ['mollets']]
 ];
 
 export const LIBRARY = RAW.map(([id, name, gear, mode, primary, secondary]) =>
@@ -309,7 +330,7 @@ const EN_FR = [
   ['bodyweight', 'poids du corps'], ['smith machine', 'smith'],
   ['incline', 'incline'], ['decline', 'decline'], ['seated', 'assis'],
   ['standing', 'debout'], ['lying', 'couche'], ['bent over', 'penche'],
-  ['single arm', 'un bras'], ['one arm', 'un bras'], ['single leg', 'une jambe'],
+  ['single arm', 'unilateral'], ['one arm', 'unilateral'], ['single leg', 'unilateral'],
   ['chest', 'pectoraux'], ['back', 'dos'], ['shoulder', 'epaules'],
   ['biceps', 'biceps'], ['triceps', 'triceps'], ['legs', 'jambes'],
   ['glute', 'fessiers'], ['hamstring', 'ischios'], ['quad', 'quadriceps'],
@@ -359,7 +380,24 @@ const ALIASES = {
   'mollets debout': 'mollets-debout',
   'tirage horizontal': 'tirage-horizontal',
   'decline bench': 'dc-decline-barre',
-  'hip thrust': 'hip-thrust'
+  'hip thrust': 'hip-thrust',
+  squat: 'squat',
+  trapeze: 'shrugs-halteres',
+  abduction: 'abduction-machine',
+  'hip adduction': 'adduction-machine',
+  adduction: 'adduction-machine',
+  'elevantion frontale': 'elev-front-halteres',
+  'elevation frontale': 'elev-front-halteres',
+  'tirage verticale': 'tirage-vertical-pro',
+  'tirage vertical': 'tirage-vertical-pro',
+  'pompe triceps': 'pompes-diamant',
+  '1 leg leg curl': 'leg-curl-debout',
+  'leg curl unilateral': 'leg-curl-debout',
+  'fente sureleve': 'fente-bulgare',
+  'fente surelevee': 'fente-bulgare',
+  'fentes lestees support bench': 'fente-bulgare',
+  'foot exercises': 'renfo-pieds',
+  'parcours zchaud medecine ball': 'medecine-ball'
 };
 
 const ALIAS_MAP = new Map(

@@ -46,7 +46,7 @@ Inscription réservée aux emails autorisés, connexion et mot de passe oublié 
 
 ## Catalogue d'exercices
 
-« Modifier la séance » contient un **catalogue** de plus de 140 exercices : une ligne par
+« Modifier la séance » contient un **catalogue** de plus de 160 exercices : une ligne par
 variante, parce que le même mouvement à la barre, aux haltères, à la machine ou à la poulie
 ne se charge pas pareil et ne se suit pas sur la même courbe. L'inclinaison et l'angle des
 poignées ne sont pas des colonnes — ils ne concernent qu'une partie des exercices — mais
@@ -57,7 +57,8 @@ Chaque exercice affiche **les muscles qu'il travaille** sur deux silhouettes, de
 dos, reconnaissables au premier coup d'œil : muscles principaux en couleur pleine,
 secondaires en teinte claire, beaucoup d'exercices étant polyarticulaires. Le dos est
 détaillé en quatre muscles — trapèzes, grand dorsal, grand rond, rhomboïdes — parce qu'un
-tirage vertical et des shrugs n'ont rien à voir ; les douze catégories qui servent à ranger
+tirage vertical et des shrugs n'ont rien à voir, et les adducteurs sont colorés à leur place
+tout en étant rangés avec les quadriceps ; les catégories qui servent à ranger
 les exercices restent larges, elles. La barre de
 recherche comprend le français comme l'anglais : « bench press » trouve le développé
 couché.
@@ -98,6 +99,15 @@ très bien : c'est là que sert la création d'exercice.
 Les noms d'exercices ne se modifient pas : ils viennent du catalogue, et c'est ce qui fait
 que le même mouvement porte le même nom sur tous les comptes. Dans une séance, chacun règle
 l'ordre, le type et le nombre de séries.
+
+Une treizième catégorie, **Préparation physique**, reçoit ce qui ne vise pas un muscle en
+particulier : renforcement des pieds, parcours médecine ball, corde à sauter. Mieux vaut une
+case honnête qu'un exercice forcé dans un groupe musculaire qui ne lui va pas.
+
+Les noms qu'une recherche ne peut pas deviner — abréviations, fautes de frappe, formulations
+de salle — sont traduits par une table de correspondances en bas de
+[`js/exercise-library.js`](js/exercise-library.js) : une ligne « ce nom → cette fiche », qui
+vaut pour tous les comptes qui l'ont écrit pareil.
 
 Pour savoir ce qui manque aux autres comptes, les règles RLS interdisant de lire leurs
 données depuis l'appli : [`supabase/exos-hors-catalogue.sql`](supabase/exos-hors-catalogue.sql),
