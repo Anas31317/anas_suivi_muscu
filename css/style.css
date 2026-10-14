@@ -808,6 +808,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 }
 .edit-row .ex-num { margin-top: 8px; }
 .edit-fields { flex: 1 1 auto; min-width: 0; display: grid; gap: 6px; }
+.edit-fields .ex-name { margin: 6px 0 0; font-weight: 600; }
 .edit-opts { display: flex; gap: 6px; flex-wrap: wrap; }
 .edit-opts select { width: auto; flex: 1 1 auto; }
 .edit-row .mini { display: flex; gap: 2px; flex: none; margin-top: 4px; }

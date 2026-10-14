@@ -87,9 +87,9 @@ au moment de la saisie. Les vingt exercices du programme type ont tous leur fich
 exercice ajouté à la main dont le nom ne correspond à aucune fiche reste tel quel, et c'est
 très bien : c'est là que sert la création d'exercice.
 
-Le nom d'un exercice se corrige directement dans la liste : l'exercice garde son identifiant,
-donc ses séances passées et sa courbe. Les séances déjà enregistrées gardent le nom qu'elles
-portaient ce jour-là.
+Les noms d'exercices ne se modifient pas : ils viennent du catalogue, et c'est ce qui fait
+que le même mouvement porte le même nom sur tous les comptes. Dans une séance, chacun règle
+l'ordre, le type et le nombre de séries.
 
 Pour compléter le catalogue : [`js/exercise-library.js`](js/exercise-library.js), une ligne
 par exercice (id, nom, matériel, mode, muscles principaux, muscles secondaires). Les zones
