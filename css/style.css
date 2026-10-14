@@ -704,7 +704,6 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 .ex-foot { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
 .ex-foot .entry-note { flex: 1 1 auto; min-width: 0; }
 .date-field { min-width: 160px; }
-.link.centered { display: block; text-align: center; padding: 8px; }
 
 /* barre Enregistrer qui reste visible en bas */
 .form-actions {
@@ -896,26 +895,6 @@ td.note { white-space: normal; color: var(--ink-muted); }
 .c-bar   { fill: var(--accent); }
 .c-bar-past { fill-opacity: 0.55; }
 .c-band:hover .c-bar { fill-opacity: 1; }
-.c-line.alt { stroke: var(--series-2); }
-.c-dot.alt  { fill: var(--series-2); }
-
-.chart-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 18px;
-  margin-top: 10px;
-  font-size: 0.8rem;
-  color: var(--ink-2);
-}
-.legend-item { display: inline-flex; align-items: center; gap: 6px; }
-.legend-key {
-  width: 10px;
-  height: 10px;
-  border-radius: 3px;
-  background: var(--accent);
-}
-.legend-key.alt { background: var(--series-2); }
-
 .spark .c-line { stroke-width: 1.75; }
 .spark .c-dot { stroke-width: 1.5; }
 

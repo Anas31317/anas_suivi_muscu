@@ -153,7 +153,7 @@ function exerciseView(exercise, ctx, head) {
       : null
   );
   if (points.length) {
-    ctx.onCleanup(mountSeriesChart(chartHost, [{ label: metric.short, points, cls: '' }],
+    ctx.onCleanup(mountSeriesChart(chartHost, points,
       { unit: metric.unit, label: metric.label, mode: exercise.mode }));
   }
 
@@ -247,7 +247,7 @@ function cardioView(activity, ctx, head) {
       : null
   );
   if (points.length) {
-    ctx.onCleanup(mountSeriesChart(chartHost, [{ label: metric.short, points, cls: '' }],
+    ctx.onCleanup(mountSeriesChart(chartHost, points,
       { unit: metric.unit, label: metric.label }));
   }
 

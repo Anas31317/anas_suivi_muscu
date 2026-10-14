@@ -84,23 +84,6 @@ export function keyMetric(mode) {
   return mode === 'bw' ? store.METRICS.reps : store.METRICS.topWeight;
 }
 
-/** Résumé d'un exercice pour la vue d'ensemble. */
-export function exerciseSummary(exerciseId, mode) {
-  const metric = keyMetric(mode);
-  const values = store.historyForExercise(exerciseId)
-    .map((h) => metric.compute(h.sets))
-    .filter((v) => v !== null);
-  const last = values.length ? values[values.length - 1] : null;
-  const prev = values.length > 1 ? values[values.length - 2] : null;
-  return {
-    metric,
-    values,
-    last,
-    delta: last !== null && prev !== null ? last - prev : null,
-    best: values.length ? Math.max(...values) : null
-  };
-}
-
 /**
  * Records récents : chaque fois qu'un exercice dépasse son meilleur résultat
  * précédent (charge max, ou reps au poids du corps). La 1re séance d'un
