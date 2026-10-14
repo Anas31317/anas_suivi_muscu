@@ -287,6 +287,7 @@ const EN_FR = [
   ['lateral raise', 'elevations laterales'], ['side raise', 'elevations laterales'],
   ['front raise', 'elevations frontales'], ['rear delt', 'oiseau'],
   ['reverse fly', 'oiseau'], ['upright row', 'rowing menton'],
+  ['reverse wrist curl', 'curl poignets inverse'], ['wrist curl', 'curl poignets'],
   ['shrug', 'shrugs'], ['hammer curl', 'curl marteau'],
   ['preacher curl', 'curl pupitre'], ['concentration curl', 'curl concentre'],
   ['skullcrusher', 'barre au front'], ['triceps pushdown', 'extension poulie'],
