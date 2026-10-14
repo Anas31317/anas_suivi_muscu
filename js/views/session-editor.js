@@ -12,9 +12,18 @@ import * as store from '../store.js';
 import { h, toast, icon, ICONS } from '../ui.js';
 import { sessionNumber, miniBtn, pageHead, emptyState } from './common.js';
 import { cataloguePanel } from './catalogue.js';
+import { LIBRARY } from '../exercise-library.js';
 import { SUPPORT_EMAIL } from '../config.js';
 
 const SET_CHOICES = [1, 2, 3, 4, 5, 6, 7, 8, 10];
+
+/*
+ * Un exercice déjà fait est-il au catalogue ? Par son `libId` s'il en a un,
+ * sinon par son nom : les exercices connus seulement par l'historique n'ont
+ * pas gardé de `libId`, mais ils portent le nom exact du catalogue.
+ */
+const LIB_NAMES = new Set(LIBRARY.map((e) => e.name.toLowerCase()));
+const inCatalogue = (ex) => Boolean(ex.libId) || LIB_NAMES.has(String(ex.name).toLowerCase());
 
 export function viewSessionEditor(sessionId, ctx) {
   const sess = store.getSession(sessionId);
@@ -108,16 +117,20 @@ export function viewSessionEditor(sessionId, ctx) {
 
   /* --- ajout --------------------------------------------------------- */
   /*
-   * Remettre un exercice déjà connu (retiré de cette séance, ou d'une autre) :
-   * on reprend son id, donc sa courbe et son historique continuent.
+   * Remettre un exercice que le catalogue ne sait pas retrouver.
+   *
+   * Pour tout ce qui vient du catalogue, l'ajouter suffit : il revient avec
+   * son identifiant, donc sa courbe continue (voir plus bas). Il ne reste ici
+   * que les exercices créés à la main avant la fermeture de la création.
+   * Quand il n'y en a aucun, le bloc disparaît.
    */
   const reuseWrap = h('div', { class: 'reuse' });
+  let reuseFold = null;
   const drawReuse = () => {
     reuseWrap.textContent = '';
-    // on ne filtre plus les exercices masqués : sans option de retrait, les
-    // laisser de côté reviendrait à rendre leur historique inatteignable
     const known = store.exerciseCatalog()
-      .filter((e) => !draft.exercises.some((x) => x.id === e.id));
+      .filter((e) => !inCatalogue(e) && !draft.exercises.some((x) => x.id === e.id));
+    if (reuseFold) reuseFold.hidden = !known.length;
     if (!known.length) return;
 
     const select = h('select', { 'aria-label': 'Exercice déjà fait à remettre' },
@@ -149,7 +162,6 @@ export function viewSessionEditor(sessionId, ctx) {
       h('span', { class: 'hint' }, 'Son historique et sa courbe continuent.')
     );
   };
-  drawReuse();
 
   /*
    * Catalogue : une base d'exercices par muscle, pour ne pas avoir à tout
@@ -158,13 +170,21 @@ export function viewSessionEditor(sessionId, ctx) {
    */
   const catalogue = cataloguePanel({
     has: (e) => draft.exercises.some((x) => x.libId === e.id || x.name.toLowerCase() === e.name.toLowerCase()),
+    /*
+     * Déjà fait un jour ? On reprend son identifiant au lieu d'en créer un
+     * neuf : la courbe repart là où elle s'était arrêtée, sans avoir à y
+     * penser. Sinon deux courbes à moitié remplies pour le même mouvement.
+     */
     onAdd: (e) => {
-      draft.exercises.push({
-        id: store.uid('e'), name: e.name, mode: e.mode, defaultSets: 3, libId: e.id
-      });
+      const seen = store.exerciseCatalog().find((x) =>
+        !draft.exercises.some((d) => d.id === x.id) &&
+        (x.libId === e.id || x.name.toLowerCase() === e.name.toLowerCase()));
+      draft.exercises.push(seen
+        ? { id: seen.id, name: e.name, mode: seen.mode, defaultSets: seen.defaultSets, libId: e.id }
+        : { id: store.uid('e'), name: e.name, mode: e.mode, defaultSets: 3, libId: e.id });
       draw();
       drawReuse();
-      toast(`${e.name} ajouté`);
+      toast(seen ? `${e.name} remis, avec son historique` : `${e.name} ajouté`);
     }
   });
 
@@ -184,6 +204,10 @@ export function viewSessionEditor(sessionId, ctx) {
     oninput: () => { draft.name = nameInput.value; }
   });
 
+  reuseFold = fold('Remettre un exercice déjà fait',
+    'Les exercices créés à la main : les reprendre garde leur courbe.', [reuseWrap]);
+  drawReuse();
+
   return h('div', { class: 'page page-form' },
     pageHead('Modifier la séance', {
       back: { href: backHref, label: 'Retour à la séance' },
@@ -201,15 +225,13 @@ export function viewSessionEditor(sessionId, ctx) {
       ),
       fold('Catalogue d’exercices', 'Cherche un exercice, ou parcours muscle par muscle.',
         [catalogue], { extraClass: ' cat-box' }),
-      fold('Créer un exercice', 'La création est désactivée : tout le monde part de la même base.', [
+      fold('Créer un exercice', null, [
         h('div', { class: 'notice' },
           h('p', {}, 'Un exercice manque au catalogue ? Merci de contacter l’administrateur, ' +
             'il sera ajouté pour tout le monde.'),
           h('a', { class: 'btn small', href: `mailto:${SUPPORT_EMAIL}` }, SUPPORT_EMAIL))
       ]),
-      fold('Remettre un exercice déjà fait',
-        'Un exercice retiré d’une séance reprend sa courbe là où elle s’était arrêtée.',
-        [reuseWrap])
+      reuseFold
     ),
     h('div', { class: 'form-actions' },
       h('button', { class: 'btn ghost', type: 'button', onclick: cancel }, 'Annuler'),

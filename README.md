@@ -71,8 +71,15 @@ L'éditeur de séance garde ses outils repliés, sous trois titres qu'on déplie
   ([`js/config.js`](js/config.js)) pour demander l'ajout d'un exercice manquant. Tout le
   monde part ainsi de la même base, et un exercice ajouté au catalogue profite à tous au
   lieu de rester dans un seul compte ;
-- **Remettre un exercice déjà fait** : un exercice retiré d'une séance reprend son
-  identifiant, donc sa courbe continue là où elle s'était arrêtée.
+- **Remettre un exercice déjà fait** : seulement pour ce que le catalogue ne sait pas
+  retrouver, c'est-à-dire les exercices créés à la main avant la fermeture de la création.
+  Le bloc disparaît quand il n'y en a aucun.
+
+Un exercice ajouté depuis le catalogue et déjà fait un jour **reprend son identifiant** au
+lieu d'en recevoir un neuf : sa courbe repart là où elle s'était arrêtée, sans rien avoir à
+demander. C'est ce qui permet de retirer un exercice d'une séance, de le remettre des
+semaines plus tard, et de retrouver la même courbe — au lieu de deux courbes à moitié
+remplies pour le même mouvement.
 
 Un exercice vraiment polyarticulaire apparaît dans **chacune** de ses catégories : les dips
 sont dans Pectoraux et dans Triceps, le soulevé de terre dans Lombaires, Fessiers et
