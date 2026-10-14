@@ -65,6 +65,8 @@ const ZONES = {
   'avant-bras': (c) => [ell(FRONT + 9, 59, 4, 10, c), ell(FRONT + 51, 59, 4, 10, c)],
   abdos: (c) => [box(FRONT + 25, 42, 10, 20, 4, c)],
   quadriceps: (c) => [ell(FRONT + 23.5, 84, 6.5, 14, c), ell(FRONT + 36.5, 84, 6.5, 14, c)],
+  // l'intérieur des cuisses, entre les deux jambes
+  adducteurs: (c) => [ell(FRONT + 28, 86, 2.2, 12, c), ell(FRONT + 32, 86, 2.2, 12, c)],
   /*
    * Le dos en quatre zones : un tirage vertical n'allume pas les mêmes que des
    * shrugs. Elles ne se chevauchent pas, pour qu'on puisse en éclairer
