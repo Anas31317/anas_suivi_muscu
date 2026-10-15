@@ -1080,6 +1080,15 @@ details.accordion[open] > summary { margin-bottom: 8px; }
   .app { padding: 18px 16px 32px; }
   h1 { font-size: 1.45rem; }
 
+  /*
+   * Clavier ouvert : la barre d'onglets sort par le bas au lieu de flotter
+   * au-dessus du clavier (voir watchKeyboard dans app.js).
+   */
+  body.kbd-open .nav {
+    transform: translateY(100%);
+    pointer-events: none;
+  }
+
   .nav {
     position: fixed;
     left: 0;

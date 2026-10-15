@@ -366,6 +366,25 @@ function initStatusBar() {
   });
 }
 
+/*
+ * Clavier ouvert : sur iPhone, Safari rétrécit la fenêtre visible et remonte
+ * avec lui tout ce qui est en `position: fixed`. La barre d'onglets se
+ * retrouvait posée au-dessus du clavier, alors qu'elle appartient au bas de
+ * l'écran. On la fait redescendre hors champ tant que le clavier est là.
+ *
+ * Le seuil écarte les petites variations de hauteur (barre d'adresse qui se
+ * replie en défilant) : seul un vrai clavier dépasse 120 px.
+ */
+function watchKeyboard() {
+  const vv = window.visualViewport;
+  if (!vv) return;
+  const update = () => {
+    document.body.classList.toggle('kbd-open', window.innerHeight - vv.height > 120);
+  };
+  vv.addEventListener('resize', update);
+  update();
+}
+
 /** Supprime les réglages de l'ancienne synchro sans compte (clé et identifiant). */
 function removeLegacySettings() {
   try { localStorage.removeItem('suivi-muscu:sync:v1'); } catch { /* ignore */ }
@@ -385,6 +404,7 @@ async function main() {
   initTheme();
   buildChrome();
   initStatusBar();
+  watchKeyboard();
   removeLegacySettings();
   updateChrome();
 
