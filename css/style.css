@@ -1081,12 +1081,15 @@ details.accordion[open] > summary { margin-bottom: 8px; }
   h1 { font-size: 1.45rem; }
 
   /*
-   * Clavier ouvert : la barre d'onglets sort par le bas au lieu de flotter
-   * au-dessus du clavier (voir watchKeyboard dans app.js).
+   * Clavier ouvert : la barre d'onglets et la barre « Enregistrer » sortent
+   * par le bas au lieu de flotter au-dessus du clavier (voir watchKeyboard
+   * dans app.js). Safari les remontait tantôt l'une, tantôt l'autre selon
+   * qu'on ouvrait le clavier pour la première fois ou non : elles restent
+   * désormais en bas de la page dans tous les cas, cachées sous le clavier.
    */
-  body.kbd-open .nav {
-    transform: translateY(100%);
-    pointer-events: none;
+  body.kbd-open .nav,
+  body.kbd-open .form-actions {
+    visibility: hidden;
   }
 
   .nav {
