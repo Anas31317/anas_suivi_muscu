@@ -27,16 +27,24 @@ function programmeSection(state) {
       h('a', { class: 'btn primary', href: '#/programme' }, 'Créer mon programme'));
   }
 
+  /*
+   * Une séance commencée aujourd'hui et pas encore enregistrée reste celle du
+   * moment : le cadre et la pastille restent dessus. Sans ça ils passaient à
+   * la séance d'après alors qu'on était encore en train de la faire.
+   */
+  const enCours = state.sessions.find((s) => store.unfinishedToday(s.id)) || null;
   const next = insights.nextSession();
+  const enAvant = enCours || (state.logs.length ? next : null);
   const cards = state.sessions.map((sess) => {
     const last = store.lastLogForSession(sess.id);
-    const isNext = next && next.id === sess.id && state.logs.length > 0;
+    const isNext = Boolean(enAvant && enAvant.id === sess.id);
     const href = `#/seance/${sess.id}`;
     return h('div', { class: 'card session-card' + (isNext ? ' is-next' : '') },
       h('a', { class: 'session-link', href },
         h('span', { class: 'session-num' }, String(sessionNumber(sess.id))),
         h('div', { class: 'body' },
-          h('div', { class: 'name' }, sess.name, isNext ? h('span', { class: 'badge' }, 'Prochaine') : null),
+          h('div', { class: 'name' }, sess.name,
+            isNext ? h('span', { class: 'badge' }, enCours ? 'En cours' : 'Prochaine') : null),
           h('div', { class: 'meta' },
             plural(sess.exercises.length, 'exercice', 'exercices'),
             last ? ` · ${insights.relativeDay(last.date)}` : ' · jamais faite'
