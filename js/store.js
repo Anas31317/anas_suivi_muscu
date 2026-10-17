@@ -101,8 +101,11 @@ const RELINK = [
 
 function linkToCatalog(ex) {
   if (ex.libId) {
+    // le nom suit sa fiche : quand le catalogue corrige un intitulé, tous les
+    // programmes qui pointent dessus le reçoivent, sans changer d'identifiant
+    // ni bouger de place dans la séance
     const fix = RELINK.find(([id, from]) => id === ex.id && from === ex.libId);
-    const lib = fix && libraryEntry(fix[2]);
+    const lib = (fix && libraryEntry(fix[2])) || libraryEntry(ex.libId);
     return lib ? { ...ex, name: lib.name, libId: lib.id } : ex;
   }
   const lib = (SEED_LINKS[ex.id] && libraryEntry(SEED_LINKS[ex.id])) || findByName(ex.name);

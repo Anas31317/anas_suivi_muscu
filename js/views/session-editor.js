@@ -60,6 +60,9 @@ export function viewSessionEditor(sessionId, ctx) {
 
   /* --- liste des exercices ------------------------------------------- */
   const list = h('div', { class: 'edit-list' });
+  // où se trouvait un exercice retiré pendant cette modification : le remettre
+  // le repose à sa place au lieu de l'envoyer en bas de la séance
+  const placeOrigine = new Map();
 
   const draw = () => {
     list.textContent = '';
@@ -96,6 +99,7 @@ export function viewSessionEditor(sessionId, ctx) {
           }),
           miniBtn(ICONS.close, 'Retirer de la séance', () => {
             if (!confirm(`Retirer « ${ex.name || 'cet exercice'} » de la séance ? Son historique est conservé.`)) return;
+            placeOrigine.set(ex.id, i);
             draft.exercises.splice(i, 1);
             draw();
           })
@@ -122,9 +126,12 @@ export function viewSessionEditor(sessionId, ctx) {
       const seen = store.exerciseCatalog().find((x) =>
         !draft.exercises.some((d) => d.id === x.id) &&
         (x.libId === e.id || x.name.toLowerCase() === e.name.toLowerCase()));
-      draft.exercises.push(seen
+      const ajout = seen
         ? { id: seen.id, name: e.name, mode: seen.mode, defaultSets: seen.defaultSets, libId: e.id }
-        : { id: store.uid('e'), name: e.name, mode: e.mode, defaultSets: 3, libId: e.id });
+        : { id: store.uid('e'), name: e.name, mode: e.mode, defaultSets: 3, libId: e.id };
+      const place = placeOrigine.has(ajout.id) ? placeOrigine.get(ajout.id) : draft.exercises.length;
+      draft.exercises.splice(Math.min(place, draft.exercises.length), 0, ajout);
+      placeOrigine.delete(ajout.id);
       draw();
       toast(seen ? `${e.name} remis, avec son historique` : `${e.name} ajouté`);
     }

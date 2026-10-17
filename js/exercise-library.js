@@ -173,10 +173,15 @@ const RAW = [
   ['barre-au-front', 'Barre au front (EZ)', 'barre', 'kg', ['triceps'], []],
   ['barre-au-front-halteres', 'Extension haltères couché', 'halteres', 'kg', ['triceps'], []],
   ['ext-corde', 'Extension poulie haute corde', 'poulie', 'kg', ['triceps'], []],
-  ['ext-barre', 'Extension poulie haute barre', 'poulie', 'kg', ['triceps'], []],
+  ['ext-pushdown-barre', 'Extension poulie haute barre', 'poulie', 'kg', ['triceps'], []],
   ['ext-inverse', 'Extension poulie prise inversée', 'poulie', 'kg', ['triceps'], []],
   ['overhead-haltere', 'Extension au-dessus de la tête haltère', 'halteres', 'kg', ['triceps'], []],
   ['overhead-corde', 'Extension au-dessus de la tête corde', 'poulie', 'kg', ['triceps'], []],
+  // `ext-barre` portait le nom « Extension poulie haute barre ». Ceux qui s'en
+  // servaient faisaient en fait l'extension au-dessus de la tête à la barre :
+  // la fiche garde son identifiant, donc leur courbe, et prend le bon nom. Le
+  // pushdown à la barre repart de zéro sous `ext-pushdown-barre`.
+  ['ext-barre', 'Extension au-dessus de la tête barre', 'poulie', 'kg', ['triceps'], []],
   ['ext-unilaterale', 'Extension poulie unilatérale', 'poulie', 'kg', ['triceps'], []],
   ['kickback-haltere', 'Kickback haltère', 'halteres', 'kg', ['triceps'], []],
   ['kickback-poulie', 'Kickback poulie', 'poulie', 'kg', ['triceps'], []],
