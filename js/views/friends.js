@@ -227,7 +227,7 @@ function renderFriend(row, ctx, code) {
     (() => {
       const rows = catalogOf(data)
         .map((ex) => {
-          const metric = ex.mode === 'bw' ? store.METRICS.reps : store.METRICS.topWeight;
+          const metric = ex.mode === 'kg' ? store.METRICS.topWeight : store.METRICS.reps;
           const values = historyOf(data, ex.id).map((entry) => metric.compute(entry.sets)).filter((v) => v !== null);
           return { ex, metric, values };
         })

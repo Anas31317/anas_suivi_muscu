@@ -47,7 +47,7 @@ function setsLabel(sets, mode) {
     .map((s) => {
       const reps = s.reps === null ? '?' : s.reps;
       if (s.weight === null) return `${reps} reps`;
-      if (mode === 'bw' && s.weight === 0) return `${reps} (PdC)`;
+      if (mode === 'pdc' || (mode === 'bw' && s.weight === 0)) return `${reps} (PdC)`;
       return `${fmtNum(s.weight)} kg × ${reps}`;
     })
     .join('  ·  ');

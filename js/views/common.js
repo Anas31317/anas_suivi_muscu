@@ -13,7 +13,7 @@ export function summarizeSets(sets, mode) {
   if (weights.length === 1) {
     const w = weights[0];
     if (w === null) return reps + ' reps';
-    if (mode === 'bw' && w === 0) return reps + ' reps (poids du corps)';
+    if (mode === 'pdc' || (mode === 'bw' && w === 0)) return reps + ' reps (poids du corps)';
     return `${fmtNum(w)} kg × ${reps}`;
   }
   return valid

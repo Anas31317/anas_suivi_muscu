@@ -75,7 +75,8 @@ export function viewSessionEditor(sessionId, ctx) {
       const name = h('p', { class: 'ex-name' }, ex.name);
       const mode = h('select', { 'aria-label': 'Type', onchange: () => { ex.mode = mode.value; } },
         h('option', { value: 'kg', selected: ex.mode === 'kg' }, 'Charge'),
-        h('option', { value: 'bw', selected: ex.mode === 'bw' }, 'Poids du corps'));
+        h('option', { value: 'pdc', selected: ex.mode === 'pdc' }, 'Poids du corps'),
+        h('option', { value: 'bw', selected: ex.mode === 'bw' }, 'Poids du corps + lest'));
       const sets = h('select', { 'aria-label': 'Nombre de séries', onchange: () => { ex.defaultSets = Number(sets.value); } },
         ...[...new Set([...SET_CHOICES, ex.defaultSets])].sort((a, b) => a - b)
           .map((n) => h('option', { value: n, selected: n === ex.defaultSets }, `${n} série${n > 1 ? 's' : ''}`)));

@@ -18,7 +18,9 @@
  *
  * Colonnes : id, nom, matériel, mode, muscles primaires, muscles secondaires.
  *   matériel : barre | halteres | machine | poulie | corps
- *   mode     : kg (charge saisie) | bw (poids du corps, lest éventuel)
+ *   mode     : kg  charge saisie
+ *              pdc poids du corps, pas de charge à saisir
+ *              bw  poids du corps avec lest (la colonne de charge est le lest)
  */
 
 export const MUSCLES = [
@@ -98,10 +100,16 @@ const RAW = [
   ['pompes-uni', 'Pompes unilatérales', 'corps', 'bw', ['pecs'], ['triceps', 'epaules', 'abdos']],
 
   /* ---------------------------------------------------------------- dos */
-  ['tractions-pro', 'Tractions pronation', 'corps', 'bw', ['grand-dorsal'], ['grand-rond', 'biceps', 'avant-bras']],
-  ['tractions-supi', 'Tractions supination', 'corps', 'bw', ['grand-dorsal'], ['biceps', 'grand-rond']],
-  ['tractions-neutre', 'Tractions prise neutre', 'corps', 'bw', ['grand-dorsal'], ['grand-rond', 'biceps', 'avant-bras']],
-  ['tractions-larges', 'Tractions prise large', 'corps', 'bw', ['grand-dorsal'], ['grand-rond', 'rhomboides', 'epaules']],
+  ['tractions-pro', 'Tractions pronation', 'corps', 'pdc', ['grand-dorsal'], ['grand-rond', 'biceps', 'avant-bras']],
+  ['tractions-supi', 'Tractions supination', 'corps', 'pdc', ['grand-dorsal'], ['biceps', 'grand-rond']],
+  ['tractions-neutre', 'Tractions prise neutre', 'corps', 'pdc', ['grand-dorsal'], ['grand-rond', 'biceps', 'avant-bras']],
+  ['tractions-larges', 'Tractions prise large', 'corps', 'pdc', ['grand-dorsal'], ['grand-rond', 'rhomboides', 'epaules']],
+  // les mêmes avec une ceinture : charge et répétitions ne se suivent pas sur
+  // la même courbe, d'où une fiche par façon de faire
+  ['tractions-pro-leste', 'Tractions pronation lestées', 'corps', 'bw', ['grand-dorsal'], ['grand-rond', 'biceps', 'avant-bras']],
+  ['tractions-supi-leste', 'Tractions supination lestées', 'corps', 'bw', ['grand-dorsal'], ['biceps', 'grand-rond']],
+  ['tractions-neutre-leste', 'Tractions prise neutre lestées', 'corps', 'bw', ['grand-dorsal'], ['grand-rond', 'biceps', 'avant-bras']],
+  ['tractions-larges-leste', 'Tractions prise large lestées', 'corps', 'bw', ['grand-dorsal'], ['grand-rond', 'rhomboides', 'epaules']],
   ['tirage-vertical-pro', 'Tirage vertical pronation', 'poulie', 'kg', ['grand-dorsal'], ['grand-rond', 'biceps']],
   ['tirage-vertical-supi', 'Tirage vertical supination', 'poulie', 'kg', ['grand-dorsal'], ['biceps', 'grand-rond']],
   ['tirage-vertical-neutre', 'Tirage vertical prise neutre', 'poulie', 'kg', ['grand-dorsal'], ['grand-rond', 'biceps']],
@@ -166,7 +174,8 @@ const RAW = [
   ['drag-curl', 'Drag curl', 'barre', 'kg', ['biceps'], []],
 
   /* ------------------------------------------------------------ triceps */
-  ['dips', 'Dips', 'corps', 'bw', ['pecs', 'triceps'], ['epaules']],
+  ['dips', 'Dips', 'corps', 'pdc', ['pecs', 'triceps'], ['epaules']],
+  ['dips-leste', 'Dips lestés', 'corps', 'bw', ['pecs', 'triceps'], ['epaules']],
   ['dips-machine', 'Dips machine', 'machine', 'kg', ['triceps'], ['pecs']],
   ['dips-banc', 'Dips sur banc', 'corps', 'bw', ['triceps'], ['epaules']],
   ['dev-serre', 'Développé couché prise serrée', 'barre', 'kg', ['triceps'], ['pecs', 'epaules']],
@@ -374,7 +383,7 @@ const libKey = (e) => normalizeQuery(e.name);
  */
 const ALIASES = {
   'wirst curl': 'curl-poignets',
-  'dips lestes': 'dips',
+  'dips lestes': 'dips-leste',
   'bulgarian squat': 'fente-bulgare',
   '1 leg press': 'presse-une-jambe',
   '1 leg calf raise': 'mollets-une-jambe',

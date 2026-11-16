@@ -46,7 +46,7 @@ Inscription réservée aux emails autorisés, connexion et mot de passe oublié 
 
 ## Catalogue d'exercices
 
-« Modifier la séance » contient un **catalogue** de plus de 160 exercices : une ligne par
+« Modifier la séance » contient un **catalogue** de plus de 170 exercices : une ligne par
 variante, parce que le même mouvement à la barre, aux haltères, à la machine ou à la poulie
 ne se charge pas pareil et ne se suit pas sur la même courbe. L'inclinaison et l'angle des
 poignées ne sont pas des colonnes — ils ne concernent qu'une partie des exercices — mais
@@ -64,6 +64,14 @@ recherche comprend le français comme l'anglais : « bench press » trouve le d�
 couché.
 
 Pas de nombre de séries dans le catalogue : il se règle dans la séance, après l'ajout.
+
+Trois façons de charger un exercice, parce qu'une seule ne suffisait pas : **charge** (barre,
+machine, haltères), **poids du corps** (aucune charge à saisir, la courbe est en répétitions)
+et **poids du corps + lest** (la colonne de charge est le lest). Tractions et dips existent
+donc en deux fiches, au poids du corps et lestées : charge et répétitions ne se lisent pas
+sur la même courbe. Les comptes ouverts avant cette séparation sont répartis d'après ce
+qu'ils ont réellement fait — jamais de lest saisi, c'est la fiche poids du corps ; du lest
+déjà mis, c'est la fiche lestée — sans changer d'identifiant, donc sans couper la courbe.
 
 L'éditeur de séance garde ses outils repliés, sous deux titres qu'on déplie au besoin :
 

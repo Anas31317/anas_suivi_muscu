@@ -81,7 +81,7 @@ export function weeklyActivity(n = 8) {
 
 /** Valeur suivie pour un exercice : charge max, ou reps totales au poids du corps. */
 export function keyMetric(mode) {
-  return mode === 'bw' ? store.METRICS.reps : store.METRICS.topWeight;
+  return mode === 'kg' ? store.METRICS.topWeight : store.METRICS.reps;
 }
 
 /**

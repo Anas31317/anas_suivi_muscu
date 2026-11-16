@@ -112,6 +112,34 @@ function linkToCatalog(ex) {
   return lib ? { ...ex, name: lib.name, libId: lib.id } : ex;
 }
 
+/*
+ * Trois façons de charger un exercice :
+ *   kg  une charge à saisir (barre, machine, haltères)
+ *   pdc le poids du corps seul, aucune charge à saisir
+ *   bw  le poids du corps avec un lest, saisi dans la colonne de charge
+ */
+const MODES = new Set(['kg', 'pdc', 'bw']);
+const okMode = (m) => (MODES.has(m) ? m : 'kg');
+
+/*
+ * Tractions et dips existent en deux fiches : au poids du corps, et lestées.
+ * Les comptes ouverts avant cette séparation pointent tous sur la première.
+ * On les répartit d'après ce qu'ils font vraiment :
+ *
+ *   jamais de lest  -> fiche poids du corps, plus de colonne de charge
+ *   du lest déjà mis -> fiche lestée, la colonne reste
+ *
+ * L'identifiant de l'exercice ne change pas dans les deux cas : la courbe et
+ * les séances continuent, et aucune séance enregistrée n'est réécrite.
+ */
+function bodyweightIfNeverLested(ex, lested) {
+  const lib = ex.libId ? libraryEntry(ex.libId) : null;
+  if (!lib || lib.mode !== 'pdc') return ex;
+  if (!lested.has(ex.id)) return ex.mode === 'bw' ? { ...ex, mode: 'pdc' } : ex;
+  const leste = libraryEntry(lib.id + '-leste');
+  return leste ? { ...ex, name: leste.name, libId: leste.id, mode: 'bw' } : ex;
+}
+
 const numOrNull = (v) => (v === null || v === undefined || v === '' || Number.isNaN(Number(v)) ? null : Number(v));
 
 function normalize(raw) {
@@ -119,6 +147,14 @@ function normalize(raw) {
   const sessions = Array.isArray(s.sessions) ? s.sessions : [];
   const logs = Array.isArray(s.logs) ? s.logs : [];
   const cardio = Array.isArray(s.cardio) ? s.cardio : [];
+  // exercices sur lesquels un lest a déjà été saisi : eux gardent leur colonne
+  const lested = new Set();
+  for (const l of logs) {
+    for (const en of Array.isArray(l && l.entries) ? l.entries : []) {
+      const sets = Array.isArray(en.sets) ? en.sets : [];
+      if (sets.some((st) => Number(st && st.weight) > 0)) lested.add(en.exerciseId);
+    }
+  }
   return {
     // champs inconnus conservés : une version plus récente du site ne perd rien
     ...s,
@@ -127,14 +163,17 @@ function normalize(raw) {
     sessions: sessions.map((sess) => ({
       id: sess.id || uid('s'),
       name: sess.name || 'Séance',
-      exercises: (Array.isArray(sess.exercises) ? sess.exercises : []).map((e) => linkToCatalog({
-        id: e.id || uid('e'),
-        name: e.name || 'Exercice',
-        mode: e.mode === 'bw' ? 'bw' : 'kg',
-        defaultSets: Number(e.defaultSets) > 0 ? Number(e.defaultSets) : 3,
-        // exercice venu du catalogue : sert à retrouver son muscle et son matériel
-        libId: e.libId ? String(e.libId).slice(0, 40) : ''
-      }))
+      exercises: (Array.isArray(sess.exercises) ? sess.exercises : []).map((e) => bodyweightIfNeverLested(
+        linkToCatalog({
+          id: e.id || uid('e'),
+          name: e.name || 'Exercice',
+          mode: okMode(e.mode),
+          defaultSets: Number(e.defaultSets) > 0 ? Number(e.defaultSets) : 3,
+          // exercice venu du catalogue : sert à retrouver son muscle et son matériel
+          libId: e.libId ? String(e.libId).slice(0, 40) : ''
+        }),
+        lested
+      ))
     })),
     logs: logs.map((l) => ({
       id: l.id || uid('log'),
@@ -147,7 +186,7 @@ function normalize(raw) {
       entries: (Array.isArray(l.entries) ? l.entries : []).map((en) => ({
         exerciseId: en.exerciseId || '',
         name: en.name || 'Exercice',
-        mode: en.mode === 'bw' ? 'bw' : 'kg',
+        mode: okMode(en.mode),
         note: en.note || '',
         sets: (Array.isArray(en.sets) ? en.sets : []).map((st) => ({
           weight: st.weight === null || st.weight === undefined || st.weight === '' ? null : Number(st.weight),
@@ -374,7 +413,7 @@ export function exerciseCatalog() {
     if (!id || seen.has(id)) return;
     seen.add(id);
     out.push({
-      ...linkToCatalog({ id, name, mode: mode === 'bw' ? 'bw' : 'kg', defaultSets: sets || 3, libId: '' }),
+      ...linkToCatalog({ id, name, mode: okMode(mode), defaultSets: sets || 3, libId: '' }),
       sessionId: null, sessionName: null, inProgramme: false
     });
   };
@@ -458,6 +497,7 @@ export const METRICS = {
 export function metricsFor(mode) {
   // le volume en premier : c'est la mesure regardée en premier dans Progrès.
   // Le 1RM n'est pas ici : il a sa propre page (#/1rm), estimé et réalisé côte à côte.
+  if (mode === 'pdc') return [METRICS.reps];
   return mode === 'bw'
     ? [METRICS.reps, METRICS.topWeight, METRICS.volume]
     : [METRICS.volume, METRICS.topWeight, METRICS.reps];
@@ -503,7 +543,7 @@ export function saveSessionProgram(sessionId, { name, exercises }) {
     sess.exercises = exercises.map((e) => ({
       id: e.id || uid('e'),
       name: e.name || 'Exercice',
-      mode: e.mode === 'bw' ? 'bw' : 'kg',
+      mode: okMode(e.mode),
       defaultSets: Math.min(10, Math.max(1, Number(e.defaultSets) || 3)),
       libId: e.libId ? String(e.libId).slice(0, 40) : ''
     }));

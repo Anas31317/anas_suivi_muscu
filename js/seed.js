@@ -27,10 +27,10 @@ const TEMPLATE = [
     id: 's2',
     name: 'Dos + Triceps',
     exercises: [
-      ['e-traction', 'Tractions pronation', 'bw', 3, 'tractions-pro'],
+      ['e-traction', 'Tractions pronation', 'pdc', 3, 'tractions-pro'],
       ['e-rowing', 'Rowing machine', 'kg', 3, 'rowing-machine'],
       ['e-pull-over', 'Pull over machine', 'kg', 3, 'pull-over-machine'],
-      ['e-dips', 'Dips', 'bw', 3, 'dips'],
+      ['e-dips', 'Dips', 'pdc', 3, 'dips'],
       ['e-ext-corde', 'Extension poulie haute corde', 'kg', 3, 'ext-corde'],
       ['e-overhead-uni', 'Extension poulie unilatérale', 'kg', 3, 'ext-unilaterale']
     ]

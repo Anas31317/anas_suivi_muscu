@@ -33,7 +33,7 @@ function previousEntry(exerciseId, log) {
 function setLabel(set, mode) {
   if (!set) return '—';
   const reps = set.reps === null ? '?' : set.reps;
-  if (set.weight === null || (mode === 'bw' && set.weight === 0)) return String(reps);
+  if (set.weight === null || mode === 'pdc' || (mode === 'bw' && set.weight === 0)) return String(reps);
   return `${fmtNum(set.weight)} × ${reps}`;
 }
 
@@ -160,6 +160,8 @@ export function viewWorkout({ sessionId, logId }, ctx) {
 
   const exerciseCard = (entry, entryIndex) => {
     const isBW = entry.mode === 'bw';
+    // poids du corps sans lest : pas de colonne de charge du tout
+    const sansCharge = entry.mode === 'pdc';
     const prev = previousEntry(entry.exerciseId, draft);
     const card = h('section', { class: 'card ex-card' });
     const refreshDone = () => { card.classList.toggle('is-done', isDone(entry)); updateProgress(); };
@@ -172,10 +174,11 @@ export function viewWorkout({ sessionId, logId }, ctx) {
         h('span', { class: 'set-head prev-head' },
           'Dernière fois',
           prev ? h('span', { class: 'prev-date' }, formatDateShort(prev.date)) : null),
-        h('span', { class: 'set-head' }, isBW ? 'Lest kg' : 'Charge kg'),
+        sansCharge ? null : h('span', { class: 'set-head' }, isBW ? 'Lest kg' : 'Charge kg'),
         h('span', { class: 'set-head' }, 'Reps')
       )
     );
+    if (sansCharge) rows.firstChild.classList.add('no-weight');
 
     entry.sets.forEach((set, i) => {
       const before = prev && prev.sets[i];
@@ -208,7 +211,8 @@ export function viewWorkout({ sessionId, logId }, ctx) {
           }, setLabel(before, entry.mode))
         : h('span', { class: 'prev-cell empty' }, '—');
 
-      rows.append(h('div', { class: 'set-row' }, h('span', { class: 'idx' }, String(i + 1)), prevCell, w, r));
+      rows.append(h('div', { class: 'set-row' + (sansCharge ? ' no-weight' : '') },
+        h('span', { class: 'idx' }, String(i + 1)), prevCell, sansCharge ? null : w, r));
     });
 
     const note = h('input', {
@@ -222,7 +226,7 @@ export function viewWorkout({ sessionId, logId }, ctx) {
       h('div', { class: 'ex-head' },
         h('span', { class: 'ex-num' }, String(entryIndex + 1)),
         h('div', { class: 'ex-title' },
-          h('h2', {}, entry.name, isBW ? h('span', { class: 'tag' }, 'PdC') : null),
+          h('h2', {}, entry.name, isBW || sansCharge ? h('span', { class: 'tag' }, 'PdC') : null),
           // la note laissée la dernière fois sur cet exercice, s'il y en a une
           prev && prev.note
             ? h('p', { class: 'prev-note' }, `${formatDateShort(prev.date)} · ${prev.note}`)
