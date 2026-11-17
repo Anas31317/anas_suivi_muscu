@@ -518,6 +518,9 @@ a.list-row:hover { background: var(--surface-sunk); }
 }
 .profile-card .name { font-size: 1.05rem; }
 .profile-card .meta.pending { color: var(--accent-ink); margin-top: 2px; }
+/* la carte d'identité porte aussi « Modifier le profil », sous un trait fin */
+.identity-card { padding: 0; }
+.identity-card .profile-edit { margin: 0 16px; padding: 4px 0 8px; border-top: 1px solid var(--border); }
 
 /* --------------------------------------------------------------- séances */
 
