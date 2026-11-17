@@ -538,6 +538,28 @@ a.list-row:hover { background: var(--surface-sunk); }
 .changelog ul { margin: 6px 0 14px; padding-left: 18px; color: var(--ink-2); line-height: 1.45; }
 .changelog li + li { margin-top: 6px; }
 .changelog .btn-row { justify-content: flex-end; }
+
+/* petite mise à jour : un bandeau discret en bas, qui ne bloque rien */
+.patch-note {
+  position: fixed;
+  z-index: 30;
+  left: 16px;
+  right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  max-width: 440px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 8px 12px 16px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+.patch-note .body { flex: 1 1 auto; min-width: 0; }
+.patch-note ul { margin: 4px 0 0; padding-left: 16px; font-size: 0.88rem; color: var(--ink-2); line-height: 1.4; }
 .identity-card .profile-edit { margin: 0 16px; padding: 4px 0 8px; border-top: 1px solid var(--border); }
 
 /* --------------------------------------------------------------- séances */
@@ -1290,6 +1312,7 @@ details.accordion[open] > summary { margin-bottom: 8px; }
   body.signed-in { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom)); }
   body.signed-in .toast { bottom: calc(var(--tabbar-h) + 14px + env(safe-area-inset-bottom)); }
   body.signed-in .form-actions { bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom)); padding-bottom: 12px; }
+  body.signed-in .patch-note { bottom: calc(var(--tabbar-h) + 12px + env(safe-area-inset-bottom)); }
   .form-actions { margin: 18px -16px 0; padding-left: 16px; padding-right: 16px; }
   .form-actions .btn.primary { flex: 1 1 auto; }
 

@@ -1,18 +1,23 @@
 /**
- * « Quoi de neuf » : une fenêtre à l'ouverture de l'appli après une mise à jour.
+ * Patch notes à l'ouverture de l'appli après une mise à jour, en deux tailles :
  *
- * - Elle montre les notes des versions sorties depuis la dernière visite sur cet
- *   appareil, la plus récente en premier ; on la ferme d'un bouton, d'Échap ou
- *   d'un clic à côté.
- * - La version vue est retenue sur l'appareil : chaque note ne s'affiche qu'une fois.
- * - Une version sans note (petit correctif) n'affiche rien.
+ * - grosse mise à jour (1.28.0, 1.29.0… : dernier nombre à 0) : une fenêtre
+ *   « Quoi de neuf », fermée d'un bouton, d'Échap ou d'un clic à côté ;
+ * - petite mise à jour ou correctif (1.28.1, 1.28.2…) : un petit bandeau en
+ *   bas de l'écran, fermé d'un ✕.
+ *
+ * On montre les notes des versions sorties depuis la dernière visite sur cet
+ * appareil, la plus récente en premier ; s'il y a une grosse dans le lot, c'est
+ * la fenêtre, qui les montre toutes. La version vue est retenue sur l'appareil :
+ * chaque note ne s'affiche qu'une fois. Une version sans note n'affiche rien.
  *
  * Pour une mise à jour visible : ajouter une entrée EN HAUT de NOTES, avec le
- * numéro de js/version.js, et 3 à 5 phrases courtes écrites pour les utilisateurs.
+ * numéro de js/version.js et des phrases courtes écrites pour les utilisateurs :
+ * 3 à 5 pour une grosse, 1 ou 2 pour une petite.
  */
 
 import { APP_VERSION } from './version.js';
-import { h } from './ui.js';
+import { h, icon, ICONS } from './ui.js';
 
 const NOTES = [
   {
@@ -48,8 +53,30 @@ export function maybeShowChangelog() {
   const notes = (seen ? NOTES.filter((n) => newer(n.version, seen)) : NOTES.slice(0, 1))
     .filter((n) => !newer(n.version, APP_VERSION))
     .slice(0, 3);
-  if (!notes.length || typeof HTMLDialogElement === 'undefined') return;
+  if (!notes.length) return;
+  const major = notes.some((n) => Number(n.version.split('.')[2] || 0) === 0);
+  if (major && typeof HTMLDialogElement !== 'undefined') showDialog(notes);
+  else showBanner(notes);
+}
 
+/** Petite mise à jour : un bandeau en bas, qui ne bloque rien. */
+function showBanner(notes) {
+  const items = notes.flatMap((n) => n.items).slice(0, 3);
+  const banner = h('div', { class: 'patch-note', role: 'status' },
+    h('div', { class: 'body' },
+      h('p', { class: 'eyebrow' }, `Mise à jour ${notes[0].version}`),
+      h('ul', {}, items.map((t) => h('li', {}, t)))
+    ),
+    h('button', {
+      class: 'btn ghost small icon-only', type: 'button', title: 'Fermer', 'aria-label': 'Fermer les nouveautés',
+      onclick: () => banner.remove()
+    }, icon(ICONS.close, 14))
+  );
+  document.body.append(banner);
+}
+
+/** Grosse mise à jour : la fenêtre « Quoi de neuf ». */
+function showDialog(notes) {
   const close = () => dialog.close();
   const dialog = h('dialog', { class: 'changelog', 'aria-labelledby': 'changelog-title' },
     h('h2', { id: 'changelog-title' }, 'Quoi de neuf'),

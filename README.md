@@ -192,13 +192,21 @@ largeur d'Archivo, qui est réglable.
 
 ## Quoi de neuf
 
-Après une mise à jour, l'appli ouvre une petite fenêtre « Quoi de neuf » avec les
-nouveautés, une seule fois par appareil. On la ferme d'un bouton, d'Échap ou d'un clic à
-côté. Une version sans note (petit correctif) n'affiche rien.
+Après une mise à jour, l'appli présente les nouveautés à la première ouverture, une seule
+fois par appareil, en deux tailles selon le numéro de version :
+
+- **grosse mise à jour** (1.28.0, 1.29.0… : dernier nombre à 0) : une fenêtre « Quoi de
+  neuf », fermée d'un bouton, d'Échap ou d'un clic à côté ;
+- **petite mise à jour ou correctif** (1.28.1, 1.28.2…) : un petit bandeau en bas de
+  l'écran, fermé d'un ✕, qui ne bloque rien.
+
+Si une grosse et des petites se cumulent depuis la dernière visite, la fenêtre les montre
+toutes. Une version sans note n'affiche rien.
 
 Pour une mise à jour visible : dans [`js/changelog.js`](js/changelog.js), ajouter une
-entrée **en haut** de `NOTES`, avec le numéro de [`js/version.js`](js/version.js) et 3 à 5
-phrases courtes écrites pour les utilisateurs, pas pour les développeurs.
+entrée **en haut** de `NOTES`, avec le numéro de [`js/version.js`](js/version.js) et des
+phrases courtes écrites pour les utilisateurs, pas pour les développeurs : 3 à 5 pour une
+grosse mise à jour, 1 ou 2 pour une petite.
 
 ## Mode maintenance
 
