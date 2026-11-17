@@ -190,6 +190,16 @@ redéfinit sous `[data-style="…"]`, et la liste des styles est dans
 [`js/theme.js`](js/theme.js). Les styles ne changent pas de police : ils jouent sur la
 largeur d'Archivo, qui est réglable.
 
+## Quoi de neuf
+
+Après une mise à jour, l'appli ouvre une petite fenêtre « Quoi de neuf » avec les
+nouveautés, une seule fois par appareil. On la ferme d'un bouton, d'Échap ou d'un clic à
+côté. Une version sans note (petit correctif) n'affiche rien.
+
+Pour une mise à jour visible : dans [`js/changelog.js`](js/changelog.js), ajouter une
+entrée **en haut** de `NOTES`, avec le numéro de [`js/version.js`](js/version.js) et 3 à 5
+phrases courtes écrites pour les utilisateurs, pas pour les développeurs.
+
 ## Mode maintenance
 
 Pour que les autres ne tombent jamais sur une appli à moitié faite : dans
@@ -274,6 +284,7 @@ Site statique : HTML, CSS et JavaScript à modules, sans build ni dépendance à
 | `js/charts.js` | graphes SVG (courbes, barres, mini-courbes) |
 | `js/seed.js` | programme type des nouveaux comptes |
 | `js/logo.js`, `js/theme.js`, `js/version.js` | logo, thème et styles, nom / version / auteur |
+| `js/changelog.js` | « Quoi de neuf » affiché après une mise à jour |
 | `js/config.js` | URL et clé publique Supabase |
 | `js/exercise-library.js`, `js/body-map.js` | catalogue d'exercices et silhouettes |
 | `js/views/` | une page par fichier : `dashboard`, `muscu` (programme + historique), `workout` (séance en cours), `session-editor`, `catalogue`, `cardio`, `progression`, `one-rm`, `friends`, `programme`, `profile` |

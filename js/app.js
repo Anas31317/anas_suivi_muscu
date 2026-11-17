@@ -33,6 +33,7 @@ import * as auth from './auth.js';
 import * as share from './share.js';
 import * as authViews from './auth-views.js';
 import { initTheme } from './theme.js';
+import { maybeShowChangelog } from './changelog.js';
 import { logo, APP_NAME } from './logo.js';
 import { APP_VERSION, APP_AUTHOR } from './version.js';
 import { MAINTENANCE, MAINTAINER_ID } from './config.js';
@@ -110,6 +111,9 @@ async function startUser(user) {
         'N’accepte que si ce sont TES données.'
       )
   });
+
+  // après la synchro (et son éventuelle question d'import), pour ne pas empiler deux fenêtres
+  if (currentUser && currentUser.id === user.id && !blockedByMaintenance()) maybeShowChangelog();
 }
 
 /** Ferme la session locale. `wipe` efface le cache de l'appareil. */

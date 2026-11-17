@@ -520,6 +520,24 @@ a.list-row:hover { background: var(--surface-sunk); }
 .profile-card .meta.pending { color: var(--accent-ink); margin-top: 2px; }
 /* la carte d'identité porte aussi « Modifier le profil », sous un trait fin */
 .identity-card { padding: 0; }
+
+/* « Quoi de neuf » après une mise à jour */
+.changelog {
+  width: calc(100% - 32px);
+  max-width: 440px;
+  max-height: calc(100% - 48px);
+  overflow-y: auto;
+  padding: 22px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.changelog::backdrop { background: rgba(0, 0, 0, 0.55); }
+.changelog h2 { font-size: 1.3rem; margin-bottom: 12px; }
+.changelog ul { margin: 6px 0 14px; padding-left: 18px; color: var(--ink-2); line-height: 1.45; }
+.changelog li + li { margin-top: 6px; }
+.changelog .btn-row { justify-content: flex-end; }
 .identity-card .profile-edit { margin: 0 16px; padding: 4px 0 8px; border-top: 1px solid var(--border); }
 
 /* --------------------------------------------------------------- séances */
