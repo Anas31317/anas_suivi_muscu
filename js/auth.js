@@ -190,7 +190,8 @@ export async function updateAccount({ meta, email } = {}) {
   const attrs = {};
   if (meta) attrs.data = meta;
   if (email) attrs.email = normalizeEmail(email);
-  const { data, error } = await client.auth.updateUser(attrs, { emailRedirectTo: siteUrl() });
+  // ?flow=email : au retour du lien, l'appli dit que l'email a changé (voir app.js)
+  const { data, error } = await client.auth.updateUser(attrs, { emailRedirectTo: siteUrl() + '?flow=email' });
   return { user: data ? data.user : null, error };
 }
 

@@ -455,6 +455,13 @@ async function main() {
     history.replaceState(null, '', url.pathname + url.search + '#/nouveau-mot-de-passe');
   }
 
+  // Retour du lien de changement d'email : ?flow=email (+ ?code=). Le message vient après la session.
+  const emailChanged = url.searchParams.get('flow') === 'email';
+  if (emailChanged) {
+    url.searchParams.delete('flow');
+    history.replaceState(null, '', url.pathname + url.search + '#/');
+  }
+
   // Premier des deux liens d'un changement d'email : Supabase revient avec
   // ?message=… (ou #message=…), en anglais. On dit quoi faire ensuite.
   const supabaseMessage = url.searchParams.get('message') || new URLSearchParams(location.hash.slice(1)).get('message');
@@ -469,6 +476,14 @@ async function main() {
   auth.onAuthChange(handleAuthEvent);
   // attend aussi l'échange du code des liens email
   const { session, error: sessionError } = await auth.getSession();
+
+  if (emailChanged) {
+    // lien ouvert dans le même navigateur : déjà connecté avec la nouvelle adresse ;
+    // sinon (lien ouvert depuis l'appli mail), on arrive sur la connexion
+    noticeBanner(session
+      ? `Ton email est changé : tu te connectes maintenant avec ${session.user.email}.`
+      : 'Ton email est changé : connecte-toi avec ta nouvelle adresse et ton mot de passe habituel.');
+  }
 
   if (session) {
     booted = true;

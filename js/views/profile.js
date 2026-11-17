@@ -22,8 +22,8 @@ export function viewProfile(ctx) {
         h('div', { class: 'meta' }, meta.username ? `@${meta.username} · ${email}` : email),
         ctx.user.newEmail
           ? h('div', { class: 'meta pending' },
-              `Changement vers ${ctx.user.newEmail} en attente : clique sur le lien reçu sur cette adresse. ` +
-              `Tu te connectes avec ${email} jusque-là.`)
+              `Changement en attente : clique sur le lien reçu sur ${ctx.user.newEmail}, ` +
+              'tu te connecteras ensuite avec cette nouvelle adresse.')
           : null
       )
     ),
