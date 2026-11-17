@@ -123,14 +123,16 @@ export async function getSession() {
   }
 }
 
-/** Session renouvelée auprès du serveur (après un changement d'email, par exemple), ou null. */
-export async function refreshSession() {
-  try {
-    const { data } = await client.auth.refreshSession();
-    return data ? data.session : null;
-  } catch {
-    return null;
-  }
+/**
+ * Le compte tel que le serveur le connaît (email à jour), ou null hors ligne.
+ * 3 s au plus : avec un mauvais réseau à la salle, l'appli ne doit pas attendre.
+ */
+export async function getServerUser() {
+  const ask = client.auth.getUser()
+    .then(({ data, error }) => (error || !data ? null : data.user))
+    .catch(() => null);
+  const giveUp = new Promise((resolve) => setTimeout(() => resolve(null), 3000));
+  return Promise.race([ask, giveUp]);
 }
 
 export function onAuthChange(fn) {

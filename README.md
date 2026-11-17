@@ -56,8 +56,9 @@ fait en dessous**, et toutes les courbes de musculation sont réunies dans Progr
   des données, mot de passe, déconnexion. Prénom, nom et nom d'utilisateur sont rangés dans
   le compte Supabase (pas de table en plus) ; le prénom sert au « Salut » de l'accueil. Un
   changement d'email se fait comme partout : on donne son mot de passe actuel, puis un seul
-  lien de confirmation part sur la nouvelle adresse ; l'email change au clic, et l'appli dit
-  alors de se connecter avec la nouvelle adresse. Personne n'a
+  lien de confirmation part sur la nouvelle adresse ; l'email change au clic. On est alors
+  déconnecté, sur cet appareil comme sur les autres à leur ouverture, et on se reconnecte
+  avec la nouvelle adresse. Personne n'a
   rien à faire dans Supabase. Le nom d'utilisateur s'affiche dans le profil ; il n'est pas vérifié unique.
 
 Inscription réservée aux emails autorisés, connexion et mot de passe oublié par email.

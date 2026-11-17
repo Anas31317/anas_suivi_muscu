@@ -90,12 +90,19 @@ function lastUser() {
 }
 
 /** Ouvre les données d'un utilisateur connecté et lance la synchro. */
+/** Ce que l'appli garde du compte : meta = prénom, nom, nom d'utilisateur ; newEmail = changement pas encore confirmé. */
+const accountInfo = (user) => ({ email: user.email, meta: user.user_metadata || {}, newEmail: user.new_email || null });
+
 async function startUser(user) {
-  if (currentUser && currentUser.id === user.id && store.isOpen()) return;
+  if (currentUser && currentUser.id === user.id && store.isOpen()) {
+    // même compte : on garde ses données ouvertes, mais on relit ses infos (email changé…)
+    Object.assign(currentUser, accountInfo(user));
+    rememberUser(currentUser);
+    return;
+  }
   if (currentUser) endUser({ wipe: true });
 
-  // meta : prénom, nom, nom d'utilisateur ; newEmail : changement d'email pas encore confirmé
-  currentUser = { id: user.id, email: user.email, meta: user.user_metadata || {}, newEmail: user.new_email || null };
+  currentUser = { id: user.id, ...accountInfo(user) };
   rememberUser(currentUser);
   const hadCache = store.openForUser(user.id);
   updateChrome();
@@ -156,6 +163,10 @@ function handleAuthEvent(event, session) {
         startUser(session.user).then(() => {
           if (!recoveryMode) location.hash = '#/';
         });
+      } else {
+        // même compte (reconnexion, retour sur l'onglet) : infos à jour, sans changer de page
+        Object.assign(currentUser, accountInfo(session.user));
+        rememberUser(currentUser);
       }
     } else if (event === 'SIGNED_OUT') {
       if (currentUser) {
@@ -164,11 +175,7 @@ function handleAuthEvent(event, session) {
         render();
       }
     } else if ((event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') && session && currentUser) {
-      Object.assign(currentUser, {
-        email: session.user.email,
-        meta: session.user.user_metadata || {},
-        newEmail: session.user.new_email || null
-      });
+      Object.assign(currentUser, accountInfo(session.user));
       rememberUser(currentUser);
     }
   }, 0);
@@ -464,16 +471,24 @@ async function main() {
   // attend aussi l'échange du code des liens email
   let { session, error: sessionError } = await auth.getSession();
 
+  // Email changé (retour du lien, ou changé depuis un autre appareil) : la session de ce
+  // navigateur date d'avant. On déconnecte, et on se reconnecte avec la nouvelle adresse.
+  const changedMsg = 'Ton email est changé : connecte-toi avec ta nouvelle adresse et ton mot de passe habituel.';
   if (emailReturn) {
-    history.replaceState(null, '', location.pathname + '#/');
+    history.replaceState(null, '', location.pathname + (linkFailed ? '#/' : '#/connexion'));
     if (linkFailed) {
       noticeBanner('Ce lien a déjà servi ou a expiré.');
     } else {
-      // la session gardée par le navigateur date d'avant le changement : on la renouvelle
-      if (session) session = (await auth.refreshSession()) || session;
-      noticeBanner(session
-        ? `Ton email est changé : c’est maintenant ${session.user.email}.`
-        : 'Ton email est changé : connecte-toi avec ta nouvelle adresse.');
+      noticeBanner(changedMsg);
+      if (session) { await auth.signOut(); session = null; }
+    }
+  } else if (session) {
+    const server = await auth.getServerUser(); // null hors ligne : on garde la session de l'appareil
+    if (server && server.email !== session.user.email) {
+      await auth.signOut();
+      session = null;
+      location.hash = '#/connexion';
+      noticeBanner(changedMsg);
     }
   }
 
