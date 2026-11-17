@@ -89,15 +89,13 @@ export function viewSessionEditor(sessionId, ctx) {
         ),
         h('div', { class: 'mini' },
           miniBtn(ICONS.up, 'Monter', () => {
-            if (i === 0) return;
             [draft.exercises[i - 1], draft.exercises[i]] = [draft.exercises[i], draft.exercises[i - 1]];
             draw();
-          }),
+          }, i === 0),
           miniBtn(ICONS.down, 'Descendre', () => {
-            if (i === draft.exercises.length - 1) return;
             [draft.exercises[i + 1], draft.exercises[i]] = [draft.exercises[i], draft.exercises[i + 1]];
             draw();
-          }),
+          }, i === draft.exercises.length - 1),
           miniBtn(ICONS.close, 'Retirer de la séance', () => {
             if (!confirm(`Retirer « ${ex.name || 'cet exercice'} » de la séance ? Son historique est conservé.`)) return;
             placeOrigine.set(ex.id, i);

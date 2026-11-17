@@ -4,6 +4,7 @@
  */
 
 import * as store from './store.js';
+import { libraryEntry } from './exercise-library.js';
 
 const pad = (n) => String(n).padStart(2, '0');
 const toISO = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
@@ -139,6 +140,51 @@ export function cardioStats(days) {
     minutes: items.reduce((a, c) => a + (c.duration || 0), 0),
     km: items.reduce((a, c) => a + (c.distance || 0), 0)
   };
+}
+
+/**
+ * Muscles travaillés sur les `days` derniers jours, d'après les fiches du
+ * catalogue : { primary, secondary }, un muscle principal une fois n'est pas
+ * répété en secondaire. Un exercice sans fiche ne compte pas.
+ */
+export function recentMuscles(days = 7) {
+  const from = new Date();
+  from.setDate(from.getDate() - (days - 1));
+  const since = toISO(from);
+  const libOf = new Map(store.exerciseCatalog().map((e) => [e.id, e.libId]));
+  const primary = new Set();
+  const secondary = new Set();
+  for (const log of store.getState().logs) {
+    if (log.date < since) continue;
+    for (const en of log.entries) {
+      const lib = en.sets.length ? libraryEntry(libOf.get(en.exerciseId)) : null;
+      if (!lib) continue;
+      lib.primary.forEach((m) => primary.add(m));
+      lib.secondary.forEach((m) => secondary.add(m));
+    }
+  }
+  return { primary: [...primary], secondary: [...secondary].filter((m) => !primary.has(m)) };
+}
+
+/**
+ * Tonnage (charge × reps) depuis lundi, et sur la même période la semaine
+ * d'avant (lundi → même jour) : on compare ce qui est comparable.
+ */
+export function weekVolume() {
+  const monday = mondayOf(new Date());
+  const prevMonday = new Date(monday);
+  prevMonday.setDate(prevMonday.getDate() - 7);
+  const sameDay = new Date();
+  sameDay.setDate(sameDay.getDate() - 7);
+  const [a, b, c] = [toISO(monday), toISO(prevMonday), toISO(sameDay)];
+  let current = 0;
+  let previous = 0;
+  for (const log of store.getState().logs) {
+    const v = log.entries.reduce((t, en) => t + (store.METRICS.volume.compute(en.sets) || 0), 0);
+    if (log.date >= a) current += v;
+    else if (log.date >= b && log.date <= c) previous += v;
+  }
+  return { current, previous };
 }
 
 /** Prénom déduit de l'email : « anas.hadouche@… » -> « Anas ». */

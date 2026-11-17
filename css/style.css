@@ -12,14 +12,14 @@
   --surface-sunk:   #f1f0ec;   /* champs, zones creuses   */
   --ink:            #0b0b0b;
   --ink-2:          #52514e;
-  --ink-muted:      #898781;
+  --ink-muted:      #6f6d67;   /* ≥ 4,5:1 sur les cartes  */
   --grid:           #e7e6e0;
   --axis:           #c3c2b7;
   --border:         rgba(11, 11, 11, 0.09);
 
-  --accent:         #2a78d6;
+  --accent:         #2873d0;   /* texte blanc dessus ≥ 4,5:1 */
   --accent-ink:     #1c5cab;   /* texte accentué lisible  */
-  --accent-soft:    rgba(42, 120, 214, 0.09);
+  --accent-soft:    rgba(40, 115, 208, 0.09);
   --series-2:       #eb6834;   /* 2e courbe (1RM réalisé) */
   --on-accent:      #ffffff;
   --good:           #006300;
@@ -30,7 +30,23 @@
   --shadow:   none;
   --tabbar-h: 62px;
 
-  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-head: "Archivo", var(--font);
+}
+
+/* polices hébergées sur le site (la CSP bloque Google Fonts) ; licence OFL : fonts/LICENSE-*.txt */
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/inter-latin-wght.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Archivo";
+  src: url("../fonts/archivo-latin-wdth.woff2") format("woff2");
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -45,9 +61,9 @@
     --grid:         #2c2c2a;
     --axis:         #45453f;
     --border:       rgba(255, 255, 255, 0.09);
-    --accent:       #3987e5;
+    --accent:       #2b74d2;
     --accent-ink:   #86b6ef;
-    --accent-soft:  rgba(57, 135, 229, 0.14);
+    --accent-soft:  rgba(43, 116, 210, 0.14);
     --series-2:     #d95926;
     --good:         #0ca30c;
     --critical:     #e66767;
@@ -66,9 +82,9 @@
   --grid:         #2c2c2a;
   --axis:         #45453f;
   --border:       rgba(255, 255, 255, 0.09);
-  --accent:       #3987e5;
+  --accent:       #2b74d2;
   --accent-ink:   #86b6ef;
-  --accent-soft:  rgba(57, 135, 229, 0.14);
+  --accent-soft:  rgba(43, 116, 210, 0.14);
   --series-2:     #d95926;
   --good:         #0ca30c;
   --critical:     #e66767;
@@ -100,7 +116,7 @@ html, body {
   touch-action: pan-y;
 }
 
-h1, h2, h3 { line-height: 1.2; margin: 0; font-weight: 700; letter-spacing: -0.015em; }
+h1, h2, h3 { line-height: 1.2; margin: 0; font-weight: 700; letter-spacing: -0.015em; font-family: var(--font-head); font-stretch: 85%; }
 h1 { font-size: 1.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: -0.025em; }
 h2 { font-size: 1rem; }
 
@@ -542,6 +558,12 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 .btn.small { min-height: 34px; padding: 5px 11px; font-size: 0.72rem; }
 .btn.icon-only { width: 34px; padding: 0; }
 .btn.block { width: 100%; min-height: 46px; }
+/* au doigt (salle, mains moites) : cibles de 44 px ; la souris garde les boutons compacts */
+@media (pointer: coarse) {
+  .btn, .btn.small { min-height: 44px; }
+  .btn.icon-only { width: 44px; }
+  .chip { min-height: 40px; }
+}
 
 .btn-row { display: flex; flex-wrap: wrap; gap: 8px; }
 
@@ -631,7 +653,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
   line-height: 1.35;
   color: var(--ink-2);
 }
-.section > .prev-note { margin: 6px 0 10px; }
+.section > .prev-notes { margin: 6px 0 10px; }
 .done-mark {
   display: none;
   align-items: center;
@@ -646,16 +668,22 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 .is-done .done-mark { display: inline-flex; }
 .is-done .ex-num { background: color-mix(in srgb, var(--good) 14%, transparent); color: var(--good); }
 
-.sets { display: grid; gap: 6px; max-width: 620px; }
+/* une série = une ligne ; teintée en vert une fois faite (reps saisies) */
+.sets { display: grid; gap: 4px; max-width: 480px; }
 .set-row {
   display: grid;
   grid-template-columns: 22px minmax(64px, 0.9fr) minmax(0, 1fr) minmax(0, 1fr);
   align-items: center;
   gap: 8px;
+  padding: 3px 4px;
+  border-radius: var(--radius);
+  transition: background 0.15s ease;
 }
 .set-row.no-weight { grid-template-columns: 22px minmax(64px, 0.9fr) minmax(0, 1fr); }
-.set-row input { min-width: 0; text-align: center; font-variant-numeric: tabular-nums; font-size: 1rem; }
-.set-head-row { margin-bottom: -2px; }
+.set-row input { min-width: 0; min-height: 44px; text-align: center; font-variant-numeric: tabular-nums; font-size: 1.05rem; font-weight: 600; }
+.set-row.is-set-done { background: color-mix(in srgb, var(--good) 9%, transparent); }
+.set-row.is-set-done .idx { color: var(--good); }
+.set-head-row { margin-bottom: -2px; padding-top: 0; padding-bottom: 0; }
 .set-head {
   font-size: 0.66rem;
   font-weight: 600;
@@ -677,23 +705,24 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
   text-align: center;
   font-variant-numeric: tabular-nums;
 }
-/* valeur de la dernière fois : un tap la recopie */
+/* valeur de la dernière fois : un tap la recopie ; un bouton texte, sans cadre qui fasse bruit */
 .prev-cell {
-  min-height: 42px;
+  min-height: 44px;
   padding: 0 4px;
   font: inherit;
   font-size: 0.85rem;
   font-variant-numeric: tabular-nums;
   color: var(--ink-2);
   background: transparent;
-  border: 1px dashed var(--axis);
+  border: 1px solid transparent;
   border-radius: var(--radius-s);
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: background 0.12s ease, color 0.12s ease;
 }
-.prev-cell:hover { color: var(--accent-ink); border-color: var(--accent); background: var(--accent-soft); }
+.prev-cell:hover, .prev-cell:active { color: var(--accent-ink); background: var(--accent-soft); }
 .prev-cell.empty {
   display: flex;
   align-items: center;
@@ -702,16 +731,27 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
   color: var(--ink-muted);
   cursor: default;
 }
-.ex-foot { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
-.ex-foot .entry-note { flex: 1 1 auto; min-width: 0; }
+.ex-foot { display: grid; gap: 6px; margin-top: 12px; align-content: start; }
+.ex-foot .set-head { text-align: left; }
+.ex-foot .prev-notes .prev-note:first-child { margin-top: 0; }
+/* grand écran : les notes occupent la place vide à droite des séries */
+@media (min-width: 861px) {
+  .ex-body { display: grid; grid-template-columns: minmax(0, 480px) minmax(0, 1fr); gap: 24px; align-items: start; }
+  .ex-body .ex-foot { margin-top: 0; }
+}
 .date-field { min-width: 160px; }
 
 /* barre Enregistrer qui reste visible en bas */
+/* chrono, à gauche de la barre Enregistrer */
+.chrono { display: inline-flex; align-items: center; gap: 4px; margin-right: auto; color: var(--accent-ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.chrono-time { min-width: 3.2em; }
+
 .form-actions {
   position: sticky;
   bottom: 0;
   z-index: 10;
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 8px;
   margin: 18px -20px 0;
@@ -770,11 +810,16 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 /* silhouettes : corps en gris, muscles travaillés en couleur */
 .body-map { flex: none; display: block; }
 .bm-body { fill: var(--grid); }
+/* muscles au repos : un ton plus marqué que le corps, pour qu'on devine l'anatomie */
+.bm-muscle { fill: color-mix(in srgb, var(--ink) 9%, var(--grid)); }
 .bm-on { fill: var(--accent); }
-.bm-second { fill: color-mix(in srgb, var(--accent) 34%, transparent); }
+.bm-second { fill: color-mix(in srgb, var(--accent) 38%, var(--grid)); }
+/* un fin liseré sépare les segments (chefs, carreaux, faisceaux) */
+.bm-muscle, .bm-on, .bm-second { stroke: var(--surface); stroke-width: 0.45; stroke-linejoin: round; }
 /* repères de vue : visage de face, colonne et omoplates de dos */
 .bm-trait { fill: var(--ink-muted); }
-.bm-trait-line { fill: none; stroke: var(--ink-muted); stroke-width: 1.4; stroke-linecap: round; }
+/* la colonne, de dos : un trait fin, qui ne masque pas les muscles allumés */
+.bm-spine { fill: none; stroke: color-mix(in srgb, var(--ink-muted) 55%, transparent); stroke-width: 0.7; stroke-linecap: round; }
 .bm-label { fill: var(--ink-muted); font-size: 11px; font-weight: 600; letter-spacing: 0.04em; }
 
 .cat-row { align-items: center; gap: 10px; }
@@ -876,6 +921,10 @@ td.note { white-space: normal; color: var(--ink-muted); }
 /* --------------------------------------------------------------- graphes */
 
 .chart-card { padding: 16px 16px 12px; }
+.muscles-week { display: flex; align-items: center; gap: 16px; padding: 4px 0 6px; }
+.muscles-week .body-map { flex: none; }
+.muscles-week .m1 { margin: 0 0 6px; font-weight: 600; line-height: 1.35; }
+.muscles-week .meta { margin: 0; font-size: 0.8rem; color: var(--ink-muted); line-height: 1.35; }
 .chart-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 12px; }
 .chart-head .title { font-size: 1rem; }
 .chart-head .spacer { flex: 1 1 auto; }

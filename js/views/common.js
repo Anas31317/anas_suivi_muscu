@@ -51,8 +51,8 @@ export function monthLabel(iso) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-export function miniBtn(pathD, label, onClick) {
-  return h('button', { class: 'btn ghost small icon-only', type: 'button', title: label, 'aria-label': label, onclick: onClick },
+export function miniBtn(pathD, label, onClick, disabled = false) {
+  return h('button', { class: 'btn ghost small icon-only', type: 'button', title: label, 'aria-label': label, onclick: onClick, disabled },
     icon(pathD, 15));
 }
 

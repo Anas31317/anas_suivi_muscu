@@ -20,8 +20,8 @@ export function viewProgramme() {
           sess.exercises.length ? sess.exercises.map((e) => e.name).join(' · ') : 'aucun exercice')
       ),
       h('div', { class: 'mini' },
-        miniBtn(ICONS.up, 'Monter la séance', () => { if (i > 0) store.moveSession(sess.id, -1); }),
-        miniBtn(ICONS.down, 'Descendre la séance', () => { if (i < state.sessions.length - 1) store.moveSession(sess.id, 1); }),
+        miniBtn(ICONS.up, 'Monter la séance', () => store.moveSession(sess.id, -1), i === 0),
+        miniBtn(ICONS.down, 'Descendre la séance', () => store.moveSession(sess.id, 1), i === state.sessions.length - 1),
         miniBtn(ICONS.close, 'Retirer la séance du programme', () => {
           if (!confirm(`Retirer « ${sess.name} » du programme ?\n\nLes séances déjà enregistrées restent dans ton historique.`)) return;
           store.deleteSession(sess.id);

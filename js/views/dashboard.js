@@ -4,6 +4,8 @@ import * as store from '../store.js';
 import { fmtNum, formatDate } from '../store.js';
 import * as insights from '../insights.js';
 import { mountWeekBars } from '../charts.js';
+import { bodyMap } from '../body-map.js';
+import { muscleLabel } from '../exercise-library.js';
 import { h, icon, ICONS } from '../ui.js';
 import { sessionTitle, plural, emptyState } from './common.js';
 import { startLabel } from './muscu.js';
@@ -27,7 +29,8 @@ export function viewDashboard(ctx) {
       h('p', { class: 'eyebrow' }, 'Séance du jour'),
       h('h2', { class: 'hero-title' }, sessionTitle(current)),
       h('p', { class: 'hero-meta' },
-        `${todayLog.entries.length} sur ${plural(current.exercises.length, 'exercice', 'exercices')} enregistrés`),
+        // une entrée peut ne porter qu'une note : seules celles avec des séries comptent
+        `${todayLog.entries.filter((e) => e.sets.length).length} sur ${plural(current.exercises.length, 'exercice', 'exercices')} enregistrés`),
       h('div', { class: 'btn-row' },
         h('a', { class: 'btn primary', href: `#/seance/${current.id}` }, icon(ICONS.play, 14), 'Reprendre'),
         next && next.id !== current.id
@@ -62,9 +65,19 @@ export function viewDashboard(ctx) {
       h('div', { class: 'value' }, value),
       sub ? h('div', { class: 'delta' }, sub) : null
     );
-  const tiles = h('div', { class: 'tiles' },
+  const vol = insights.weekVolume();
+  const volPct = vol.previous ? Math.round(((vol.current - vol.previous) / vol.previous) * 100) : null;
+  const tonnage = (kg) => (kg >= 1000 ? `${fmtNum(kg / 1000, 1)} t` : `${fmtNum(kg, 0)} kg`);
+  const tiles = h('div', { class: 'tiles tiles-4' },
     tile('Cette semaine', String(c.week), plural(c.week, 'séance', 'séances')),
     tile('Ce mois-ci', String(c.month), plural(c.month, 'séance', 'séances')),
+    h('div', { class: 'card tile' },
+      h('div', { class: 'label' }, 'Volume · semaine'),
+      h('div', { class: 'value' }, vol.current ? tonnage(vol.current) : '—'),
+      volPct === null
+        ? h('div', { class: 'delta' }, vol.current ? 'rien la semaine passée' : 'charge × reps')
+        : h('div', { class: 'delta ' + (volPct > 0 ? 'up' : volPct < 0 ? 'down' : '') },
+            `${volPct > 0 ? '+' : ''}${volPct} % vs sem. passée`)),
     (() => {
       const cw = insights.cardioStats(7);
       return h('a', { class: 'card tile tile-link', href: '#/cardio' },
@@ -85,6 +98,23 @@ export function viewDashboard(ctx) {
     barsHost
   );
   ctx.onCleanup(mountWeekBars(barsHost, weeks));
+
+  /* --- muscles de la semaine ------------------------------------------ */
+  // les silhouettes du catalogue : on voit d'un coup d'œil ce qui a été négligé
+  const mus = insights.recentMuscles(7);
+  const musclesCard = h('section', { class: 'card chart-card' },
+    h('div', { class: 'chart-head' },
+      h('h2', { class: 'title' }, 'Muscles travaillés'),
+      h('span', { class: 'chart-sub' }, '7 derniers jours')
+    ),
+    mus.primary.length
+      ? h('div', { class: 'muscles-week' },
+          bodyMap(mus.primary, mus.secondary, { height: 150, label: mus.primary.map(muscleLabel).join(', ') }),
+          h('div', {},
+            h('p', { class: 'm1' }, mus.primary.map(muscleLabel).join(', ')),
+            mus.secondary.length ? h('p', { class: 'meta' }, 'En secondaire : ' + mus.secondary.map(muscleLabel).join(', ')) : null))
+      : h('p', { class: 'list-empty' }, 'Aucune séance de muscu ces 7 derniers jours.')
+  );
 
   /* --- records ------------------------------------------------------- */
   const records = insights.recentRecords(5);
@@ -125,7 +155,8 @@ export function viewDashboard(ctx) {
     h('div', { class: 'stack' },
       hero,
       tiles,
-      h('div', { class: 'grid-2' }, activity, recordsCard)
+      h('div', { class: 'grid-2' }, activity, musclesCard),
+      recordsCard
     )
   );
 }

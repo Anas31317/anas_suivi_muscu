@@ -20,6 +20,29 @@ import { sessionNumber, pageHead, emptyState, longDate } from './common.js';
 
 const SAVE_DELAY = 500;
 
+// Chrono, gardé sur l'appareil : il survit à un changement de page, un rechargement ou
+// l'appli fermée. start : Date.now() quand il tourne ; acc : ms déjà comptées.
+const CHRONO_KEY = 'suivi-muscu:chrono';
+const chrono = (() => {
+  try {
+    const c = JSON.parse(localStorage.getItem(CHRONO_KEY));
+    if (c && typeof c.acc === 'number' && (c.start === null || typeof c.start === 'number')) return c;
+  } catch { /* stockage indisponible : on repart de zéro */ }
+  return { start: null, acc: 0 };
+})();
+const saveChrono = () => { try { localStorage.setItem(CHRONO_KEY, JSON.stringify(chrono)); } catch { /* ignore */ } };
+const chronoMs = () => chrono.acc + (chrono.start === null ? 0 : Date.now() - chrono.start);
+
+const NOTES_SHOWN = 3;
+
+/** Les notes des dernières fois (la plus récente d'abord), en rappel gris. */
+function pastNotes(items) {
+  const notes = items.filter((x) => x.note && x.note.trim()).slice(0, NOTES_SHOWN);
+  return notes.length
+    ? h('div', { class: 'prev-notes' }, notes.map((x) => h('p', { class: 'prev-note' }, `${formatDateShort(x.date)} · ${x.note}`)))
+    : null;
+}
+
 const clone = (o) => JSON.parse(JSON.stringify(o));
 const numText = (n) => (n === null || n === undefined ? '' : String(n).replace('.', ','));
 
@@ -152,6 +175,38 @@ export function viewWorkout({ sessionId, logId }, ctx) {
 
   setStatus(source ? 'Enregistré' : 'Enregistrement automatique', source ? 'ok' : '');
 
+  /* --- chrono -------------------------------------------------------- */
+  // Toujours dans la barre du bas ; on le lance, le met en pause et le remet à zéro à la main.
+  const chronoTime = h('span', { class: 'chrono-time', role: 'timer', 'aria-label': 'Chrono' });
+  const playBtn = h('button', { class: 'btn ghost small icon-only', type: 'button', onclick: () => {
+    if (chrono.start === null) chrono.start = Date.now();
+    else { chrono.acc = chronoMs(); chrono.start = null; }
+    saveChrono();
+    tick();
+  } });
+  const resetBtn = h('button', {
+    class: 'btn ghost small icon-only', type: 'button', title: 'Remettre à zéro', 'aria-label': 'Remettre le chrono à zéro',
+    onclick: () => { chrono.acc = 0; chrono.start = chrono.start === null ? null : Date.now(); saveChrono(); tick(); }
+  }, icon(ICONS.reset, 15));
+  const chronoBox = h('div', { class: 'chrono' }, icon(ICONS.timer, 16), chronoTime, playBtn, resetBtn);
+  let shownRunning = null;
+  const tick = () => {
+    const s = Math.floor(chronoMs() / 1000);
+    chronoTime.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+    const running = chrono.start !== null;
+    if (running !== shownRunning) { // l'icône ne change qu'au démarrage / à la pause
+      shownRunning = running;
+      const label = running ? 'Mettre le chrono en pause' : 'Démarrer le chrono';
+      playBtn.title = label;
+      playBtn.setAttribute('aria-label', label);
+      playBtn.replaceChildren(icon(running ? ICONS.pause : ICONS.play, 15));
+    }
+  };
+  // 4 fois par seconde : calé sur l'appui, la première seconde ne traîne pas
+  const ticker = setInterval(tick, 250);
+  ctx.onCleanup(() => clearInterval(ticker));
+  tick();
+
   /* --- exercices ----------------------------------------------------- */
   const doneCount = h('span', {});
   const updateProgress = () => {
@@ -182,18 +237,22 @@ export function viewWorkout({ sessionId, logId }, ctx) {
 
     entry.sets.forEach((set, i) => {
       const before = prev && prev.sets[i];
+      let rowEl = null;
+      const markRow = () => rowEl && rowEl.classList.toggle('is-set-done', set.reps !== null);
       const w = numInput({
         value: numText(set.weight),
-        placeholder: before && before.weight !== null ? numText(before.weight) : isBW ? '0' : '',
+        placeholder: isBW ? '0' : '',
         'aria-label': `${entry.name}, série ${i + 1}, charge en kg`,
+        enterkeyhint: 'next',
         oninput: () => { set.weight = parseNum(w.value); changed(); }
       });
       const r = numInput({
         value: numText(set.reps),
-        placeholder: before && before.reps !== null ? String(before.reps) : '',
+        // pas de rappel ici : « Dernière fois », juste à côté, le donne déjà (un tap le recopie)
         inputmode: 'numeric',
+        enterkeyhint: 'next',
         'aria-label': `${entry.name}, série ${i + 1}, répétitions`,
-        oninput: () => { set.reps = parseNum(r.value); refreshDone(); changed(); }
+        oninput: () => { set.reps = parseNum(r.value); markRow(); refreshDone(); changed(); }
       });
       const prevCell = before
         ? h('button', {
@@ -205,14 +264,17 @@ export function viewWorkout({ sessionId, logId }, ctx) {
               set.reps = before.reps;
               w.value = numText(set.weight);
               r.value = numText(set.reps);
+              markRow();
               refreshDone();
               changed();
             }
           }, setLabel(before, entry.mode))
         : h('span', { class: 'prev-cell empty' }, '—');
 
-      rows.append(h('div', { class: 'set-row' + (sansCharge ? ' no-weight' : '') },
-        h('span', { class: 'idx' }, String(i + 1)), prevCell, sansCharge ? null : w, r));
+      rowEl = h('div', { class: 'set-row' + (sansCharge ? ' no-weight' : '') },
+        h('span', { class: 'idx' }, String(i + 1)), prevCell, sansCharge ? null : w, r);
+      markRow();
+      rows.append(rowEl);
     });
 
     const note = h('input', {
@@ -226,11 +288,7 @@ export function viewWorkout({ sessionId, logId }, ctx) {
       h('div', { class: 'ex-head' },
         h('span', { class: 'ex-num' }, String(entryIndex + 1)),
         h('div', { class: 'ex-title' },
-          h('h2', {}, entry.name, isBW || sansCharge ? h('span', { class: 'tag' }, 'PdC') : null),
-          // la note laissée la dernière fois sur cet exercice, s'il y en a une
-          prev && prev.note
-            ? h('p', { class: 'prev-note' }, `${formatDateShort(prev.date)} · ${prev.note}`)
-            : null
+          h('h2', {}, entry.name, isBW || sansCharge ? h('span', { class: 'tag' }, 'PdC') : null)
         ),
         h('span', { class: 'done-mark', title: 'Exercice fait' }, icon('M5 12.5l4.5 4.5L19 7.5', 14)),
         h('a', {
@@ -238,14 +296,29 @@ export function viewWorkout({ sessionId, logId }, ctx) {
           title: 'Voir la progression', 'aria-label': `Progression de ${entry.name}`
         }, icon(ICONS.chart, 16))
       ),
-      rows,
-      h('div', { class: 'ex-foot' }, note)
+      // séries à gauche, notes à droite sur grand écran ; l'une sous l'autre sur téléphone
+      h('div', { class: 'ex-body' },
+        rows,
+        h('div', { class: 'ex-foot' },
+          h('span', { class: 'set-head' }, 'Notes'),
+          // les notes des dernières fois, là où on écrit la nouvelle
+          pastNotes(store.historyForExercise(entry.exerciseId, draft.id).filter((e) => e.date <= draft.date).reverse()),
+          note))
     );
     refreshDone();
     return card;
   };
 
-  const list = h('div', { class: 'stack' },
+  // Entrée (« Suivant » sur le clavier du téléphone) : charge → reps → série suivante → exercice suivant
+  const nextField = (e) => {
+    if (e.key !== 'Enter' || !e.target.matches('.set-row input')) return;
+    e.preventDefault();
+    const fields = [...list.querySelectorAll('.set-row input')];
+    const next = fields[fields.indexOf(e.target) + 1];
+    if (next) next.focus(); else e.target.blur();
+  };
+
+  const list = h('div', { class: 'stack', onkeydown: nextField },
     draft.entries.length
       ? draft.entries.map(exerciseCard)
       : emptyState('Aucun exercice dans cette séance', 'Ajoute des exercices depuis « Modifier la séance ».',
@@ -258,9 +331,8 @@ export function viewWorkout({ sessionId, logId }, ctx) {
     type: 'date', value: draft.date, max: store.todayISO(), 'aria-label': 'Date de la séance',
     onchange: () => { draft.date = dateInput.value || store.todayISO(); changed(); }
   });
-  // note laissée à la séance précédente du même programme
-  const prevLog = store.previousLogForSession(sid, draft.id);
-  const prevNote = prevLog && prevLog.note ? prevLog : null;
+  // notes laissées les dernières fois sur cette même séance du programme
+  const prevNotes = pastNotes(store.logsForSession(sid).filter((l) => l.id !== draft.id && l.date <= draft.date));
   const sessionNote = h('textarea', {
     placeholder: 'Forme du jour, ressenti…', maxlength: 1000, 'aria-label': 'Note de séance',
     oninput: () => { draft.note = sessionNote.value; changed(); }
@@ -312,12 +384,11 @@ export function viewWorkout({ sessionId, logId }, ctx) {
       list,
       h('div', { class: 'card section' },
         h('h2', {}, 'Note de séance'),
-        prevNote
-          ? h('p', { class: 'prev-note' }, `${formatDateShort(prevNote.date)} · ${prevNote.note}`)
-          : null,
+        prevNotes,
         sessionNote)
     ),
     h('div', { class: 'form-actions' },
+      chronoBox,
       source ? h('button', { class: 'btn ghost danger', type: 'button', onclick: remove }, 'Supprimer') : null,
       h('button', { class: 'btn primary', type: 'button', onclick: save }, icon('M5 12.5l4.5 4.5L19 7.5', 15), 'Enregistrer la séance')
     )

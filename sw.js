@@ -8,7 +8,7 @@
  *   données personnelles ne passent jamais par ce cache.
  */
 
-const CACHE = 'suivi-muscu-v31';
+const CACHE = 'suivi-muscu-v32';
 const SHELL = [
   './',
   './index.html',
@@ -43,7 +43,9 @@ const SHELL = [
   './js/views/profile.js',
   './js/vendor/supabase-2.116.0.js',
   './manifest.webmanifest',
-  './icons/icon.svg'
+  './icons/icon.svg',
+  './fonts/inter-latin-wght.woff2',
+  './fonts/archivo-latin-wdth.woff2'
 ];
 
 self.addEventListener('install', (event) => {
@@ -78,8 +80,11 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // no-cache : on redemande toujours au serveur (304 si rien n'a changé). Sans ça, le cache
+  // HTTP du navigateur pouvait servir un vieux module à côté d'un neuf juste après une mise
+  // à jour, et la page plantait (« Erreur d'affichage »).
   event.respondWith(
-    fetch(req)
+    fetch(req, { cache: 'no-cache' })
       .then((res) => {
         if (res.ok && !url.search) {
           const copy = res.clone();

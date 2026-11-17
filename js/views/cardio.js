@@ -171,7 +171,7 @@ export function viewCardioForm(id) {
 
   const typeSel = h('select', { 'aria-label': 'Activité' },
     store.CARDIO_TYPES.map((t) => h('option', { value: t.id, selected: t.id === draft.type }, t.label)));
-  const labelIn = h('input', { type: 'text', value: draft.label || '', maxlength: 60, placeholder: 'ex : HIIT, boxe, escalade…' });
+  const labelIn = h('input', { type: 'text', value: draft.label || '', maxlength: 60, placeholder: 'ex : HIIT, boxe, escalade…', 'aria-label': 'Nom de l’activité' });
   const labelField = h('div', { class: 'field' }, h('label', {}, 'Nom de l’activité'), labelIn);
   const dateIn = h('input', { type: 'date', value: draft.date, max: store.todayISO() });
 
@@ -183,7 +183,7 @@ export function viewCardioForm(id) {
   const inclineIn = numInput({ value: fieldNum(draft.incline), placeholder: 'optionnel', 'aria-label': 'Inclinaison en pourcent' });
   const calIn = numInput({ value: draft.calories !== null ? String(draft.calories) : '', inputmode: 'numeric', placeholder: 'optionnel' });
   const hrIn = numInput({ value: draft.heartRate !== null ? String(draft.heartRate) : '', inputmode: 'numeric', placeholder: 'optionnel' });
-  const noteIn = h('textarea', { maxlength: 500, placeholder: 'Résistance, sensations, fractionné…' });
+  const noteIn = h('textarea', { maxlength: 500, placeholder: 'Résistance, sensations, fractionné…', 'aria-label': 'Note' });
   noteIn.value = draft.note || '';
 
   const readDuration = () => {
@@ -269,7 +269,11 @@ export function viewCardioForm(id) {
     location.hash = '#/cardio';
   };
 
-  const field = (label, input, hint) => h('div', { class: 'field' }, h('label', {}, label), input, hint ? h('span', { class: 'hint' }, hint) : null);
+  const field = (label, input, hint) => {
+    // le libellé visible n'est pas relié au champ : on le donne aux lecteurs d'écran
+    if (input.matches('input, select, textarea') && !input.hasAttribute('aria-label')) input.setAttribute('aria-label', label);
+    return h('div', { class: 'field' }, h('label', {}, label), input, hint ? h('span', { class: 'hint' }, hint) : null);
+  };
 
   return h('div', { class: 'page page-form' },
     pageHead(existing ? 'Modifier la séance cardio' : 'Nouvelle séance cardio', {

@@ -4,7 +4,7 @@ Appli de suivi de musculation et de cardio pour un petit groupe : chacun a son c
 son suivi privé, un historique complet et des courbes de progression. Elle s'installe sur
 le téléphone et reste utilisable sans réseau, à la salle.
 
-En ligne : <https://anas31317.github.io/suivi_muscu_india/>
+En ligne : <https://anas31317.github.io/anas_suivi_muscu/>
 
 ## Les onglets
 
@@ -13,15 +13,26 @@ fait en dessous**, et toutes les courbes de musculation sont réunies dans Progr
 
 - **Accueil** : la prochaine séance — celle du jour tant qu'elle n'est pas enregistrée,
   la suivante dès qu'elle l'est — les chiffres de la
-  semaine et du mois, le cardio des 7 derniers jours, l'activité sur 8 semaines et les
-  derniers records.
+  semaine et du mois, le **volume** de la semaine (charge × reps) comparé à la même période
+  de la semaine passée, le cardio des 7 derniers jours, l'activité sur 8 semaines, les
+  **muscles travaillés** ces 7 derniers jours sur les silhouettes du catalogue (pour voir
+  d'un coup d'œil ce qu'on a négligé) et les derniers records.
 - **Muscu** : les séances du programme à lancer, puis l'historique complet par mois,
   filtrable par séance (c'est là qu'on modifie ou supprime une séance passée).
   Une séance s'ouvre sur une page unique avec tous les exercices, séries et reps ; chaque
-  série affiche à gauche ce qui a été fait la fois précédente (un tap la recopie). Tout
+  série affiche à gauche ce qui a été fait la fois précédente (un tap la recopie) et se
+  teinte en vert dès que ses reps sont saisies : on voit d'un coup d'œil où on en est. Tout
   s'enregistre au fur et à mesure ; rouvrir la séance le même jour reprend où on en était.
-  Les notes laissées la fois précédente, sur la séance comme sur chaque exercice, sont
-  rappelées en gris à l'endroit où on écrit les nouvelles.
+  La touche « Suivant » du clavier enchaîne charge, reps, série suivante puis exercice
+  suivant : une séance se saisit sans viser les champs au doigt.
+  Un **chrono** est toujours là, dans la barre du bas, avec démarrer / pause et remise à
+  zéro. C'est un chrono, pas un compte à rebours : on prend le repos qu'on veut, et rien ne
+  se déclenche tout seul. Il est gardé sur l'appareil : il continue de tourner si on va voir
+  Progrès, si la page se recharge ou si on ferme l'appli, et affiche toujours le bon temps.
+  Les notes des trois dernières fois, sur la séance comme sur chaque exercice, sont
+  rappelées en gris avec leur date, à l'endroit où on écrit les nouvelles (à droite des
+  séries sur ordinateur, en dessous sur téléphone). On voit d'un coup
+  d'œil ce qui revient d'une semaine à l'autre (une gêne, un réglage de machine…).
   Le programme (exercices, séries, ordre) ne se change que dans « Modifier la séance », avec
   un bouton Enregistrer — **l'historique n'est jamais réécrit**.
 - **Cardio** : tapis, course, vélo, rameur… durée, vitesse **ou** distance (l'une calcule
@@ -55,11 +66,22 @@ neutre », « Développé incliné ».
 
 Chaque exercice affiche **les muscles qu'il travaille** sur deux silhouettes, de face et de
 dos, reconnaissables au premier coup d'œil : muscles principaux en couleur pleine,
-secondaires en teinte claire, beaucoup d'exercices étant polyarticulaires. Le dos est
+secondaires en teinte claire, beaucoup d'exercices étant polyarticulaires. Chaque muscle a sa
+forme, découpée en segments (carreaux des abdominaux, chefs du quadriceps, des ischios et des
+mollets), et les muscles au repos se devinent en gris. Le dos est
 détaillé en quatre muscles — trapèzes, grand dorsal, grand rond, rhomboïdes — parce qu'un
-tirage vertical et des shrugs n'ont rien à voir, et les adducteurs sont colorés à leur place
-tout en étant rangés avec les quadriceps ; les catégories qui servent à ranger
-les exercices restent larges, elles. La barre de
+tirage vertical et des shrugs n'ont rien à voir ; l'épaule en trois faisceaux — antérieur,
+latéral, postérieur — parce qu'un développé, une élévation latérale et un oiseau non plus (le
+postérieur se colore de dos). Les adducteurs sont colorés à leur place
+tout en étant rangés avec les quadriceps.
+
+Pour ranger les exercices, le dos est coupé par muscle, en restant fidèle à l'anatomie :
+**Grand dorsal** (tractions, tirages, rowings, pull-over ; le grand rond, qui le seconde,
+est rangé avec lui), **Trapèzes** et **Rhomboïdes**. Un rowing figure dans les trois : il
+travaille le grand dorsal, les rhomboïdes et le trapèze moyen. Le trapèze est dessiné en ses
+trois faisceaux : **supérieur** (shrugs, rowing menton), **moyen** (rowings, face pull ; oiseau
+en secondaire) et **inférieur**. Les autres catégories
+restent larges : les trois faisceaux de l'épaule sont tous rangés dans Épaules. La barre de
 recherche comprend le français comme l'anglais : « bench press » trouve le développé
 couché.
 
@@ -108,7 +130,7 @@ Les noms d'exercices ne se modifient pas : ils viennent du catalogue, et c'est c
 que le même mouvement porte le même nom sur tous les comptes. Dans une séance, chacun règle
 l'ordre, le type et le nombre de séries.
 
-Une treizième catégorie, **Préparation physique**, reçoit ce qui ne vise pas un muscle en
+Une dernière catégorie, **Préparation physique**, reçoit ce qui ne vise pas un muscle en
 particulier : renforcement des pieds, parcours médecine ball, corde à sauter. Mieux vaut une
 case honnête qu'un exercice forcé dans un groupe musculaire qui ne lui va pas.
 
@@ -133,6 +155,24 @@ photos, rendus 3D — et aucune ne couvre tous les exercices. Une liste moitié 
 dessins se lit mal. Les silhouettes, elles, sont dessinées par le site : même style partout,
 rien à télécharger, aucun droit à demander, et elles disent ce qu'une photo ne dit pas, à
 savoir quels muscles travaillent et dans quelle mesure.
+
+## Apparence
+
+Palette sobre : gris chauds et un seul accent bleu, en clair comme en sombre (réglage
+« auto » par défaut, dans Profil). Deux polices, hébergées dans [`fonts/`](fonts/) (licence
+OFL) parce que la Content-Security-Policy n'autorise que les fichiers du site : **Archivo**
+légèrement resserrée pour les titres, **Inter** pour le texte et les chiffres, alignés en
+colonnes (`tabular-nums`). Elles sont dans le cache hors ligne comme le reste.
+
+Lisible à la salle, en un coup d'œil :
+
+- texte, texte secondaire et texte blanc des boutons bleus à **4,5:1 de contraste au
+  moins** (norme WCAG AA) ;
+- sur écran tactile, boutons d'au moins **44 px** de haut ; à la souris, ils restent
+  compacts.
+
+Les couleurs sont des variables en tête de [`css/style.css`](css/style.css) (`--accent`,
+`--ink-muted`…), une fois pour le clair et une fois pour le sombre.
 
 ## Mode maintenance
 
@@ -171,7 +211,7 @@ Tout repart vers le compte au retour du réseau.
 - Un suivi partagé n'est lisible qu'en fournissant le code exact : impossible de lister les
   suivis des autres, même avec la clé publique.
 - Confirmation d'email obligatoire ; liens email en flux PKCE, à usage unique.
-- Content-Security-Policy stricte ; librairie Supabase hébergée dans le dépôt
+- Content-Security-Policy stricte (scripts, styles et polices du site uniquement) ; librairie Supabase hébergée dans le dépôt
   (`js/vendor`, version 2.116.0 vérifiée) plutôt que chargée depuis un CDN.
 - À la déconnexion, les données locales de l'appareil sont effacées, y compris les suivis
   d'amis mis en cache.
@@ -197,6 +237,7 @@ Site statique : HTML, CSS et JavaScript à modules, sans build ni dépendance à
 |---|---|
 | `index.html` | squelette de la page, Content-Security-Policy |
 | `css/style.css` | tout le style (thème clair / sombre) |
+| `fonts/` | polices Archivo et Inter (woff2) et leurs licences |
 | `js/app.js` | routeur, onglets, garde d'accès, cycle de connexion |
 | `js/store.js` | état, cache local par compte, métriques, import / export |
 | `js/sync.js` | synchronisation du compte avec Supabase |
@@ -213,6 +254,6 @@ Site statique : HTML, CSS et JavaScript à modules, sans build ni dépendance à
 | `supabase/` | scripts SQL : tables, règles de sécurité, partage |
 | `sw.js`, `manifest.webmanifest` | installation sur mobile et mode hors ligne |
 
-En ajoutant un fichier JS ou CSS : l'ajouter à la liste `SHELL` de `sw.js` et incrémenter
+En ajoutant un fichier JS, CSS ou une police : l'ajouter à la liste `SHELL` de `sw.js` et incrémenter
 `CACHE`, pour qu'il soit disponible hors ligne. La version affichée en pied de page est
 dans [`js/version.js`](js/version.js).

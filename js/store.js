@@ -365,11 +365,6 @@ export function unfinishedToday(sessionId) {
   return log && !log.done ? log : null;
 }
 
-/** Séance précédente d'une séance du programme, hors celle en cours. */
-export function previousLogForSession(sessionId, excludeLogId = null) {
-  return logsForSession(sessionId).find((l) => l.id !== excludeLogId) || null;
-}
-
 /**
  * Historique d'un exercice, du plus ancien au plus récent.
  * `excludeLogId` : ignore une séance (celle qu'on est en train de saisir).
