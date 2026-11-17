@@ -296,8 +296,11 @@ export function viewResetPassword({ hasSession, email, onDone }) {
 
 /** Section « Mon compte » de la page Réglages. */
 /**
- * Modifier le profil : prénom, nom, nom d'utilisateur et email. Un seul envoi ;
- * le nouvel email n'est pris en compte qu'après le lien de confirmation.
+ * Modifier le profil : prénom, nom, nom d'utilisateur et email.
+ *
+ * Changer d'email, comme partout ailleurs : on donne son mot de passe actuel
+ * (c'est ce qui prouve que c'est bien soi), puis un seul lien de confirmation
+ * part sur la nouvelle adresse ; l'email change quand on clique dessus.
  * `onSaved({ meta, newEmail })` reçoit ce que le compte renvoie.
  */
 export function profileEditor(user, onSaved) {
@@ -308,6 +311,14 @@ export function profileEditor(user, onSaved) {
   const username = text(meta.username, { autocomplete: 'username', maxlength: 20, autocapitalize: 'none', spellcheck: 'false' });
   const email = emailInput();
   email.value = user.email || '';
+  // demandé seulement quand l'email change
+  const password = passwordInput('current-password');
+  const passwordField = pwField('Mot de passe actuel', password, 'Pour confirmer que c’est bien toi qui changes d’email.');
+  const emailChanged = () => auth.normalizeEmail(email.value) !== auth.normalizeEmail(user.email);
+  const togglePassword = () => { passwordField.hidden = !emailChanged(); };
+  email.addEventListener('input', togglePassword);
+  togglePassword();
+
   const msg = messageBox();
   const submit = h('button', { class: 'btn primary', type: 'submit' }, 'Enregistrer');
 
@@ -315,7 +326,8 @@ export function profileEditor(user, onSaved) {
     field('Prénom', first),
     field('Nom', last),
     field('Nom d’utilisateur', username, '3 à 20 caractères : lettres minuscules, chiffres, point ou tiret bas.'),
-    field('Email', email, 'Pour changer d’email, tu recevras deux liens : un sur la nouvelle adresse, un sur l’actuelle. Clique sur les deux.'),
+    field('Email', email, 'Un lien de confirmation sera envoyé à la nouvelle adresse.'),
+    passwordField,
     msg,
     h('div', { class: 'btn-row' }, submit)
   );
@@ -332,16 +344,23 @@ export function profileEditor(user, onSaved) {
     if (!auth.isValidEmail(newEmail)) { msg.show('Adresse email invalide.'); return; }
 
     const metaChanged = Object.keys(next).some((k) => (meta[k] || '') !== next[k]);
-    const emailChanged = newEmail !== auth.normalizeEmail(user.email);
-    if (!metaChanged && !emailChanged) { msg.show('Rien n’a changé.', 'info'); return; }
+    const changingEmail = emailChanged();
+    if (!metaChanged && !changingEmail) { msg.show('Rien n’a changé.', 'info'); return; }
+
+    if (changingEmail) {
+      if (!password.input.value) { msg.show('Renseigne ton mot de passe actuel pour changer d’email.'); return; }
+      const { error } = await auth.verifyPassword(user.email, password.input.value);
+      password.input.value = '';
+      if (error) { msg.show(auth.explain(error)); return; }
+    }
 
     const { user: saved, error } = await auth.updateAccount({
       meta: metaChanged ? next : null,
-      email: emailChanged ? newEmail : null
+      email: changingEmail ? newEmail : null
     });
     if (error) { msg.show(auth.explain(error)); return; }
-    onSaved({ meta: (saved && saved.user_metadata) || next, newEmail: (saved && saved.new_email) || (emailChanged ? newEmail : null) });
-    toast(emailChanged ? 'Liens envoyés : clique sur celui de chaque adresse' : 'Profil enregistré');
+    onSaved({ meta: (saved && saved.user_metadata) || next, newEmail: (saved && saved.new_email) || (changingEmail ? newEmail : null) });
+    toast(changingEmail ? `Lien de confirmation envoyé à ${newEmail}` : 'Profil enregistré');
   });
 
   return form;

@@ -162,9 +162,9 @@ export async function updatePassword(password) {
   return { error };
 }
 
-/** Vérifie le mot de passe actuel avant d'en définir un nouveau. */
-export async function changePassword(email, currentPassword, newPassword) {
-  const check = await client.auth.signInWithPassword({ email: normalizeEmail(email), password: currentPassword });
+/** Vérifie le mot de passe actuel (avant un changement de mot de passe ou d'email). */
+export async function verifyPassword(email, password) {
+  const check = await client.auth.signInWithPassword({ email: normalizeEmail(email), password });
   if (check.error) {
     const e = check.error;
     if (e.code === 'invalid_credentials' || /invalid login/i.test(e.message || '')) {
@@ -172,7 +172,13 @@ export async function changePassword(email, currentPassword, newPassword) {
     }
     return { error: e };
   }
-  return updatePassword(newPassword);
+  return { error: null };
+}
+
+/** Vérifie le mot de passe actuel avant d'en définir un nouveau. */
+export async function changePassword(email, currentPassword, newPassword) {
+  const { error } = await verifyPassword(email, currentPassword);
+  return error ? { error } : updatePassword(newPassword);
 }
 
 /**

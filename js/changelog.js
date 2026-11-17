@@ -21,8 +21,8 @@ import { h, icon, ICONS } from './ui.js';
 
 const NOTES = [
   {
-    version: '1.28.2',
-    items: ['Changer d’email depuis Profil est plus clair : l’appli te dit quels liens cliquer, et quand c’est terminé.']
+    version: '1.28.3',
+    items: ['Changer d’email depuis Profil est plus simple : ton mot de passe, puis un seul lien à cliquer sur ta nouvelle adresse.']
   },
   {
     version: '1.28.0',

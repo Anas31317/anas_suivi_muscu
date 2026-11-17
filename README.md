@@ -55,9 +55,9 @@ fait en dessous**, et toutes les courbes de musculation sont réunies dans Progr
   apparence (auto / clair / sombre) et style (Sobre, Énergie, Néon, Violet), export / import
   des données, mot de passe, déconnexion. Prénom, nom et nom d'utilisateur sont rangés dans
   le compte Supabase (pas de table en plus) ; le prénom sert au « Salut » de l'accueil. Un
-  nouvel email ne compte qu'une fois confirmé par **deux liens**, l'un reçu sur la nouvelle
-  adresse, l'autre sur l'actuelle : l'appli le rappelle tant que ce n'est pas fait. Personne
-  n'a rien à faire dans Supabase. Le nom d'utilisateur s'affiche dans le profil ; il n'est pas vérifié unique.
+  changement d'email se fait comme partout : on donne son mot de passe actuel, puis un seul
+  lien de confirmation part sur la nouvelle adresse ; l'email change au clic. Personne n'a
+  rien à faire dans Supabase. Le nom d'utilisateur s'affiche dans le profil ; il n'est pas vérifié unique.
 
 Inscription réservée aux emails autorisés, connexion et mot de passe oublié par email.
 

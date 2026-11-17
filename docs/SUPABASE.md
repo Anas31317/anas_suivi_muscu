@@ -66,9 +66,10 @@ Dans **Authentication** :
 | | **Confirm email** | **activé** (indispensable, voir plus bas) |
 | | Minimum password length | **10** |
 | | Password requirements | *Letters and digits* |
+| | **Secure email change** | **désactivé** : l'appli demande le mot de passe actuel, puis un seul lien part sur la nouvelle adresse |
 | **Sign In / Providers** | Allow anonymous sign-ins | **désactivé** |
-| **URL Configuration** | Site URL | `https://anas31317.github.io/suivi_muscu_india/` |
-| | Redirect URLs | `https://anas31317.github.io/suivi_muscu_india/**` |
+| **URL Configuration** | Site URL | `https://anas31317.github.io/anas_suivi_muscu/` |
+| | Redirect URLs | `https://anas31317.github.io/anas_suivi_muscu/**` |
 
 **Pourquoi la confirmation d'email est indispensable** : sans elle, quelqu'un qui connaît
 l'email d'un membre du groupe pourrait créer le compte à sa place. Avec la confirmation, il
@@ -137,7 +138,7 @@ toutes les protections.
 | Menace | Protection |
 |---|---|
 | Un inconnu trouve le lien du site | Inscription refusée par la base (liste blanche) |
-| Quelqu'un détourne un compte en changeant son email | Double confirmation : le changement n'aboutit qu'avec le lien reçu sur l'ancienne ET la nouvelle adresse (Authentication > Email > « Secure email change », à laisser activé) |
+| Quelqu'un détourne un compte en changeant son email | L'appli demande le mot de passe actuel avant tout changement d'email, puis le changement n'aboutit qu'avec le lien reçu sur la nouvelle adresse. Réglage : Authentication > Sign In / Providers > Email > « Secure email change » **désactivé** (sinon Supabase envoie aussi un lien à l'ancienne adresse, en même temps) |
 | Quelqu'un s'inscrit avec l'email d'un autre | Confirmation par email obligatoire |
 | Un membre essaie de lire les données d'un autre | Règles RLS : chacun ne voit que sa ligne |
 | Visiteur non connecté qui interroge l'API | Rôle `anon` sans aucun droit sur les tables |
