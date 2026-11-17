@@ -91,6 +91,91 @@
   --shadow:       none;
 }
 
+/* ------------------------------------------------------------- styles *
+ * Choisis dans Profil, en plus du clair / sombre (attribut data-style).
+ * Chacun redéfinit les couleurs pour le clair, puis pour le sombre (réglage
+ * de l'appareil ou forcé) ; texte, texte secondaire et boutons gardent
+ * 4,5:1 de contraste. Sans data-style : la palette sobre ci-dessus.
+ * --------------------------------------------------------------------- */
+
+/* Énergie : orange brûlé, titres serrés */
+:root[data-style="energie"] {
+  --plane: #faf7f2; --surface: #fffdfa; --surface-sunk: #f2ede5;
+  --ink: #1c1917; --ink-2: #57504a; --ink-muted: #6b635b;
+  --grid: #ebe4da; --axis: #cfc5b8; --border: rgba(28, 25, 23, 0.1);
+  --accent: #c2410c; --accent-ink: #9a3412; --accent-soft: rgba(194, 65, 12, 0.1); --on-accent: #ffffff;
+  --series-2: #0f766e; --good: #15803d; --critical: #b91c1c;
+  --radius: 10px; --head-stretch: 70%;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-style="energie"]:not([data-theme="light"]) {
+    --plane: #121110; --surface: #1c1a18; --surface-sunk: #272421;
+    --ink: #f8f5f1; --ink-2: #d6cfc6; --ink-muted: #a39b92;
+    --grid: #2e2a26; --axis: #4a443d; --border: rgba(255, 255, 255, 0.08);
+    --accent: #c2410c; --accent-ink: #fdac74; --accent-soft: rgba(251, 138, 60, 0.15); --on-accent: #ffffff;
+    --series-2: #2dd4bf; --good: #22c55e; --critical: #f87171;
+  }
+}
+:root[data-style="energie"][data-theme="dark"] {
+  --plane: #121110; --surface: #1c1a18; --surface-sunk: #272421;
+  --ink: #f8f5f1; --ink-2: #d6cfc6; --ink-muted: #a39b92;
+  --grid: #2e2a26; --axis: #4a443d; --border: rgba(255, 255, 255, 0.08);
+  --accent: #c2410c; --accent-ink: #fdac74; --accent-soft: rgba(251, 138, 60, 0.15); --on-accent: #ffffff;
+  --series-2: #2dd4bf; --good: #22c55e; --critical: #f87171;
+}
+
+/* Néon : vert citron sur noir profond, coins arrondis, titres larges */
+:root[data-style="neon"] {
+  --plane: #f4f4f0; --surface: #ffffff; --surface-sunk: #ebebe5;
+  --ink: #111111; --ink-2: #44443e; --ink-muted: #66665e;
+  --grid: #e2e2da; --axis: #c4c4b8; --border: rgba(17, 17, 17, 0.1);
+  --accent: #3f6212; --accent-ink: #3f6212; --accent-soft: rgba(101, 163, 13, 0.14); --on-accent: #ffffff;
+  --series-2: #c2410c; --good: #15803d; --critical: #b91c1c;
+  --radius: 14px; --radius-s: 8px; --head-stretch: 112%;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-style="neon"]:not([data-theme="light"]) {
+    --plane: #0a0a0b; --surface: #161618; --surface-sunk: #222225;
+    --ink: #f2f2ee; --ink-2: #c8c8c0; --ink-muted: #8e8e88;
+    --grid: #2a2a2d; --axis: #45454a; --border: rgba(255, 255, 255, 0.08);
+    --accent: #c6f432; --accent-ink: #d4ff3a; --accent-soft: rgba(212, 255, 58, 0.12); --on-accent: #111111;
+    --series-2: #fb923c; --good: #22c55e; --critical: #f87171;
+  }
+}
+:root[data-style="neon"][data-theme="dark"] {
+  --plane: #0a0a0b; --surface: #161618; --surface-sunk: #222225;
+  --ink: #f2f2ee; --ink-2: #c8c8c0; --ink-muted: #8e8e88;
+  --grid: #2a2a2d; --axis: #45454a; --border: rgba(255, 255, 255, 0.08);
+  --accent: #c6f432; --accent-ink: #d4ff3a; --accent-soft: rgba(212, 255, 58, 0.12); --on-accent: #111111;
+  --series-2: #fb923c; --good: #22c55e; --critical: #f87171;
+}
+
+/* Violet : plus doux, coins arrondis */
+:root[data-style="violet"] {
+  --plane: #f8f7fb; --surface: #fdfcff; --surface-sunk: #efedf5;
+  --ink: #15121f; --ink-2: #4c475c; --ink-muted: #6a6578;
+  --grid: #e6e3ee; --axis: #c6c1d4; --border: rgba(21, 18, 31, 0.09);
+  --accent: #6d28d9; --accent-ink: #5b21b6; --accent-soft: rgba(109, 40, 217, 0.09); --on-accent: #ffffff;
+  --series-2: #db2777; --good: #15803d; --critical: #b91c1c;
+  --radius: 12px; --radius-s: 6px; --head-stretch: 95%;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-style="violet"]:not([data-theme="light"]) {
+    --plane: #0e0c14; --surface: #1a1724; --surface-sunk: #24202f;
+    --ink: #f5f3ff; --ink-2: #cfc9e0; --ink-muted: #948da8;
+    --grid: #2c2838; --axis: #474159; --border: rgba(255, 255, 255, 0.09);
+    --accent: #7c3aed; --accent-ink: #c4b5fd; --accent-soft: rgba(139, 92, 246, 0.16); --on-accent: #ffffff;
+    --series-2: #f472b6; --good: #22c55e; --critical: #f87171;
+  }
+}
+:root[data-style="violet"][data-theme="dark"] {
+  --plane: #0e0c14; --surface: #1a1724; --surface-sunk: #24202f;
+  --ink: #f5f3ff; --ink-2: #cfc9e0; --ink-muted: #948da8;
+  --grid: #2c2838; --axis: #474159; --border: rgba(255, 255, 255, 0.09);
+  --accent: #7c3aed; --accent-ink: #c4b5fd; --accent-soft: rgba(139, 92, 246, 0.16); --on-accent: #ffffff;
+  --series-2: #f472b6; --good: #22c55e; --critical: #f87171;
+}
+
 /* ---------------------------------------------------------------- base */
 
 * { box-sizing: border-box; }
@@ -116,7 +201,7 @@ html, body {
   touch-action: pan-y;
 }
 
-h1, h2, h3 { line-height: 1.2; margin: 0; font-weight: 700; letter-spacing: -0.015em; font-family: var(--font-head); font-stretch: 85%; }
+h1, h2, h3 { line-height: 1.2; margin: 0; font-weight: 700; letter-spacing: -0.015em; font-family: var(--font-head); font-stretch: var(--head-stretch, 85%); }
 h1 { font-size: 1.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: -0.025em; }
 h2 { font-size: 1rem; }
 
@@ -141,7 +226,7 @@ a  { color: inherit; }
 .logo { display: inline-flex; align-items: center; gap: 10px; }
 .logo-mark { display: block; flex: none; }
 .logo-bg { fill: var(--accent); }
-.logo-fg { fill: #ffffff; }
+.logo-fg { fill: var(--on-accent); }
 .logo-name { font-weight: 800; font-size: 1rem; letter-spacing: 0.02em; text-transform: uppercase; white-space: nowrap; }
 .logo-large { flex-direction: column; gap: 12px; }
 .logo-large .logo-name { font-size: 1.4rem; }
@@ -277,6 +362,13 @@ html { overflow-x: hidden; }
   gap: 12px;
 }
 .section-row .desc { margin-bottom: 0; }
+.style-row { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+/* pastille de couleur de chaque style, la même quel que soit le style en cours */
+.swatch { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 50%; vertical-align: -1px; }
+.swatch-sobre { background: #2873d0; }
+.swatch-energie { background: #c2410c; }
+.swatch-neon { background: #9ccc1a; }
+.swatch-violet { background: #6d28d9; }
 .section-actions { margin-top: 16px; }
 
 /* hero de l'accueil */

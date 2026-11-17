@@ -1,7 +1,7 @@
-/** Accueil : prochaine séance, chiffres clés, activité, records. */
+/** Accueil : prochaine séance, muscles travaillés, chiffres clés, activité. */
 
 import * as store from '../store.js';
-import { fmtNum, formatDate } from '../store.js';
+import { fmtNum } from '../store.js';
 import * as insights from '../insights.js';
 import { mountWeekBars } from '../charts.js';
 import { bodyMap } from '../body-map.js';
@@ -11,7 +11,6 @@ import { sessionTitle, plural, emptyState } from './common.js';
 import { startLabel } from './muscu.js';
 
 export function viewDashboard(ctx) {
-  const state = store.getState();
   const name = insights.firstName(ctx.user.email);
   const next = insights.nextSession();
   const last = insights.lastLog();
@@ -116,33 +115,6 @@ export function viewDashboard(ctx) {
       : h('p', { class: 'list-empty' }, 'Aucune séance de muscu ces 7 derniers jours.')
   );
 
-  /* --- records ------------------------------------------------------- */
-  const records = insights.recentRecords(5);
-  const recordsCard = h('section', { class: 'card list-card' },
-    h('div', { class: 'list-head' },
-      h('h2', {}, 'Derniers records'),
-      h('a', { class: 'link', href: '#/progression' }, 'Tout voir')
-    ),
-    records.length
-      ? records.map((r) =>
-          h('a', { class: 'list-row', href: `#/progression/${encodeURIComponent(r.exerciseId)}` },
-            h('span', { class: 'row-icon' }, icon(ICONS.trophy, 16)),
-            h('div', { class: 'body' },
-              h('div', { class: 'name' }, r.name),
-              h('div', { class: 'meta' }, formatDate(r.date))
-            ),
-            h('div', { class: 'row-value' },
-              h('span', { class: 'v' }, `${fmtNum(r.value, 1)} ${r.unit}`),
-              h('span', { class: 'delta up' }, `+${fmtNum(r.gain, 1)}`)
-            )
-          )
-        )
-      : h('p', { class: 'list-empty' },
-          state.logs.length
-            ? 'Pas encore de record : ils apparaîtront quand tu battras une perf.'
-            : 'Tes records apparaîtront ici après quelques séances.')
-  );
-
   return h('div', { class: 'page' },
     h('div', { class: 'page-top' },
       h('div', { class: 'page-head' },
@@ -154,9 +126,9 @@ export function viewDashboard(ctx) {
     ),
     h('div', { class: 'stack' },
       hero,
+      musclesCard,
       tiles,
-      h('div', { class: 'grid-2' }, activity, musclesCard),
-      recordsCard
+      activity
     )
   );
 }

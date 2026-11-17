@@ -1,6 +1,6 @@
 /**
  * Calculs pour l'accueil et la vue d'ensemble : prochaine séance, compteurs,
- * activité par semaine, records, résumé par exercice.
+ * activité par semaine, volume, muscles travaillés.
  */
 
 import * as store from './store.js';
@@ -78,55 +78,6 @@ export function weeklyActivity(n = 8) {
     weeks.push({ iso: a, count: logs.filter((l) => l.date >= a && l.date < b).length });
   }
   return weeks;
-}
-
-/** Valeur suivie pour un exercice : charge max, ou reps totales au poids du corps. */
-export function keyMetric(mode) {
-  return mode === 'kg' ? store.METRICS.topWeight : store.METRICS.reps;
-}
-
-/**
- * Records récents : chaque fois qu'un exercice dépasse son meilleur résultat
- * précédent (charge max, ou reps au poids du corps). La 1re séance d'un
- * exercice ne compte pas comme un record.
- */
-export function recentRecords(limit = 5) {
-  const seen = new Map();
-  for (const log of store.getState().logs) {
-    for (const en of log.entries) if (!seen.has(en.exerciseId)) seen.set(en.exerciseId, en);
-  }
-  /*
-   * L'historique fige le nom porté le jour de la séance : c'est ce qui permet
-   * de relire une vieille séance telle quelle. Un record, lui, parle de
-   * maintenant, donc il prend le nom actuel de l'exercice quand il est encore
-   * au programme (un exercice renommé ou rattaché au catalogue garde le même
-   * identifiant, donc le même record).
-   */
-  const current = new Map();
-  for (const sess of store.getState().sessions) {
-    for (const ex of sess.exercises) current.set(ex.id, ex.name);
-  }
-  const records = [];
-  for (const [id, sample] of seen) {
-    const metric = keyMetric(sample.mode);
-    let best = null;
-    for (const h of store.historyForExercise(id)) {
-      const v = metric.compute(h.sets);
-      if (v === null) continue;
-      if (best !== null && v > best) {
-        records.push({
-          exerciseId: id,
-          name: current.get(id) || sample.name,
-          date: h.date,
-          value: v,
-          gain: v - best,
-          unit: metric.unit
-        });
-      }
-      if (best === null || v > best) best = v;
-    }
-  }
-  return records.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0)).slice(0, limit);
 }
 
 /** Cardio sur les `days` derniers jours (aujourd'hui compris) : nombre, minutes, km. */

@@ -12,11 +12,12 @@ Chaque onglet suit la même logique : **ce qu'on fait maintenant en haut, ce qu'
 fait en dessous**, et toutes les courbes de musculation sont réunies dans Progrès.
 
 - **Accueil** : la prochaine séance — celle du jour tant qu'elle n'est pas enregistrée,
-  la suivante dès qu'elle l'est — les chiffres de la
-  semaine et du mois, le **volume** de la semaine (charge × reps) comparé à la même période
-  de la semaine passée, le cardio des 7 derniers jours, l'activité sur 8 semaines, les
-  **muscles travaillés** ces 7 derniers jours sur les silhouettes du catalogue (pour voir
-  d'un coup d'œil ce qu'on a négligé) et les derniers records.
+  la suivante dès qu'elle l'est — juste en dessous les **muscles travaillés** ces 7
+  derniers jours sur les silhouettes du catalogue (pour voir d'un coup d'œil ce qu'on a
+  négligé avant de choisir sa séance), puis les chiffres de la semaine et du mois, le
+  **volume** de la semaine (charge × reps) comparé à la même période de la semaine passée,
+  le cardio des 7 derniers jours et l'activité sur 8 semaines. Les records se lisent dans
+  Progrès.
 - **Muscu** : les séances du programme à lancer, puis l'historique complet par mois,
   filtrable par séance (c'est là qu'on modifie ou supprime une séance passée).
   Une séance s'ouvre sur une page unique avec tous les exercices, séries et reps ; chaque
@@ -50,8 +51,8 @@ fait en dessous**, et toutes les courbes de musculation sont réunies dans Progr
 - **Amis** : ton code de partage se règle ici. Donne-le à qui tu veux et il verra ton
   programme, ta progression, ton cardio et tes 1RM, en lecture seule. Personne ne peut te
   trouver sans ce code, et en générer un nouveau coupe l'accès aux anciens.
-- **Profil** : programme, apparence (auto / clair / sombre), export / import des données,
-  mot de passe, déconnexion.
+- **Profil** : programme, apparence (auto / clair / sombre) et style (Sobre, Énergie, Néon,
+  Violet), export / import des données, mot de passe, déconnexion.
 
 Inscription réservée aux emails autorisés, connexion et mot de passe oublié par email.
 
@@ -158,8 +159,16 @@ savoir quels muscles travaillent et dans quelle mesure.
 
 ## Apparence
 
-Palette sobre : gris chauds et un seul accent bleu, en clair comme en sombre (réglage
-« auto » par défaut, dans Profil). Deux polices, hébergées dans [`fonts/`](fonts/) (licence
+Quatre styles au choix dans Profil, chacun en clair comme en sombre (réglage « auto » par
+défaut) :
+
+- **Sobre** (par défaut) : gris chauds et un seul accent bleu ;
+- **Énergie** : orange brûlé, titres très resserrés ;
+- **Néon** : vert citron sur noir profond, coins arrondis, titres larges (en clair, le citron
+  devient un vert olive, sinon il serait illisible sur fond blanc) ;
+- **Violet** : plus doux, coins arrondis.
+
+Le style et le thème sont retenus sur l'appareil : chacun règle le sien. Deux polices, hébergées dans [`fonts/`](fonts/) (licence
 OFL) parce que la Content-Security-Policy n'autorise que les fichiers du site : **Archivo**
 légèrement resserrée pour les titres, **Inter** pour le texte et les chiffres, alignés en
 colonnes (`tabular-nums`). Elles sont dans le cache hors ligne comme le reste.
@@ -172,7 +181,10 @@ Lisible à la salle, en un coup d'œil :
   compacts.
 
 Les couleurs sont des variables en tête de [`css/style.css`](css/style.css) (`--accent`,
-`--ink-muted`…), une fois pour le clair et une fois pour le sombre.
+`--ink-muted`…), une fois pour le clair et une fois pour le sombre ; chaque style les
+redéfinit sous `[data-style="…"]`, et la liste des styles est dans
+[`js/theme.js`](js/theme.js). Les styles ne changent pas de police : ils jouent sur la
+largeur d'Archivo, qui est réglable.
 
 ## Mode maintenance
 
@@ -251,10 +263,10 @@ Site statique : HTML, CSS et JavaScript à modules, sans build ni dépendance à
 | `js/sync.js` | synchronisation du compte avec Supabase |
 | `js/auth.js`, `js/auth-views.js` | comptes : connexion, inscription, mots de passe |
 | `js/share.js` | partage : publication de ma copie, lecture du suivi d'un ami |
-| `js/insights.js` | calculs de l'accueil : prochaine séance, activité, records |
+| `js/insights.js` | calculs de l'accueil : prochaine séance, activité, volume, muscles travaillés |
 | `js/charts.js` | graphes SVG (courbes, barres, mini-courbes) |
 | `js/seed.js` | programme type des nouveaux comptes |
-| `js/logo.js`, `js/theme.js`, `js/version.js` | logo, thème, nom / version / auteur |
+| `js/logo.js`, `js/theme.js`, `js/version.js` | logo, thème et styles, nom / version / auteur |
 | `js/config.js` | URL et clé publique Supabase |
 | `js/exercise-library.js`, `js/body-map.js` | catalogue d'exercices et silhouettes |
 | `js/views/` | une page par fichier : `dashboard`, `muscu` (programme + historique), `workout` (séance en cours), `session-editor`, `catalogue`, `cardio`, `progression`, `one-rm`, `friends`, `programme`, `profile` |

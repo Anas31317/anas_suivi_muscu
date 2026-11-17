@@ -3,7 +3,7 @@
 import * as store from '../store.js';
 import * as insights from '../insights.js';
 import { accountSection } from '../auth-views.js';
-import { getTheme, setTheme } from '../theme.js';
+import { getTheme, setTheme, getStyle, setStyle, STYLES } from '../theme.js';
 import { h, toast, icon, ICONS } from '../ui.js';
 import { plural, pageHead } from './common.js';
 
@@ -31,6 +31,16 @@ export function viewProfile(ctx) {
       }, label)
     )
   );
+  // le style change les couleurs et l'allure des titres ; clair / sombre s'applique à chacun
+  const style = getStyle();
+  const styleSeg = h('div', { class: 'segmented', role: 'group', 'aria-label': 'Style' },
+    STYLES.map((s) =>
+      h('button', {
+        type: 'button', 'aria-pressed': s.id === style ? 'true' : 'false',
+        onclick: () => { setStyle(s.id); ctx.render(); }
+      }, h('span', { class: `swatch swatch-${s.id}`, 'aria-hidden': 'true' }), s.label)
+    )
+  );
   const appearance = h('section', { class: 'card section' },
     h('div', { class: 'section-row' },
       h('div', {},
@@ -38,6 +48,13 @@ export function viewProfile(ctx) {
         h('p', { class: 'desc' }, 'Auto suit le réglage de ton appareil.')
       ),
       themeSeg
+    ),
+    h('div', { class: 'section-row style-row' },
+      h('div', {},
+        h('h2', {}, 'Style'),
+        h('p', { class: 'desc' }, 'Couleurs et allure des titres, en clair comme en sombre.')
+      ),
+      styleSeg
     )
   );
 
