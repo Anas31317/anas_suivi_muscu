@@ -21,12 +21,17 @@ export const SUPPORT_EMAIL = 'anas.suivimuscu@gmail.com';
 export const PASSWORD_MIN_LENGTH = 10;
 
 /**
- * Mode maintenance : quand il est à true, seule l'adresse ci-dessous entre
+ * Mode maintenance : quand il est à true, seul le compte ci-dessous entre
  * dans l'appli. Les autres comptes voient un écran « maintenance en cours ».
+ *
+ * Le mainteneur est reconnu à l'identifiant de son compte (Supabase >
+ * Authentication > Users, colonne UID), pas à son email : l'identifiant ne
+ * change pas quand on change d'email, et il ne dit rien de personnel dans un
+ * dépôt public.
  *
  * C'est un garde-fou d'affichage, pas une sécurité : il tient les autres à
  * l'écart le temps d'un essai, il n'empêcherait pas quelqu'un de décidé. Ce
  * qui protège vraiment les données reste les règles RLS de la base.
  */
 export const MAINTENANCE = true;
-export const MAINTAINER_EMAIL = 'mainteneur@exemple.com';
+export const MAINTAINER_ID = 'ee064c0d-97e1-41c6-a397-b0257fe70402';

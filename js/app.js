@@ -35,7 +35,7 @@ import * as authViews from './auth-views.js';
 import { initTheme } from './theme.js';
 import { logo, APP_NAME } from './logo.js';
 import { APP_VERSION, APP_AUTHOR } from './version.js';
-import { MAINTENANCE, MAINTAINER_EMAIL } from './config.js';
+import { MAINTENANCE, MAINTAINER_ID } from './config.js';
 import { h, toast, icon, ICONS } from './ui.js';
 import { plural } from './views/common.js';
 import { viewDashboard } from './views/dashboard.js';
@@ -174,8 +174,7 @@ function handleAuthEvent(event, session) {
 
 /** Vrai si ce compte a le droit d'entrer pendant une maintenance. */
 function isMaintainer() {
-  return Boolean(currentUser) &&
-    auth.normalizeEmail(currentUser.email) === auth.normalizeEmail(MAINTAINER_EMAIL);
+  return Boolean(currentUser) && currentUser.id === MAINTAINER_ID;
 }
 
 /** Vrai si l'appli doit être remplacée par l'écran de maintenance. */

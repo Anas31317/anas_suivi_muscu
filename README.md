@@ -193,10 +193,13 @@ largeur d'Archivo, qui est réglable.
 ## Mode maintenance
 
 Pour que les autres ne tombent jamais sur une appli à moitié faite : dans
-[`js/config.js`](js/config.js), `MAINTENANCE = true`. Seule l'adresse `MAINTAINER_EMAIL`
-entre alors dans l'appli ; les autres comptes voient un écran « Maintenance en cours » et
-peuvent seulement se déconnecter. Un bandeau orange rappelle au mainteneur que le mode est
-actif.
+[`js/config.js`](js/config.js), `MAINTENANCE = true`. Seul le compte `MAINTAINER_ID` entre
+alors dans l'appli ; les autres comptes voient un écran « Maintenance en cours » et peuvent
+seulement se déconnecter. Un bandeau orange rappelle au mainteneur que le mode est actif.
+
+Le mainteneur est reconnu à l'**identifiant de son compte** (Supabase > Authentication >
+Users, colonne UID), pas à son email : l'identifiant ne change pas quand on change d'email
+dans Profil, et il ne dit rien de personnel dans un dépôt public.
 
 **La règle : le mode maintenance s'active sur le site en ligne dès qu'on commence des
 modifications, pas seulement pour le test final.**
