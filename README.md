@@ -176,12 +176,20 @@ Les couleurs sont des variables en tête de [`css/style.css`](css/style.css) (`-
 
 ## Mode maintenance
 
-Pour essayer une nouveauté sans que les autres tombent sur une appli à moitié faite :
-dans [`js/config.js`](js/config.js), `MAINTENANCE = true`. Seule l'adresse
-`MAINTAINER_EMAIL` entre alors dans l'appli ; les autres comptes voient un écran
-« Maintenance en cours » et peuvent seulement se déconnecter. Un bandeau orange rappelle au
-mainteneur que le mode est actif — **il faut repasser `MAINTENANCE` à `false` et pousser**
-pour rouvrir l'appli. Aujourd'hui l'appli est ouverte : `MAINTENANCE = false`.
+Pour que les autres ne tombent jamais sur une appli à moitié faite : dans
+[`js/config.js`](js/config.js), `MAINTENANCE = true`. Seule l'adresse `MAINTAINER_EMAIL`
+entre alors dans l'appli ; les autres comptes voient un écran « Maintenance en cours » et
+peuvent seulement se déconnecter. Un bandeau orange rappelle au mainteneur que le mode est
+actif.
+
+**La règle : le mode maintenance s'active sur le site en ligne dès qu'on commence des
+modifications, pas seulement pour le test final.**
+
+1. Passer `MAINTENANCE` à `true`, commiter et pousser ce seul changement.
+2. Faire les modifications et les pousser (elles sont en ligne, mais visibles du seul
+   mainteneur).
+3. Tester sur le site en ligne.
+4. Une fois validé, repasser `MAINTENANCE` à `false` et pousser : l'appli rouvre pour tous.
 
 C'est un garde-fou d'affichage, pas une sécurité : il tient les autres à l'écart le temps
 d'un essai, il n'arrêterait pas quelqu'un de décidé. Ce qui protège vraiment les données
