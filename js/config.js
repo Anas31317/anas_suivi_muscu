@@ -33,5 +33,5 @@ export const PASSWORD_MIN_LENGTH = 10;
  * l'écart le temps d'un essai, il n'empêcherait pas quelqu'un de décidé. Ce
  * qui protège vraiment les données reste les règles RLS de la base.
  */
-export const MAINTENANCE = true;
+export const MAINTENANCE = false;
 export const MAINTAINER_ID = 'ee064c0d-97e1-41c6-a397-b0257fe70402';
