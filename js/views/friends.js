@@ -68,7 +68,7 @@ function lastLogOf(data) {
 /** Mon code : activer le partage, le copier, le renouveler, choisir son nom. */
 function codeCard(ctx) {
   const cfg = store.getShare();
-  const defaultName = insights.firstName(ctx.user.email);
+  const defaultName = insights.firstName(ctx.user);
 
   const enabledIn = h('input', { type: 'checkbox', id: 'share-on', checked: cfg.enabled });
   const nameIn = h('input', {

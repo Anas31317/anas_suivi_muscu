@@ -2,7 +2,7 @@
 
 import * as store from '../store.js';
 import * as insights from '../insights.js';
-import { accountSection } from '../auth-views.js';
+import { accountSection, profileEditor } from '../auth-views.js';
 import { getTheme, setTheme, getStyle, setStyle, STYLES } from '../theme.js';
 import { h, toast, icon, ICONS } from '../ui.js';
 import { plural, pageHead } from './common.js';
@@ -10,14 +10,29 @@ import { plural, pageHead } from './common.js';
 export function viewProfile(ctx) {
   const state = store.getState();
   const email = ctx.user.email;
-  const name = insights.firstName(email);
+  const meta = ctx.user.meta || {};
+  const name = [meta.first_name, meta.last_name].filter(Boolean).join(' ') || insights.firstName(ctx.user);
 
   /* --- identité ------------------------------------------------------ */
   const identity = h('section', { class: 'card profile-card' },
     h('span', { class: 'avatar', 'aria-hidden': 'true' }, (name || email).charAt(0).toUpperCase()),
     h('div', { class: 'body' },
       h('div', { class: 'name' }, name || 'Mon compte'),
-      h('div', { class: 'meta' }, email)
+      h('div', { class: 'meta' }, meta.username ? `@${meta.username} · ${email}` : email),
+      ctx.user.newEmail
+        ? h('div', { class: 'meta pending' }, `Nouvel email en attente de confirmation : ${ctx.user.newEmail}`)
+        : null
+    )
+  );
+
+  // replié tant qu'on ne l'ouvre pas, comme « Changer le mot de passe »
+  const editProfile = h('section', { class: 'card section' },
+    h('details', { class: 'accordion' },
+      h('summary', {}, 'Modifier le profil'),
+      profileEditor(ctx.user, (saved) => {
+        Object.assign(ctx.user, saved);
+        ctx.render();
+      })
     )
   );
 
@@ -119,6 +134,7 @@ export function viewProfile(ctx) {
     pageHead('Profil'),
     h('div', { class: 'stack' },
       identity,
+      editProfile,
       programme,
       appearance,
       data,

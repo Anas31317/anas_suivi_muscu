@@ -138,8 +138,9 @@ export function weekVolume() {
   return { current, previous };
 }
 
-/** Prénom déduit de l'email : « anas.hadouche@… » -> « Anas ». */
-export function firstName(email) {
-  const local = String(email || '').split('@')[0].split(/[._-]/)[0];
+/** Prénom de l'utilisateur : celui du profil, sinon déduit de l'email (« anas.hadouche@… » -> « Anas »). */
+export function firstName(user) {
+  if (user && user.meta && user.meta.first_name) return user.meta.first_name;
+  const local = String((user && user.email) || '').split('@')[0].split(/[._-]/)[0];
   return local ? local.charAt(0).toUpperCase() + local.slice(1) : '';
 }

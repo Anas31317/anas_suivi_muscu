@@ -295,6 +295,58 @@ export function viewResetPassword({ hasSession, email, onDone }) {
 }
 
 /** Section « Mon compte » de la page Réglages. */
+/**
+ * Modifier le profil : prénom, nom, nom d'utilisateur et email. Un seul envoi ;
+ * le nouvel email n'est pris en compte qu'après le lien de confirmation.
+ * `onSaved({ meta, newEmail })` reçoit ce que le compte renvoie.
+ */
+export function profileEditor(user, onSaved) {
+  const meta = user.meta || {};
+  const text = (value, attrs) => h('input', { type: 'text', maxlength: 40, value: value || '', ...attrs });
+  const first = text(meta.first_name, { autocomplete: 'given-name' });
+  const last = text(meta.last_name, { autocomplete: 'family-name' });
+  const username = text(meta.username, { autocomplete: 'username', maxlength: 20, autocapitalize: 'none', spellcheck: 'false' });
+  const email = emailInput();
+  email.value = user.email || '';
+  const msg = messageBox();
+  const submit = h('button', { class: 'btn primary', type: 'submit' }, 'Enregistrer');
+
+  const form = h('form', { class: 'stack', novalidate: true },
+    field('Prénom', first),
+    field('Nom', last),
+    field('Nom d’utilisateur', username, '3 à 20 caractères : lettres minuscules, chiffres, point ou tiret bas.'),
+    field('Email', email, 'Un changement d’email se confirme par un lien envoyé par email.'),
+    msg,
+    h('div', { class: 'btn-row' }, submit)
+  );
+
+  onSubmit(form, submit, async () => {
+    msg.clear();
+    const clean = (s) => s.trim().replace(/\s+/g, ' ');
+    const next = { first_name: clean(first.value), last_name: clean(last.value), username: username.value.trim().toLowerCase() };
+    if (next.username && !/^[a-z0-9._]{3,20}$/.test(next.username)) {
+      msg.show('Nom d’utilisateur : 3 à 20 caractères, lettres minuscules, chiffres, point ou tiret bas.');
+      return;
+    }
+    const newEmail = auth.normalizeEmail(email.value);
+    if (!auth.isValidEmail(newEmail)) { msg.show('Adresse email invalide.'); return; }
+
+    const metaChanged = Object.keys(next).some((k) => (meta[k] || '') !== next[k]);
+    const emailChanged = newEmail !== auth.normalizeEmail(user.email);
+    if (!metaChanged && !emailChanged) { msg.show('Rien n’a changé.', 'info'); return; }
+
+    const { user: saved, error } = await auth.updateAccount({
+      meta: metaChanged ? next : null,
+      email: emailChanged ? newEmail : null
+    });
+    if (error) { msg.show(auth.explain(error)); return; }
+    onSaved({ meta: (saved && saved.user_metadata) || next, newEmail: (saved && saved.new_email) || (emailChanged ? newEmail : null) });
+    toast(emailChanged ? `Lien de confirmation envoyé à ${newEmail}` : 'Profil enregistré');
+  });
+
+  return form;
+}
+
 export function accountSection({ email, onSignOut }) {
   const current = passwordInput('current-password');
   const next = passwordInput('new-password');

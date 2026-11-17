@@ -11,7 +11,7 @@ import { sessionTitle, plural, emptyState } from './common.js';
 import { startLabel } from './muscu.js';
 
 export function viewDashboard(ctx) {
-  const name = insights.firstName(ctx.user.email);
+  const name = insights.firstName(ctx.user);
   const next = insights.nextSession();
   const last = insights.lastLog();
   const c = insights.counts();

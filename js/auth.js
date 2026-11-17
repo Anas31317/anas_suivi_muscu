@@ -88,6 +88,10 @@ export function explain(error) {
     return 'Mot de passe trop faible : allonge-le ou varie les caractères.';
   }
   if (code === 'same_password') return 'Le nouveau mot de passe doit être différent de l’ancien.';
+  // sans dire si l'adresse a déjà un compte
+  if (code === 'email_exists' || code === 'email_address_invalid' || /already (been )?registered/i.test(msg)) {
+    return 'Impossible d’utiliser cette adresse email.';
+  }
   if (code === 'otp_expired' || /expired|invalid.*(link|token|code)/i.test(msg)) {
     return 'Ce lien a expiré ou a déjà servi. Redemande un nouvel email.';
   }
@@ -169,6 +173,19 @@ export async function changePassword(email, currentPassword, newPassword) {
     return { error: e };
   }
   return updatePassword(newPassword);
+}
+
+/**
+ * Profil : prénom, nom et nom d'utilisateur sont rangés dans le compte
+ * (user_metadata). Un nouvel email ne prend effet qu'une fois confirmé par le
+ * lien reçu ; en attendant, il est dans `user.new_email`.
+ */
+export async function updateAccount({ meta, email } = {}) {
+  const attrs = {};
+  if (meta) attrs.data = meta;
+  if (email) attrs.email = normalizeEmail(email);
+  const { data, error } = await client.auth.updateUser(attrs, { emailRedirectTo: siteUrl() });
+  return { user: data ? data.user : null, error };
 }
 
 /** Déconnexion de CET appareil seulement (les autres restent connectés). */

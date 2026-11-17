@@ -137,6 +137,7 @@ toutes les protections.
 | Menace | Protection |
 |---|---|
 | Un inconnu trouve le lien du site | Inscription refusée par la base (liste blanche) |
+| Un compte passe sur une adresse non autorisée | Changement d'email refusé par la base à la confirmation (même liste blanche, déclencheur `check_allowed_email_change` de `supabase/schema.sql`) |
 | Quelqu'un s'inscrit avec l'email d'un autre | Confirmation par email obligatoire |
 | Un membre essaie de lire les données d'un autre | Règles RLS : chacun ne voit que sa ligne |
 | Visiteur non connecté qui interroge l'API | Rôle `anon` sans aucun droit sur les tables |

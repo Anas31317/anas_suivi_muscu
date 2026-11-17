@@ -66,6 +66,16 @@ create trigger check_allowed_email
   before insert on auth.users
   for each row execute function public.check_allowed_email();
 
+-- Même règle quand un compte change d'email (Profil > Modifier le profil) :
+-- sinon on pourrait passer son compte sur une adresse hors liste blanche.
+-- Le contrôle a lieu à la confirmation du changement (quand l'email change
+-- vraiment) : une adresse non autorisée fait échouer le lien de confirmation.
+drop trigger if exists check_allowed_email_change on auth.users;
+create trigger check_allowed_email_change
+  before update of email on auth.users
+  for each row when (new.email is distinct from old.email)
+  execute function public.check_allowed_email();
+
 
 -- ---------------------------------------------------------------------
 -- 3. Données de chaque utilisateur (une ligne par compte)

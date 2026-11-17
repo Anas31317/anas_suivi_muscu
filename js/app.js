@@ -75,7 +75,7 @@ const TABS = [
 
 function rememberUser(user) {
   try {
-    localStorage.setItem(LAST_USER_KEY, JSON.stringify({ id: user.id, email: user.email }));
+    localStorage.setItem(LAST_USER_KEY, JSON.stringify({ id: user.id, email: user.email, meta: user.meta || {} }));
   } catch { /* stockage indisponible : pas de mode hors ligne */ }
 }
 
@@ -93,7 +93,8 @@ async function startUser(user) {
   if (currentUser && currentUser.id === user.id && store.isOpen()) return;
   if (currentUser) endUser({ wipe: true });
 
-  currentUser = { id: user.id, email: user.email };
+  // meta : prénom, nom, nom d'utilisateur ; newEmail : changement d'email pas encore confirmé
+  currentUser = { id: user.id, email: user.email, meta: user.user_metadata || {}, newEmail: user.new_email || null };
   rememberUser(currentUser);
   const hadCache = store.openForUser(user.id);
   updateChrome();
@@ -159,7 +160,12 @@ function handleAuthEvent(event, session) {
         render();
       }
     } else if (event === 'USER_UPDATED' && session && currentUser) {
-      currentUser.email = session.user.email;
+      Object.assign(currentUser, {
+        email: session.user.email,
+        meta: session.user.user_metadata || {},
+        newEmail: session.user.new_email || null
+      });
+      rememberUser(currentUser);
     }
   }, 0);
 }

@@ -51,8 +51,12 @@ fait en dessous**, et toutes les courbes de musculation sont réunies dans Progr
 - **Amis** : ton code de partage se règle ici. Donne-le à qui tu veux et il verra ton
   programme, ta progression, ton cardio et tes 1RM, en lecture seule. Personne ne peut te
   trouver sans ce code, et en générer un nouveau coupe l'accès aux anciens.
-- **Profil** : programme, apparence (auto / clair / sombre) et style (Sobre, Énergie, Néon,
-  Violet), export / import des données, mot de passe, déconnexion.
+- **Profil** : **modifier le profil** (prénom, nom, nom d'utilisateur, email), programme,
+  apparence (auto / clair / sombre) et style (Sobre, Énergie, Néon, Violet), export / import
+  des données, mot de passe, déconnexion. Prénom, nom et nom d'utilisateur sont rangés dans
+  le compte Supabase (pas de table en plus) ; le prénom sert au « Salut » de l'accueil. Un
+  nouvel email ne compte qu'une fois confirmé par le lien reçu, et doit être sur la liste
+  blanche (déclencheur `check_allowed_email_change` de [`supabase/schema.sql`](supabase/schema.sql)). Le nom d'utilisateur s'affiche dans le profil ; il n'est pas vérifié unique.
 
 Inscription réservée aux emails autorisés, connexion et mot de passe oublié par email.
 
