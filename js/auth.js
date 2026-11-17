@@ -123,6 +123,16 @@ export async function getSession() {
   }
 }
 
+/** Session renouvelée auprès du serveur (après un changement d'email, par exemple), ou null. */
+export async function refreshSession() {
+  try {
+    const { data } = await client.auth.refreshSession();
+    return data ? data.session : null;
+  } catch {
+    return null;
+  }
+}
+
 export function onAuthChange(fn) {
   return client.auth.onAuthStateChange((event, session) => fn(event, session));
 }

@@ -202,8 +202,10 @@ fois par appareil, en deux tailles selon le numéro de version :
 - **petite mise à jour ou correctif** (1.28.1, 1.28.2…) : un petit bandeau en bas de
   l'écran, fermé d'un ✕, qui ne bloque rien.
 
-Si une grosse et des petites se cumulent depuis la dernière visite, la fenêtre les montre
-toutes. Une version sans note n'affiche rien.
+Une seule note à la fois, même pour qui a raté plusieurs versions : la dernière grosse mise
+à jour pas encore vue s'il y en a une, sinon la dernière petite. Une version sans note
+n'affiche rien. Une note dit ce qui change pour l'utilisateur, sans entrer dans le détail
+technique.
 
 Pour une mise à jour visible : dans [`js/changelog.js`](js/changelog.js), ajouter une
 entrée **en haut** de `NOTES`, avec le numéro de [`js/version.js`](js/version.js) et des

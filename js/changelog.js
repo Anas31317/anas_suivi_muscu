@@ -6,10 +6,10 @@
  * - petite mise à jour ou correctif (1.28.1, 1.28.2…) : un petit bandeau en
  *   bas de l'écran, fermé d'un ✕.
  *
- * On montre les notes des versions sorties depuis la dernière visite sur cet
- * appareil, la plus récente en premier ; s'il y a une grosse dans le lot, c'est
- * la fenêtre, qui les montre toutes. La version vue est retenue sur l'appareil :
- * chaque note ne s'affiche qu'une fois. Une version sans note n'affiche rien.
+ * Une seule note à la fois, même pour qui a raté plusieurs versions : la
+ * dernière grosse mise à jour pas encore vue s'il y en a une, sinon la dernière
+ * petite. La version vue est retenue sur l'appareil : chaque note ne s'affiche
+ * qu'une fois. Une version sans note n'affiche rien.
  *
  * Pour une mise à jour visible : ajouter une entrée EN HAUT de NOTES, avec le
  * numéro de js/version.js et des phrases courtes écrites pour les utilisateurs :
@@ -20,10 +20,6 @@ import { APP_VERSION } from './version.js';
 import { h, icon, ICONS } from './ui.js';
 
 const NOTES = [
-  {
-    version: '1.28.3',
-    items: ['Changer d’email depuis Profil est plus simple : ton mot de passe, puis un seul lien à cliquer sur ta nouvelle adresse.']
-  },
   {
     version: '1.28.0',
     items: [
@@ -53,22 +49,22 @@ export function maybeShowChangelog() {
   if (seen === APP_VERSION) return;
   try { localStorage.setItem(KEY, APP_VERSION); } catch { /* ignore */ }
 
-  // jamais venu sur cet appareil avec cette fonction : seulement la dernière note
-  const notes = (seen ? NOTES.filter((n) => newer(n.version, seen)) : NOTES.slice(0, 1))
-    .filter((n) => !newer(n.version, APP_VERSION))
-    .slice(0, 3);
-  if (!notes.length) return;
-  const major = notes.some((n) => Number(n.version.split('.')[2] || 0) === 0);
-  if (major && typeof HTMLDialogElement !== 'undefined') showDialog(notes);
-  else showBanner(notes);
+  // pas encore vues (toutes, si l'appareil n'a jamais rien vu), sans aller au-delà de la version en ligne
+  const unseen = NOTES.filter((n) => (!seen || newer(n.version, seen)) && !newer(n.version, APP_VERSION));
+  const isMajor = (n) => Number(n.version.split('.')[2] || 0) === 0;
+  // une seule note : la dernière grosse s'il y en a une, sinon la dernière petite (NOTES est du plus récent au plus ancien)
+  const note = unseen.find(isMajor) || unseen[0];
+  if (!note) return;
+  if (isMajor(note) && typeof HTMLDialogElement !== 'undefined') showDialog(note);
+  else showBanner(note);
 }
 
 /** Petite mise à jour : un bandeau en bas, qui ne bloque rien. */
-function showBanner(notes) {
-  const items = notes.flatMap((n) => n.items).slice(0, 3);
+function showBanner(note) {
+  const items = note.items.slice(0, 2);
   const banner = h('div', { class: 'patch-note', role: 'status' },
     h('div', { class: 'body' },
-      h('p', { class: 'eyebrow' }, `Mise à jour ${notes[0].version}`),
+      h('p', { class: 'eyebrow' }, `Mise à jour ${note.version}`),
       h('ul', {}, items.map((t) => h('li', {}, t)))
     ),
     h('button', {
@@ -80,14 +76,12 @@ function showBanner(notes) {
 }
 
 /** Grosse mise à jour : la fenêtre « Quoi de neuf ». */
-function showDialog(notes) {
+function showDialog(note) {
   const close = () => dialog.close();
   const dialog = h('dialog', { class: 'changelog', 'aria-labelledby': 'changelog-title' },
     h('h2', { id: 'changelog-title' }, 'Quoi de neuf'),
-    notes.map((n) => h('section', {},
-      h('p', { class: 'eyebrow' }, `Version ${n.version}`),
-      h('ul', {}, n.items.map((t) => h('li', {}, t)))
-    )),
+    h('p', { class: 'eyebrow' }, `Version ${note.version}`),
+    h('ul', {}, note.items.map((t) => h('li', {}, t))),
     h('div', { class: 'btn-row' }, h('button', { class: 'btn primary', type: 'button', onclick: close }, 'C’est parti'))
   );
   // un clic sur le fond, hors de la fenêtre, la ferme aussi
