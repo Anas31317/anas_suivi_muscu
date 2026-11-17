@@ -68,6 +68,8 @@ Dans **Authentication** :
 | | Password requirements | *Letters and digits* |
 | | **Secure email change** | **désactivé** : l'appli demande le mot de passe actuel, puis un seul lien part sur la nouvelle adresse |
 | **Sign In / Providers** | Allow anonymous sign-ins | **désactivé** |
+| **Emails** > Security | **Password changed** | **activé** : un mail prévient après un changement de mot de passe |
+| | **Email address changed** | **activé** : l'ancienne adresse est prévenue une fois l'email changé |
 | **URL Configuration** | Site URL | `https://anas31317.github.io/anas_suivi_muscu/` |
 | | Redirect URLs | `https://anas31317.github.io/anas_suivi_muscu/**` |
 
