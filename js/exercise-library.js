@@ -25,7 +25,11 @@
 
 export const MUSCLES = [
   { id: 'pecs', label: 'Pectoraux', view: 'front' },
-  { id: 'dos', label: 'Dos', view: 'back' },
+  // le dos par muscle : on ne cherche pas un tirage vertical, un rowing et des
+  // shrugs au même endroit
+  { id: 'grand-dorsal', label: 'Grand dorsal', view: 'back' },
+  { id: 'trapezes', label: 'Trapèzes', view: 'back' },
+  { id: 'rhomboides', label: 'Rhomboïdes', view: 'back' },
   { id: 'epaules', label: 'Épaules', view: 'front' },
   { id: 'biceps', label: 'Biceps', view: 'front' },
   { id: 'triceps', label: 'Triceps', view: 'back' },
@@ -42,16 +46,23 @@ export const MUSCLES = [
 ];
 
 /*
- * Muscles précis, plus fins que les catégories ci-dessus. Le dos en compte
- * quatre : un tirage vertical et un rowing ne travaillent pas la même chose,
- * et ça se voit sur la silhouette. Chacun dit à quelle catégorie il appartient,
+ * Muscles précis, plus fins que les catégories ci-dessus, et colorés chacun à
+ * leur place sur la silhouette. Chacun dit à quelle catégorie il appartient,
  * c'est elle qui sert à ranger les exercices.
  */
 export const DETAIL = {
-  trapezes: { label: 'Trapèzes', group: 'dos' },
-  'grand-dorsal': { label: 'Grand dorsal', group: 'dos' },
-  'grand-rond': { label: 'Grand rond', group: 'dos' },
-  rhomboides: { label: 'Rhomboïdes', group: 'dos' },
+  // le grand rond seconde le grand dorsal dans tous les tirages : rangé avec lui
+  'grand-rond': { label: 'Grand rond', group: 'grand-dorsal' },
+  // le trapèze en trois faisceaux : des shrugs (supérieur) et un rowing (moyen)
+  // ne travaillent pas la même partie
+  'trap-sup': { label: 'Trapèze supérieur', group: 'trapezes' },
+  'trap-moy': { label: 'Trapèze moyen', group: 'trapezes' },
+  'trap-inf': { label: 'Trapèze inférieur', group: 'trapezes' },
+  // l'épaule en trois faisceaux : un développé, une élévation latérale et un
+  // oiseau ne visent pas la même partie, et l'arrière se voit de dos
+  'delt-avant': { label: 'Deltoïde antérieur', group: 'epaules' },
+  'delt-lateral': { label: 'Deltoïde latéral', group: 'epaules' },
+  'delt-arriere': { label: 'Deltoïde postérieur', group: 'epaules' },
   // l'intérieur de la cuisse : rangé avec les quadriceps, c'est là qu'on le
   // cherche, mais coloré à sa place sur la silhouette
   adducteurs: { label: 'Adducteurs', group: 'quadriceps' }
@@ -73,87 +84,87 @@ export const GEAR = {
 
 const RAW = [
   /* ---------------------------------------------------------- pectoraux */
-  ['dc-barre', 'Développé couché', 'barre', 'kg', ['pecs'], ['triceps', 'epaules']],
-  ['dc-incline-barre', 'Développé incliné', 'barre', 'kg', ['pecs'], ['epaules', 'triceps']],
+  ['dc-barre', 'Développé couché', 'barre', 'kg', ['pecs'], ['triceps', 'delt-avant']],
+  ['dc-incline-barre', 'Développé incliné', 'barre', 'kg', ['pecs'], ['delt-avant', 'triceps']],
   ['dc-decline-barre', 'Développé décliné', 'barre', 'kg', ['pecs'], ['triceps']],
-  ['dc-smith', 'Développé couché Smith', 'machine', 'kg', ['pecs'], ['triceps', 'epaules']],
-  ['dc-incline-smith', 'Développé incliné Smith', 'machine', 'kg', ['pecs'], ['epaules', 'triceps']],
-  ['dc-halteres', 'Développé couché haltères', 'halteres', 'kg', ['pecs'], ['triceps', 'epaules']],
-  ['dc-incline-halteres', 'Développé incliné haltères', 'halteres', 'kg', ['pecs'], ['epaules', 'triceps']],
+  ['dc-smith', 'Développé couché Smith', 'machine', 'kg', ['pecs'], ['triceps', 'delt-avant']],
+  ['dc-incline-smith', 'Développé incliné Smith', 'machine', 'kg', ['pecs'], ['delt-avant', 'triceps']],
+  ['dc-halteres', 'Développé couché haltères', 'halteres', 'kg', ['pecs'], ['triceps', 'delt-avant']],
+  ['dc-incline-halteres', 'Développé incliné haltères', 'halteres', 'kg', ['pecs'], ['delt-avant', 'triceps']],
   ['dc-decline-halteres', 'Développé décliné haltères', 'halteres', 'kg', ['pecs'], ['triceps']],
-  ['chest-press', 'Développé machine (chest press)', 'machine', 'kg', ['pecs'], ['triceps', 'epaules']],
-  ['chest-press-incline', 'Développé incliné machine', 'machine', 'kg', ['pecs'], ['epaules', 'triceps']],
+  ['chest-press', 'Développé machine (chest press)', 'machine', 'kg', ['pecs'], ['triceps', 'delt-avant']],
+  ['chest-press-incline', 'Développé incliné machine', 'machine', 'kg', ['pecs'], ['delt-avant', 'triceps']],
   ['ecarte-couche', 'Écarté haltères couché', 'halteres', 'kg', ['pecs'], []],
-  ['ecarte-incline', 'Écarté haltères incliné', 'halteres', 'kg', ['pecs'], ['epaules']],
+  ['ecarte-incline', 'Écarté haltères incliné', 'halteres', 'kg', ['pecs'], ['delt-avant']],
   ['pec-deck', 'Pec deck (butterfly)', 'machine', 'kg', ['pecs'], []],
   ['ecarte-poulie-haute', 'Écarté poulie haute', 'poulie', 'kg', ['pecs'], []],
-  ['ecarte-poulie-basse', 'Écarté poulie basse', 'poulie', 'kg', ['pecs'], ['epaules']],
+  ['ecarte-poulie-basse', 'Écarté poulie basse', 'poulie', 'kg', ['pecs'], ['delt-avant']],
   ['ecarte-poulie-milieu', 'Écarté poulie hauteur poitrine', 'poulie', 'kg', ['pecs'], []],
-  ['pompes', 'Pompes', 'corps', 'bw', ['pecs'], ['triceps', 'epaules', 'abdos']],
-  ['pompes-pieds-hauts', 'Pompes pieds surélevés', 'corps', 'bw', ['pecs'], ['epaules', 'triceps']],
-  ['pompes-larges', 'Pompes prise large', 'corps', 'bw', ['pecs'], ['epaules']],
-  ['pompes-serrees', 'Pompes prise serrée', 'corps', 'bw', ['pecs', 'triceps'], ['epaules']],
-  ['pompes-mains-hautes', 'Pompes mains surélevées', 'corps', 'bw', ['pecs'], ['triceps', 'epaules']],
-  ['pompes-genoux', 'Pompes sur les genoux', 'corps', 'bw', ['pecs'], ['triceps', 'epaules']],
-  ['pompes-archer', 'Pompes archer', 'corps', 'bw', ['pecs'], ['triceps', 'epaules', 'abdos']],
-  ['pompes-sautees', 'Pompes sautées (pliométrie)', 'corps', 'bw', ['pecs'], ['triceps', 'epaules']],
-  ['pompes-uni', 'Pompes unilatérales', 'corps', 'bw', ['pecs'], ['triceps', 'epaules', 'abdos']],
+  ['pompes', 'Pompes', 'corps', 'bw', ['pecs'], ['triceps', 'delt-avant', 'abdos']],
+  ['pompes-pieds-hauts', 'Pompes pieds surélevés', 'corps', 'bw', ['pecs'], ['delt-avant', 'triceps']],
+  ['pompes-larges', 'Pompes prise large', 'corps', 'bw', ['pecs'], ['delt-avant']],
+  ['pompes-serrees', 'Pompes prise serrée', 'corps', 'bw', ['pecs', 'triceps'], ['delt-avant']],
+  ['pompes-mains-hautes', 'Pompes mains surélevées', 'corps', 'bw', ['pecs'], ['triceps', 'delt-avant']],
+  ['pompes-genoux', 'Pompes sur les genoux', 'corps', 'bw', ['pecs'], ['triceps', 'delt-avant']],
+  ['pompes-archer', 'Pompes archer', 'corps', 'bw', ['pecs'], ['triceps', 'delt-avant', 'abdos']],
+  ['pompes-sautees', 'Pompes sautées (pliométrie)', 'corps', 'bw', ['pecs'], ['triceps', 'delt-avant']],
+  ['pompes-uni', 'Pompes unilatérales', 'corps', 'bw', ['pecs'], ['triceps', 'delt-avant', 'abdos']],
 
   /* ---------------------------------------------------------------- dos */
   ['tractions-pro', 'Tractions pronation', 'corps', 'pdc', ['grand-dorsal'], ['grand-rond', 'biceps', 'avant-bras']],
   ['tractions-supi', 'Tractions supination', 'corps', 'pdc', ['grand-dorsal'], ['biceps', 'grand-rond']],
   ['tractions-neutre', 'Tractions prise neutre', 'corps', 'pdc', ['grand-dorsal'], ['grand-rond', 'biceps', 'avant-bras']],
-  ['tractions-larges', 'Tractions prise large', 'corps', 'pdc', ['grand-dorsal'], ['grand-rond', 'rhomboides', 'epaules']],
+  ['tractions-larges', 'Tractions prise large', 'corps', 'pdc', ['grand-dorsal'], ['grand-rond', 'rhomboides', 'delt-arriere']],
   // les mêmes avec une ceinture : charge et répétitions ne se suivent pas sur
   // la même courbe, d'où une fiche par façon de faire
   ['tractions-pro-leste', 'Tractions pronation lestées', 'corps', 'bw', ['grand-dorsal'], ['grand-rond', 'biceps', 'avant-bras']],
   ['tractions-supi-leste', 'Tractions supination lestées', 'corps', 'bw', ['grand-dorsal'], ['biceps', 'grand-rond']],
   ['tractions-neutre-leste', 'Tractions prise neutre lestées', 'corps', 'bw', ['grand-dorsal'], ['grand-rond', 'biceps', 'avant-bras']],
-  ['tractions-larges-leste', 'Tractions prise large lestées', 'corps', 'bw', ['grand-dorsal'], ['grand-rond', 'rhomboides', 'epaules']],
+  ['tractions-larges-leste', 'Tractions prise large lestées', 'corps', 'bw', ['grand-dorsal'], ['grand-rond', 'rhomboides', 'delt-arriere']],
   ['tirage-vertical-pro', 'Tirage vertical pronation', 'poulie', 'kg', ['grand-dorsal'], ['grand-rond', 'biceps']],
   ['tirage-vertical-supi', 'Tirage vertical supination', 'poulie', 'kg', ['grand-dorsal'], ['biceps', 'grand-rond']],
   ['tirage-vertical-neutre', 'Tirage vertical prise neutre', 'poulie', 'kg', ['grand-dorsal'], ['grand-rond', 'biceps']],
-  ['tirage-vertical-large', 'Tirage vertical prise large', 'poulie', 'kg', ['grand-dorsal'], ['grand-rond', 'rhomboides', 'epaules']],
-  ['rowing-barre-pro', 'Rowing barre pronation', 'barre', 'kg', ['grand-dorsal', 'rhomboides'], ['trapezes', 'biceps', 'lombaires']],
-  ['rowing-barre-supi', 'Rowing barre supination (Yates)', 'barre', 'kg', ['grand-dorsal'], ['biceps', 'rhomboides', 'lombaires']],
-  ['rowing-t-bar', 'Rowing T-bar', 'barre', 'kg', ['grand-dorsal', 'rhomboides'], ['trapezes', 'biceps']],
-  ['rowing-haltere', 'Rowing haltère unilatéral', 'halteres', 'kg', ['grand-dorsal'], ['rhomboides', 'grand-rond', 'biceps']],
-  ['rowing-halteres-2', 'Rowing haltères deux bras', 'halteres', 'kg', ['grand-dorsal', 'rhomboides'], ['biceps', 'lombaires']],
-  ['seal-row', 'Seal row (banc)', 'halteres', 'kg', ['grand-dorsal', 'rhomboides'], ['trapezes', 'biceps']],
-  ['rowing-machine', 'Rowing machine', 'machine', 'kg', ['grand-dorsal', 'rhomboides'], ['trapezes', 'biceps']],
-  ['tirage-horizontal', 'Tirage horizontal poulie', 'poulie', 'kg', ['grand-dorsal', 'rhomboides'], ['trapezes', 'biceps']],
-  ['tirage-horizontal-large', 'Tirage horizontal prise large', 'poulie', 'kg', ['rhomboides', 'trapezes'], ['grand-dorsal', 'epaules']],
-  ['rowing-inverse', 'Rowing inversé (barre basse)', 'corps', 'bw', ['grand-dorsal', 'rhomboides'], ['biceps', 'abdos']],
+  ['tirage-vertical-large', 'Tirage vertical prise large', 'poulie', 'kg', ['grand-dorsal'], ['grand-rond', 'rhomboides', 'delt-arriere']],
+  ['rowing-barre-pro', 'Rowing barre pronation', 'barre', 'kg', ['grand-dorsal', 'rhomboides', 'trap-moy'], ['biceps', 'lombaires']],
+  ['rowing-barre-supi', 'Rowing barre supination (Yates)', 'barre', 'kg', ['grand-dorsal', 'rhomboides', 'trap-moy'], ['biceps', 'lombaires']],
+  ['rowing-t-bar', 'Rowing T-bar', 'barre', 'kg', ['grand-dorsal', 'rhomboides', 'trap-moy'], ['biceps']],
+  ['rowing-haltere', 'Rowing haltère unilatéral', 'halteres', 'kg', ['grand-dorsal', 'rhomboides', 'trap-moy'], ['grand-rond', 'biceps']],
+  ['rowing-halteres-2', 'Rowing haltères deux bras', 'halteres', 'kg', ['grand-dorsal', 'rhomboides', 'trap-moy'], ['biceps', 'lombaires']],
+  ['seal-row', 'Seal row (banc)', 'halteres', 'kg', ['grand-dorsal', 'rhomboides', 'trap-moy'], ['biceps']],
+  ['rowing-machine', 'Rowing machine', 'machine', 'kg', ['grand-dorsal', 'rhomboides', 'trap-moy'], ['biceps']],
+  ['tirage-horizontal', 'Tirage horizontal poulie', 'poulie', 'kg', ['grand-dorsal', 'rhomboides', 'trap-moy'], ['biceps']],
+  ['tirage-horizontal-large', 'Tirage horizontal prise large', 'poulie', 'kg', ['rhomboides', 'trap-moy'], ['grand-dorsal', 'delt-arriere']],
+  ['rowing-inverse', 'Rowing inversé (barre basse)', 'corps', 'bw', ['grand-dorsal', 'rhomboides', 'trap-moy'], ['biceps', 'abdos']],
   ['pull-over-poulie', 'Pull over poulie haute', 'poulie', 'kg', ['grand-dorsal'], ['grand-rond', 'triceps']],
   ['pull-over-haltere', 'Pull over haltère', 'halteres', 'kg', ['grand-dorsal'], ['grand-rond', 'pecs', 'triceps']],
   ['pull-over-machine', 'Pull over machine', 'machine', 'kg', ['grand-dorsal'], ['grand-rond', 'triceps']],
-  ['sdt', 'Soulevé de terre', 'barre', 'kg', ['lombaires', 'fessiers', 'ischios'], ['grand-dorsal', 'trapezes', 'quadriceps']],
+  ['sdt', 'Soulevé de terre', 'barre', 'kg', ['lombaires', 'fessiers', 'ischios'], ['grand-dorsal', 'trap-sup', 'quadriceps', 'avant-bras']],
 
   /* --------------------------------------------- dos : trapèzes et cou */
-  ['shrugs-barre', 'Shrugs barre', 'barre', 'kg', ['trapezes'], ['avant-bras']],
-  ['shrugs-halteres', 'Shrugs haltères', 'halteres', 'kg', ['trapezes'], ['avant-bras']],
-  ['shrugs-machine', 'Shrugs machine', 'machine', 'kg', ['trapezes'], []],
-  ['face-pull', 'Face pull', 'poulie', 'kg', ['trapezes', 'epaules'], ['rhomboides']],
-  ['rowing-menton', 'Rowing menton', 'barre', 'kg', ['trapezes', 'epaules'], ['biceps']],
+  ['shrugs-barre', 'Shrugs barre', 'barre', 'kg', ['trap-sup'], ['avant-bras']],
+  ['shrugs-halteres', 'Shrugs haltères', 'halteres', 'kg', ['trap-sup'], ['avant-bras']],
+  ['shrugs-machine', 'Shrugs machine', 'machine', 'kg', ['trap-sup'], []],
+  ['face-pull', 'Face pull', 'poulie', 'kg', ['delt-arriere', 'trap-moy'], ['trap-inf', 'rhomboides']],
+  ['rowing-menton', 'Rowing menton', 'barre', 'kg', ['delt-lateral', 'trap-sup'], ['biceps']],
 
   /* ------------------------------------------------------------ épaules */
-  ['militaire-debout', 'Développé militaire debout', 'barre', 'kg', ['epaules'], ['triceps', 'abdos']],
-  ['militaire-assis', 'Développé militaire assis', 'barre', 'kg', ['epaules'], ['triceps']],
-  ['militaire-smith', 'Développé épaules Smith', 'machine', 'kg', ['epaules'], ['triceps']],
-  ['dev-epaules-halteres', 'Développé épaules haltères', 'halteres', 'kg', ['epaules'], ['triceps']],
-  ['dev-epaules-neutre', 'Développé épaules prise neutre', 'halteres', 'kg', ['epaules'], ['triceps']],
-  ['arnold-press', 'Arnold press', 'halteres', 'kg', ['epaules'], ['triceps']],
-  ['dev-epaules-machine', 'Développé épaules machine', 'machine', 'kg', ['epaules'], ['triceps']],
-  ['elev-lat-halteres', 'Élévations latérales haltères', 'halteres', 'kg', ['epaules'], []],
-  ['elev-lat-poulie', 'Élévation latérale poulie', 'poulie', 'kg', ['epaules'], []],
-  ['elev-lat-machine', 'Élévations latérales machine', 'machine', 'kg', ['epaules'], []],
-  ['elev-lat-penche', 'Élévations latérales buste penché', 'halteres', 'kg', ['epaules'], ['trapezes', 'rhomboides']],
-  ['elev-front-halteres', 'Élévations frontales haltères', 'halteres', 'kg', ['epaules'], ['pecs']],
-  ['elev-front-barre', 'Élévations frontales barre', 'barre', 'kg', ['epaules'], []],
-  ['elev-front-poulie', 'Élévations frontales poulie', 'poulie', 'kg', ['epaules'], []],
-  ['oiseau-halteres', 'Oiseau haltères', 'halteres', 'kg', ['epaules'], ['rhomboides', 'trapezes']],
-  ['oiseau-machine', 'Oiseau machine (reverse pec deck)', 'machine', 'kg', ['epaules'], ['rhomboides', 'trapezes']],
-  ['oiseau-poulie', 'Oiseau poulie', 'poulie', 'kg', ['epaules'], ['rhomboides', 'trapezes']],
+  ['militaire-debout', 'Développé militaire debout', 'barre', 'kg', ['delt-avant'], ['delt-lateral', 'triceps', 'abdos']],
+  ['militaire-assis', 'Développé militaire assis', 'barre', 'kg', ['delt-avant'], ['delt-lateral', 'triceps']],
+  ['militaire-smith', 'Développé épaules Smith', 'machine', 'kg', ['delt-avant'], ['delt-lateral', 'triceps']],
+  ['dev-epaules-halteres', 'Développé épaules haltères', 'halteres', 'kg', ['delt-avant'], ['delt-lateral', 'triceps']],
+  ['dev-epaules-neutre', 'Développé épaules prise neutre', 'halteres', 'kg', ['delt-avant'], ['delt-lateral', 'triceps']],
+  ['arnold-press', 'Arnold press', 'halteres', 'kg', ['delt-avant'], ['delt-lateral', 'triceps']],
+  ['dev-epaules-machine', 'Développé épaules machine', 'machine', 'kg', ['delt-avant'], ['delt-lateral', 'triceps']],
+  ['elev-lat-halteres', 'Élévations latérales haltères', 'halteres', 'kg', ['delt-lateral'], ['trap-sup']],
+  ['elev-lat-poulie', 'Élévation latérale poulie', 'poulie', 'kg', ['delt-lateral'], ['trap-sup']],
+  ['elev-lat-machine', 'Élévations latérales machine', 'machine', 'kg', ['delt-lateral'], ['trap-sup']],
+  ['elev-lat-penche', 'Élévations latérales buste penché', 'halteres', 'kg', ['delt-arriere'], ['trap-moy', 'rhomboides']],
+  ['elev-front-halteres', 'Élévations frontales haltères', 'halteres', 'kg', ['delt-avant'], ['pecs']],
+  ['elev-front-barre', 'Élévations frontales barre', 'barre', 'kg', ['delt-avant'], ['pecs']],
+  ['elev-front-poulie', 'Élévations frontales poulie', 'poulie', 'kg', ['delt-avant'], ['pecs']],
+  ['oiseau-halteres', 'Oiseau haltères', 'halteres', 'kg', ['delt-arriere'], ['rhomboides', 'trap-moy']],
+  ['oiseau-machine', 'Oiseau machine (reverse pec deck)', 'machine', 'kg', ['delt-arriere'], ['rhomboides', 'trap-moy']],
+  ['oiseau-poulie', 'Oiseau poulie', 'poulie', 'kg', ['delt-arriere'], ['rhomboides', 'trap-moy']],
 
   /* ------------------------------------------------------------- biceps */
   ['curl-barre', 'Curl barre droite', 'barre', 'kg', ['biceps'], ['avant-bras']],
@@ -174,11 +185,11 @@ const RAW = [
   ['drag-curl', 'Drag curl', 'barre', 'kg', ['biceps'], []],
 
   /* ------------------------------------------------------------ triceps */
-  ['dips', 'Dips', 'corps', 'pdc', ['pecs', 'triceps'], ['epaules']],
-  ['dips-leste', 'Dips lestés', 'corps', 'bw', ['pecs', 'triceps'], ['epaules']],
+  ['dips', 'Dips', 'corps', 'pdc', ['pecs', 'triceps'], ['delt-avant']],
+  ['dips-leste', 'Dips lestés', 'corps', 'bw', ['pecs', 'triceps'], ['delt-avant']],
   ['dips-machine', 'Dips machine', 'machine', 'kg', ['triceps'], ['pecs']],
-  ['dips-banc', 'Dips sur banc', 'corps', 'bw', ['triceps'], ['epaules']],
-  ['dev-serre', 'Développé couché prise serrée', 'barre', 'kg', ['triceps'], ['pecs', 'epaules']],
+  ['dips-banc', 'Dips sur banc', 'corps', 'bw', ['triceps'], ['delt-avant']],
+  ['dev-serre', 'Développé couché prise serrée', 'barre', 'kg', ['triceps'], ['pecs', 'delt-avant']],
   ['barre-au-front', 'Barre au front (EZ)', 'barre', 'kg', ['triceps'], []],
   ['barre-au-front-halteres', 'Extension haltères couché', 'halteres', 'kg', ['triceps'], []],
   ['ext-corde', 'Extension poulie haute corde', 'poulie', 'kg', ['triceps'], []],
@@ -195,7 +206,7 @@ const RAW = [
   ['kickback-haltere', 'Kickback haltère', 'halteres', 'kg', ['triceps'], []],
   ['kickback-poulie', 'Kickback poulie', 'poulie', 'kg', ['triceps'], []],
   ['pompes-diamant', 'Pompes diamant', 'corps', 'bw', ['triceps'], ['pecs']],
-  ['pompes-pike', 'Pompes piquées (pike)', 'corps', 'bw', ['epaules'], ['triceps']],
+  ['pompes-pike', 'Pompes piquées (pike)', 'corps', 'bw', ['delt-avant'], ['delt-lateral', 'triceps']],
   ['ext-machine', 'Extension triceps machine', 'machine', 'kg', ['triceps'], []],
 
   /* --------------------------------------------------------- avant-bras */
@@ -203,7 +214,7 @@ const RAW = [
   ['reverse-curl-poulie', 'Reverse curl poulie basse', 'poulie', 'kg', ['avant-bras'], ['biceps']],
   ['curl-poignets', 'Curl poignets', 'barre', 'kg', ['avant-bras'], []],
   ['curl-poignets-inverse', 'Curl poignets inversé', 'barre', 'kg', ['avant-bras'], []],
-  ['farmer-walk', 'Marche du fermier', 'halteres', 'kg', ['avant-bras'], ['trapezes', 'abdos']],
+  ['farmer-walk', 'Marche du fermier', 'halteres', 'kg', ['avant-bras'], ['trap-sup', 'abdos']],
   ['suspension', 'Suspension à la barre', 'corps', 'bw', ['avant-bras'], ['grand-dorsal']],
 
   /* --------------------------------------------------------- abdominaux */
@@ -233,12 +244,12 @@ const RAW = [
   ['abduction-poulie', 'Abduction poulie', 'poulie', 'kg', ['fessiers'], []],
   ['kickback-fessier', 'Kickback fessier poulie', 'poulie', 'kg', ['fessiers'], ['ischios']],
   ['step-up', 'Montée sur banc (step-up)', 'halteres', 'kg', ['fessiers', 'quadriceps'], ['ischios']],
-  ['sdt-sumo', 'Soulevé de terre sumo', 'barre', 'kg', ['fessiers', 'quadriceps'], ['lombaires', 'trapezes']],
+  ['sdt-sumo', 'Soulevé de terre sumo', 'barre', 'kg', ['fessiers', 'quadriceps'], ['adducteurs', 'ischios', 'lombaires', 'trap-sup']],
 
   /* ------------------------------------------- quadriceps et adducteurs */
   ['adduction-machine', 'Adduction machine', 'machine', 'kg', ['adducteurs'], []],
   ['adduction-poulie', 'Adduction poulie', 'poulie', 'kg', ['adducteurs'], []],
-  ['squat', 'Squat barre (nuque)', 'barre', 'kg', ['quadriceps', 'fessiers'], ['lombaires', 'abdos']],
+  ['squat', 'Squat barre (nuque)', 'barre', 'kg', ['quadriceps', 'fessiers'], ['adducteurs', 'lombaires', 'abdos']],
   ['squat-avant', 'Squat avant (front squat)', 'barre', 'kg', ['quadriceps'], ['fessiers', 'abdos']],
   ['squat-gobelet', 'Squat gobelet', 'halteres', 'kg', ['quadriceps'], ['fessiers']],
   ['squat-smith', 'Squat Smith', 'machine', 'kg', ['quadriceps', 'fessiers'], []],
