@@ -21,6 +21,10 @@ import { h, icon, ICONS } from './ui.js';
 
 const NOTES = [
   {
+    version: '1.28.2',
+    items: ['Changer d’email depuis Profil est plus clair : l’appli te dit quels liens cliquer, et quand c’est terminé.']
+  },
+  {
     version: '1.28.0',
     items: [
       'Quatre styles au choix dans Profil (Sobre, Énergie, Néon, Violet), en clair comme en sombre.',

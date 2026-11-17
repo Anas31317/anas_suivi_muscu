@@ -66,15 +66,13 @@ create trigger check_allowed_email
   before insert on auth.users
   for each row execute function public.check_allowed_email();
 
--- Même règle quand un compte change d'email (Profil > Modifier le profil) :
--- sinon on pourrait passer son compte sur une adresse hors liste blanche.
--- Le contrôle a lieu à la confirmation du changement (quand l'email change
--- vraiment) : une adresse non autorisée fait échouer le lien de confirmation.
+-- La liste blanche dit qui peut CRÉER un compte. Un compte déjà accepté qui
+-- change son propre email (Profil > Modifier le profil) n'ouvre l'appli à
+-- personne de nouveau : pas de contrôle à ce moment-là, sinon chaque
+-- changement d'email demanderait une intervention dans Supabase. Le
+-- changement reste protégé par la double confirmation (lien sur l'ancienne
+-- ET la nouvelle adresse). Retire le contrôle s'il a été installé avant :
 drop trigger if exists check_allowed_email_change on auth.users;
-create trigger check_allowed_email_change
-  before update of email on auth.users
-  for each row when (new.email is distinct from old.email)
-  execute function public.check_allowed_email();
 
 
 -- ---------------------------------------------------------------------

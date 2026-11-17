@@ -174,6 +174,17 @@ function handleAuthEvent(event, session) {
   }, 0);
 }
 
+/** Message en bas de l'écran, fermé d'un ✕ (même allure que les petites notes de mise à jour). */
+function noticeBanner(text) {
+  const el = h('div', { class: 'patch-note', role: 'status' },
+    h('div', { class: 'body' }, h('p', {}, text)),
+    h('button', {
+      class: 'btn ghost small icon-only', type: 'button', title: 'Fermer', 'aria-label': 'Fermer le message',
+      onclick: () => el.remove()
+    }, icon(ICONS.close, 14)));
+  document.body.append(el);
+}
+
 /* --------------------------------------------------------- maintenance */
 
 /** Vrai si ce compte a le droit d'entrer pendant une maintenance. */
@@ -442,6 +453,17 @@ async function main() {
     recoveryMode = true;
     url.searchParams.delete('flow');
     history.replaceState(null, '', url.pathname + url.search + '#/nouveau-mot-de-passe');
+  }
+
+  // Premier des deux liens d'un changement d'email : Supabase revient avec
+  // ?message=… (ou #message=…), en anglais. On dit quoi faire ensuite.
+  const supabaseMessage = url.searchParams.get('message') || new URLSearchParams(location.hash.slice(1)).get('message');
+  if (supabaseMessage) {
+    url.searchParams.delete('message');
+    history.replaceState(null, '', url.pathname + url.search + (location.hash.startsWith('#/') ? location.hash : '#/'));
+    if (/other email/i.test(supabaseMessage)) {
+      noticeBanner('Premier lien accepté. Clique maintenant sur le lien reçu sur ton autre adresse email : le changement sera alors terminé.');
+    }
   }
 
   auth.onAuthChange(handleAuthEvent);

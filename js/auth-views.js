@@ -315,7 +315,7 @@ export function profileEditor(user, onSaved) {
     field('Prénom', first),
     field('Nom', last),
     field('Nom d’utilisateur', username, '3 à 20 caractères : lettres minuscules, chiffres, point ou tiret bas.'),
-    field('Email', email, 'Un changement d’email se confirme par un lien envoyé par email.'),
+    field('Email', email, 'Pour changer d’email, tu recevras deux liens : un sur la nouvelle adresse, un sur l’actuelle. Clique sur les deux.'),
     msg,
     h('div', { class: 'btn-row' }, submit)
   );
@@ -341,7 +341,7 @@ export function profileEditor(user, onSaved) {
     });
     if (error) { msg.show(auth.explain(error)); return; }
     onSaved({ meta: (saved && saved.user_metadata) || next, newEmail: (saved && saved.new_email) || (emailChanged ? newEmail : null) });
-    toast(emailChanged ? `Lien de confirmation envoyé à ${newEmail}` : 'Profil enregistré');
+    toast(emailChanged ? 'Liens envoyés : clique sur celui de chaque adresse' : 'Profil enregistré');
   });
 
   return form;
