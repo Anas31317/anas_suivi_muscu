@@ -356,15 +356,6 @@ export function viewWorkout({ sessionId, logId }, ctx) {
     location.hash = existing ? '#/muscu' : '#/';
   };
 
-  const remove = () => {
-    if (!confirm(`Supprimer la séance du ${formatDate(draft.date)} ? Elle disparaîtra de ton historique.`)) return;
-    clearTimeout(timer);
-    pending = false;
-    if (store.getLog(draft.id)) store.deleteLog(draft.id);
-    toast('Séance supprimée');
-    location.hash = '#/muscu';
-  };
-
   const n = sess ? sessionNumber(sess.id) : null;
 
   return h('div', { class: 'page page-form' },
@@ -389,7 +380,6 @@ export function viewWorkout({ sessionId, logId }, ctx) {
     ),
     h('div', { class: 'form-actions' },
       chronoBox,
-      source ? h('button', { class: 'btn ghost danger', type: 'button', onclick: remove }, 'Supprimer') : null,
       h('button', { class: 'btn primary', type: 'button', onclick: save }, icon('M5 12.5l4.5 4.5L19 7.5', 15), 'Enregistrer la séance')
     )
   );

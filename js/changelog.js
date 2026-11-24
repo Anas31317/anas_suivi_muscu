@@ -21,6 +21,13 @@ import { h, icon, ICONS } from './ui.js';
 
 const NOTES = [
   {
+    version: '1.28.7',
+    items: [
+      'Modifier la séance : le bouton pour retirer un exercice est de retour sur téléphone.',
+      'Séance : plus de bouton « Supprimer » en bas ; une séance se supprime depuis l’historique.'
+    ]
+  },
+  {
     version: '1.28.0',
     items: [
       'Quatre styles au choix dans Profil (Sobre, Énergie, Néon, Violet), en clair comme en sombre.',
